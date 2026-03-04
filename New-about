@@ -1,0 +1,399 @@
+SHS Enrollment Database Documentation (cdonhs_shs_database_enrollment)
+
+This database is for a Senior High School enrollment & elective selection system. It stores:
+
+user accounts (admin/teacher/student)
+
+student application records (Form-like profile)
+
+official enrollment status per school year
+
+track assignment (Academic / TechPro)
+
+subject catalog (old subject + new curriculum subject_new)
+
+subject offerings per school year / grade / semester / section
+
+student subject enlistment and elective choices
+
+The system supports core subjects + track electives.
+
+1) Main Concepts
+A) User vs Student
+
+users = login accounts (username/password/role)
+
+students = enrolled student entity linked to a user (students.user_id)
+
+B) Application vs Enrollment
+
+student_applications = full personal data + requirements uploads + application status (Pending/Approved/etc.)
+
+students = final enrollment record (Active/Graduated/etc.) with school_year + enlistment status
+
+So:
+
+Student submits application → goes to student_applications
+
+Admin approves → student gets created/activated in students
+
+C) Track and Cluster
+
+tracks = only Academic or TechPro
+
+clusters = elective groupings under a track (e.g., STEM cluster is now just “Science, Technology, Engineering, and Mathematics” without “STEM label” in UI)
+
+D) Subjects & Offerings
+
+You currently have two catalogs:
+
+subject
+
+looks like your legacy/old subject list (many duplicates because before it was strand-based)
+
+now altered to support track/cluster fields, but data is still old.
+
+subject_new
+
+your new curriculum subject list (Strengthened SHS mapping)
+
+already mapped to track + cluster + grade recommendation + NC equivalents
+
+Offerings:
+
+subject_offerings = when a subject is available for enrollment
+It depends on: school_year, grade_level, semester, and optional section_id, with optional slots.
+
+E) Student Enrollment & Electives
+
+student_subjects = the student’s “enlisted subjects” for a school year
+can hold status (Pending/Enrolled/Completed etc.) and references subject_id and optionally offering_id
+
+student_electives = separate table specifically for elective selections by offering
+(student chooses an offering, per semester, per school year)
+
+2) Table-by-Table Meaning
+activation_settings
+
+Feature toggles:
+
+“Student Enrollment” ON/OFF
+
+“Form 137/138 Page” ON/OFF
+
+“Student Progress Page” ON/OFF
+
+“Teacher Registration” ON/OFF
+
+Frontend should read these to hide/disable pages.
+
+users
+
+Login credentials + role:
+
+role_id links to roles (Admin / Student / Teacher)
+
+first_login flag can force password change on first login
+
+status allows disabling users
+
+roles
+
+Defines allowed roles.
+
+teachers
+
+Teacher profile linked to users.
+
+students
+
+Official enrollment identity:
+
+linked to users and student_applications
+
+enrollment_status: Active/Inactive/Graduated/Transferred
+
+enlistment_status: Not Enlisted / Pending / Enlisted / Rejected / Promoted / Finished
+
+school_year indicates the SY of this enrollment record
+
+student_applications
+
+Full application form data:
+
+personal info, parents, address
+
+learning modality flags (blended, online, modular, etc.)
+
+uploaded file paths (PSA birth certificate, Form 138, etc.)
+
+approval status + remarks
+
+tracks
+
+Two entries: Academic, TechPro.
+
+student_track
+
+Assigns each student to a track:
+
+1 student = 1 track (because student_id is primary key)
+
+This is how you decide what electives they can see.
+
+clusters
+
+Elective groupings:
+
+Core cluster has track_id = NULL (shared)
+
+Other clusters belong to Academic or TechPro
+
+Frontend uses clusters to group elective subjects.
+
+subject_new
+
+New curriculum subject catalog:
+
+track_id can be NULL for core subjects
+
+cluster_id required
+
+subject_type: CORE or ELECTIVE
+
+recommended_grade_level: ‘11’, ‘12’, or ‘11/12’
+
+nc_equivalent: NC II / NC III etc for TechPro
+
+is_required: marks must-take subjects (ex: Work Immersion for TechPro)
+
+is_active: allows you to hide/deprecate subjects without deleting
+
+subject
+
+This is your existing subject catalog used by your old enrollment records.
+Because student_subjects.subject_id references subject.subject_id, you must not delete/replace these rows unless you migrate old enrollments.
+
+subject_offerings
+
+This is the “schedule catalog”:
+
+subject offered in a given SY, grade, semester, optionally section
+
+supports slots
+
+is_active to open/close offerings
+
+Use this table for enrollment selection UI.
+
+student_subjects
+
+This is the “student enlistment list”:
+
+tracks the subject a student is taking (per school year)
+
+status supports Pending/Enrolled/Completed/Dropped/etc.
+
+can optionally reference a specific offering (offering_id)
+
+This is your “official record of what subjects a student is registered in”.
+
+student_electives
+
+This is “student elective choices”:
+
+links student to subject_offerings
+
+includes semester + school_year
+
+unique constraint prevents selecting same offering twice
+
+This table is used when you want “elective selection” separate from the official subject enlistment.
+
+section
+
+Class sections:
+
+includes grade_level
+
+has both strand_id and track_id (currently most are NULL for track_id)
+
+your DB is in transition: old sections were strand-based
+
+If you move fully to track-based, you will stop using strand_id.
+
+strands, student_strand, archived_student_strand
+
+Legacy strand system:
+
+strands list (STEM/ABM/HUMSS/GAS/TVL...)
+
+student_strand is the student’s strand assignment
+
+archived_student_strand stores history (promotion/transfer/manual)
+
+If the goal is “remove strand labels shown”, the frontend should stop reading strands and instead read track/cluster.
+
+3) Recommended System Flow (Frontend + Backend)
+Step 1: Application
+
+Frontend
+
+Student fills up application form
+
+uploads required docs
+
+Backend
+
+POST /applications
+
+saves to student_applications with status Pending
+
+Admin
+
+PATCH /applications/:id/approve
+
+creates or activates users + students
+
+Step 2: Track Assignment
+
+Frontend (Admin)
+
+choose student’s track (Academic/TechPro)
+
+Backend
+
+POST /students/:id/track
+
+upsert into student_track
+
+Step 3: Show Subjects (New Curriculum)
+
+When student opens “Electives / Enlistment” page:
+
+Backend should return:
+
+core subjects (cluster_id = 1) from subject_new
+
+electives based on track:
+
+if track Academic → subject_new.track_id = 1
+
+if track TechPro → subject_new.track_id = 2
+
+group by clusters
+
+Example endpoints
+
+GET /students/:id/curriculum
+
+returns { coreSubjects, electiveClusters }
+
+Step 4: Offerings (what can be selected)
+
+Subjects exist in catalog, but selection should be from offerings.
+
+Backend
+
+GET /offerings?school_year=2026-2027&grade_level=11&semester=1&track_id=2
+
+join offerings → subject_new or subject (choose one catalog consistently)
+
+filter by student track
+
+Step 5: Student selects electives
+
+Frontend
+
+Student chooses from available offerings
+
+Backend
+
+POST /students/:id/electives
+
+insert into student_electives
+
+Optional: also create official entries in student_subjects (recommended)
+
+for each chosen offering, insert into student_subjects with status Pending/Enrolled
+
+This makes progress tracking easier.
+
+Step 6: Enlistment / Finalize
+
+Backend
+
+POST /students/:id/enlist
+
+validate:
+
+all required subjects selected (core + required electives)
+
+elective limit per semester (your policy)
+
+slots not exceeded
+
+set students.enlistment_status = 'Enlisted'
+
+4) Frontend Pages You Can Build
+Student Portal
+
+Dashboard (activation toggles)
+
+Application Form (if not approved)
+
+Track & Curriculum view (read-only)
+
+Elective selection page (by offerings)
+
+My Subjects (from student_subjects)
+
+Progress page (if enabled)
+
+Admin Portal
+
+Applications list + approve/reject
+
+Students list + assign track
+
+Subject catalog management (activate/deactivate subjects)
+
+Create offerings per SY/semester/section/slots
+
+Monitor elective selections
+
+Enlistment approvals / finalization
+
+Teacher Portal
+
+Advisory class list (if you connect teacher_advisory)
+
+Student progress view (read student_subjects)
+
+5) Important Notes / Warnings
+
+Don’t delete old subject rows
+student_subjects.subject_id references them. Deleting breaks history.
+
+You are mid-migration:
+
+legacy: strands (student_strand, strands)
+
+new: tracks + clusters (student_track, clusters, subject_new)
+UI should choose one “source of truth” depending on curriculum year.
+
+To “remove STEM/ABM/HUMSS labels”:
+
+UI should stop using strands table for display
+
+show tracks.track_name + clusters.cluster_name instead
+
+If you want, I can also write a “Backend API contract” (exact JSON outputs) and the SQL queries for:
+
+get student’s track
+
+get subjects grouped by cluster
+
+get offerings filtered by track/grade/semester
+
+save electives + auto-create student_subjects entries
