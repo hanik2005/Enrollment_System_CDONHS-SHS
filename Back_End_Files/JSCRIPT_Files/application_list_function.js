@@ -120,6 +120,9 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .then(res => res.json())
             .then(resp => {
+                // Debug: show response in console
+                console.log('Server response:', resp);
+                
                 // Hide loading modal
                 if (loadingModal) {
                     loadingModal.classList.remove("active");

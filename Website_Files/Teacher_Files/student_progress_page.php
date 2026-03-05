@@ -17,10 +17,9 @@ if (!isFeatureEnabled('Student Progress Page')) {
 
 /* VERIFY TEACHER SESSION */
 $stmt = $connection->prepare("
-    SELECT u.*, ta.profile_image 
+    SELECT u.*, t.first_name, t.last_name, t.middle_name, t.extension_name
     FROM users u
-    INNER JOIN teachers s ON s.user_id = u.user_id
-    INNER JOIN teacher_applications ta ON s.application_id = ta.teacher_application_id
+    INNER JOIN teachers t ON t.user_id = u.user_id
     WHERE u.user_id = ? AND u.role_id = 3
 ");
 
@@ -35,12 +34,11 @@ if (!$user) {
     exit;
 }
 
-// Set profile image path
-$profileImagePath = !empty($user['profile_image']) 
-    ? "../../uploads/Profile/teacher/" . htmlspecialchars($user['profile_image']) 
-    : "../../Assets/profile_button.png";
+// Set profile image path (using default since teachers table doesn't have profile_image)
+$profileImagePath = "../../Assets/profile_button.png";
 
 include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
+include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
 
 ?>
 
@@ -53,68 +51,113 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
     <link rel="stylesheet" href="../../Design/main_design.css">
     <link rel="stylesheet" href="../../Design/profile_dropdown.css">
     <link rel="stylesheet" href="../../Design/teacher/student_progress_design.css">
+    <link rel="stylesheet" href="../../Design/admin/application_list_design.css">
     <title>Student Progress - CDONHS-SHS</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <style>
-        /* Print Styles */
-        @media print {
-            .header, .footer, .back-button-container, .btn-print, .no-print,
-            .profile-dropdown, .finalize-form, .action-column {
-                display: none !important;
-            }
-            
-            body {
-                background: white !important;
-            }
-            
-            .progress-container {
-                width: 100% !important;
-                margin: 0 !important;
-                padding: 20px !important;
-                box-shadow: none !important;
-            }
-            
-            .progress-table {
-                width: 100% !important;
-                border-collapse: collapse !important;
-            }
-            
-            .progress-table th, .progress-table td {
-                border: 1px solid #000 !important;
-                padding: 8px !important;
-                text-align: left !important;
-            }
-            
-            .print-header {
-                display: block !important;
-                text-align: center;
-                margin-bottom: 20px;
-            }
-            
-            .print-header img {
-                width: 80px;
-                height: 80px;
-            }
-            
-            .print-header h1 {
-                font-size: 18px;
-                margin: 5px 0;
-            }
-            
-            .print-header p {
-                font-size: 14px;
-                margin: 3px 0;
-            }
-            
-            .status-promoted { color: green !important; font-weight: bold; }
-            .status-retained { color: red !important; font-weight: bold; }
-            .status-graduated { color: blue !important; font-weight: bold; }
-            .status-pending { color: orange !important; }
-            .status-incomplete { color: gray !important; }
+        /* Promotion Status Styles */
+        .promotion-column {
+            min-width: 180px;
         }
-        
-        .print-header {
-            display: none;
+
+        .promotion-select {
+            padding: 6px 10px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            background: #ffffff;
+            min-width: 140px;
+        }
+
+        .promotion-select:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .promotion-select.promote { background: #d1fae5; border-color: #059669; }
+        .promotion-select.graduate { background: #dbeafe; border-color: #2563eb; }
+        .promotion-select.retain { background: #fee2e2; border-color: #dc2626; }
+        .promotion-select.pending { background: #fef3c7; border-color: #d97706; }
+
+        .remarks-input {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 12px;
+            width: 150px;
+        }
+
+        .save-btn {
+            padding: 6px 12px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background: #2563eb;
+        }
+
+        .saved-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #059669;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* Bulk action styles */
+        .bulk-action-container {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .bulk-action-container label {
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .bulk-action-container select {
+            padding: 8px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .bulk-action-container input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .confirm-btn {
+            padding: 10px 20px;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn:hover {
+            background: #047857;
         }
     </style>
 </head>
@@ -123,7 +166,7 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
-            <span>CDONSHS-SHS</span>
+            <span>CDONHS-SHS</span>
         </div>
         <div class="center">
             Student Progress | Advisory: <?php echo htmlspecialchars($advisoryText); ?>
@@ -147,40 +190,28 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
 
     <!-- Main Content -->
     <div class="progress-container">
-        <!-- Print Header (only visible when printing) -->
-        <div class="print-header">
-            <img src="../../Assets/LOGO.png" alt="School Logo">
-            <h1>Cagayan De Oro National High School - Senior High School</h1>
-            <p>Student Progress Report</p>
-            <p>School Year: <?php echo isset($progressData[0]['school_year']) ? htmlspecialchars($progressData[0]['school_year']) : 'N/A'; ?></p>
-            <p>Advisory: <?php echo htmlspecialchars($advisoryText); ?></p>
-        </div>
-
         <!-- Messages -->
-        <?php if (!empty($successMessage)): ?>
-            <div class="alert alert-success">
-                <?php echo htmlspecialchars($successMessage); ?>
-            </div>
-        <?php endif; ?>
-        
-        <?php if (!empty($errorMessage)): ?>
+        <?php if (!empty($message)): ?>
+            <?php if ($message_type === 'success'): ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    showSuccessModal('<?php echo addslashes($message); ?>');
+                });
+            </script>
+            <?php else: ?>
             <div class="alert alert-error">
-                <?php echo htmlspecialchars($errorMessage); ?>
+                <?php echo htmlspecialchars($message); ?>
             </div>
+            <?php endif; ?>
         <?php endif; ?>
 
         <!-- Table Header -->
         <div class="table-header">
-            <h2>Student Progress Report</h2>
-            <p class="subtitle">Student Academic Performance and Status</p>
+            <h2>Student Promotion Status</h2>
+            <p class="subtitle">Select promotion status for your advisory students</p>
             <?php if (!empty($advisoryText)): ?>
                 <p class="advisory-info">Advisory: <?php echo htmlspecialchars($advisoryText); ?></p>
             <?php endif; ?>
-        </div>
-
-        <!-- Print Button -->
-        <div class="button-row no-print">
-            <button onclick="printProgress()" class="btn-print">🖨 Print Progress Report</button>
         </div>
 
         <?php if (empty($progressData)): ?>
@@ -189,25 +220,69 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
             </div>
         <?php else: ?>
             <div class="table-wrapper">
-                <form method="POST" id="bulkFinalizeForm">
+                <form method="POST" id="promotionForm">
+                
+                <!-- Bulk Action Bar -->
+                <div class="bulk-action-container">
+                    <label>Bulk Action:</label>
+                    <select name="bulk_status" id="bulkStatus">
+                        <option value="Pending">Pending</option>
+                        <?php if ($advisoryGradeLevel == 11): ?>
+                        <option value="Promote to Grade 12">Promote to Grade 12</option>
+                        <?php endif; ?>
+                        <?php if ($advisoryGradeLevel == 12): ?>
+                        <option value="Graduate">Graduate</option>
+                        <?php endif; ?>
+                        <option value="Retained">Retained</option>
+                    </select>
+                    <input type="text" name="bulk_remarks" id="bulkRemarks" placeholder="Add remarks for all...">
+                    <button type="submit" name="bulk_update_promotion" class="confirm-btn">✓ Confirm Selected</button>
+                </div>
+
                 <table class="progress-table" id="progressTable">
                     <thead>
                         <tr>
-                            <th>No</th>
-                            <th>LRN</th>
-                            <th>Student Name</th>
-                            <th>School Year</th>
-                            <th>Overall Average</th>
-                            <th>Status</th>
-                            <th class="action-column no-print">Action</th>
-                            <th class="no-print" style="text-align:center; min-width:60px;">
-                                <input type="checkbox" id="selectAll" class="select-all-checkbox" title="Select All">
+                            <th style="width: 50px; text-align: center;">
+                                <input type="checkbox" id="selectAll" title="Select All">
                             </th>
+                            <th>No</th>
+                            <th>Student Name</th>
+                            <th>Grade Level</th>
+                            <th>Strand</th>
+                            <th>Section</th>
+                            <th class="promotion-column">Promotion Status</th>
+                            <th>Teacher Remarks</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
                         $count = 1;
+                        
+                        // Get promotion status for all students
+                        $promotion_statuses = [];
+                        
+                        $currentMonth = date('n');
+                        $currentYear = date('Y');
+                        if ($currentMonth >= 6) {
+                            $school_year = $currentYear . '-' . ($currentYear + 1);
+                        } else {
+                            $school_year = ($currentYear - 1) . '-' . $currentYear;
+                        }
+                        
+                        // Simple query without complex binding
+                        $promoQuery = $connection->query("
+                            SELECT student_id, recommended_status, teacher_remarks, is_approved
+                            FROM student_promotion_status 
+                            WHERE school_year = '$school_year'
+                        ");
+                        
+                        if ($promoQuery) {
+                            while ($promo = $promoQuery->fetch_assoc()) {
+                                $promotion_statuses[$promo['student_id']] = $promo;
+                            }
+                        }
+                        
                         foreach ($progressData as $student): 
                             $fullName = $student['last_name'] . ', ' . $student['first_name'];
                             if (!empty($student['middle_name'])) {
@@ -216,51 +291,64 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
                             if (!empty($student['extension_name'])) {
                                 $fullName .= ' ' . $student['extension_name'];
                             }
+
+                            // Get promotion status
+                            $promoStatus = $promotion_statuses[$student['student_id']]['recommended_status'] ?? 'Pending';
+                            $promoRemarks = $promotion_statuses[$student['student_id']]['teacher_remarks'] ?? '';
+                            $isApproved = $promotion_statuses[$student['student_id']]['is_approved'] ?? 0;
                             
-                            $statusClass = '';
-                            switch ($student['calculated_status']) {
-                                case 'Promoted': $statusClass = 'status-promoted'; break;
-                                case 'Retained': $statusClass = 'status-retained'; break;
-                                case 'Graduated': $statusClass = 'status-graduated'; break;
-                                case 'Pending': $statusClass = 'status-pending'; break;
-                                case 'Incomplete': $statusClass = 'status-incomplete'; break;
-                            }
+                            $promoClass = strtolower(str_replace(' ', '-', str_replace(' to ', '-', $promoStatus)));
+                            
+                            // Determine available options based on teacher's advisory grade level
+                            $showPromoteOption = ($advisoryGradeLevel == 11);
+                            $showGraduateOption = ($advisoryGradeLevel == 12);
                         ?>
                             <tr>
-                                <td><?php echo $count++; ?></td>
-                                <td><?php echo htmlspecialchars($student['lrn']); ?></td>
-                                <td><?php echo htmlspecialchars($fullName); ?></td>
-                                <td><?php echo htmlspecialchars($student['school_year'] ?? 'N/A'); ?></td>
-                                <td class="grade-cell overall-grade">
-                                    <?php echo $student['overall_avg'] !== null ? number_format($student['overall_avg'], 2) : '-'; ?>
-                                </td>
-                                <td class="<?php echo $statusClass; ?>">
-                                    <?php echo htmlspecialchars($student['calculated_status']); ?>
-                                </td>
-                                <td class="action-column no-print">
-                                    <?php if ($student['is_finalized']): ?>
-                                        <span class="finalized-badge">Finalized</span>
-                                    <?php else: ?>
-                                        <span class="ready-badge">Ready to Finalize</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="no-print">
-                                    <input type="checkbox" name="selected_students[]"
-                                           value="<?php echo $student['student_id']; ?>"
-                                           data-status="<?php echo $student['calculated_status']; ?>"
-                                           data-name="<?php echo htmlspecialchars($fullName); ?>"
+                                <td style="text-align: center;">
+                                    <input type="checkbox" name="selected_students[]" 
+                                           value="<?php echo $student['student_id']; ?>" 
                                            class="student-checkbox">
+                                </td>
+                                <td><?php echo $count++; ?></td>
+                                <td><?php echo htmlspecialchars($fullName); ?></td>
+                                <td>Grade <?php echo htmlspecialchars($student['grade_level']); ?></td>
+                                <td><?php echo htmlspecialchars($student['strand_name']); ?></td>
+                                <td><?php echo htmlspecialchars($student['section_name']); ?></td>
+                                <td>
+                                    <input type="hidden" name="students[<?php echo $student['student_id']; ?>][student_id]" value="<?php echo $student['student_id']; ?>">
+                                    <input type="hidden" name="students[<?php echo $student['student_id']; ?>][current_grade_level]" value="<?php echo $student['grade_level']; ?>">
+                                    <select name="students[<?php echo $student['student_id']; ?>][recommended_status]" class="promotion-select <?php echo $promoClass; ?>">
+                                        <option value="Pending" <?php echo $promoStatus === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                                        <?php if ($showPromoteOption): ?>
+                                        <option value="Promote to Grade 12" <?php echo $promoStatus === 'Promote to Grade 12' ? 'selected' : ''; ?>>Promote to Grade 12</option>
+                                        <?php endif; ?>
+                                        <?php if ($showGraduateOption): ?>
+                                        <option value="Graduate" <?php echo $promoStatus === 'Graduate' ? 'selected' : ''; ?>>Graduate</option>
+                                        <?php endif; ?>
+                                        <option value="Retained" <?php echo $promoStatus === 'Retained' ? 'selected' : ''; ?>>Retained</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" name="students[<?php echo $student['student_id']; ?>][teacher_remarks]" class="remarks-input" 
+                                           value="<?php echo htmlspecialchars($promoRemarks); ?>" 
+                                           placeholder="Add remarks...">
+                                </td>
+                                <td>
+                                    <?php if ($isApproved): ?>
+                                        <span class="saved-badge">Approved</span>
+                                    <?php else: ?>
+                                        <span style="color: #6b7280; font-size: 12px;">Pending</span>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
-                <input type="hidden" name="bulk_finalize" value="1">
                 
-                <!-- Finalize Button at Bottom -->
-                <div class="finalize-button-container no-print">
-                    <button type="button" id="finalizeSelectedBtn" class="btn-finalize-selected">
-                        ✓ Finalize Selected Students
+                <!-- Save All Button -->
+                <div style="margin-top: 20px; text-align: right;">
+                    <button type="submit" name="save_all_students" class="save-btn" style="padding: 12px 24px; font-size: 14px;">
+                        💾 Save All Changes
                     </button>
                 </div>
                 </form>
@@ -275,13 +363,26 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
         School Management System
     </div>
 
+    <!-- Loading Modal -->
+    <div id="loadingModal" class="loading-modal">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Processing... Please wait.</p>
+            <span class="loading-subtext">Sending notifications and updating records.</span>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="success-modal">
+        <div class="success-content">
+            <div class="success-icon">✓</div>
+            <p id="successMessage">Operation completed successfully!</p>
+            <button type="button" class="btn btn-success" onclick="closeSuccessModal()">OK</button>
+        </div>
+    </div>
+
     <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
     <script>
-        // Print function
-        function printProgress() {
-            window.print();
-        }
-        
         // Select All checkbox functionality
         document.getElementById('selectAll')?.addEventListener('change', function() {
             const checkboxes = document.querySelectorAll('.student-checkbox');
@@ -290,52 +391,100 @@ include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
             });
         });
         
-        // Add event listeners to all student checkboxes
-        document.querySelectorAll('.student-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                // Update select all checkbox state
-                const allCheckboxes = document.querySelectorAll('.student-checkbox');
-                const allChecked = document.querySelectorAll('.student-checkbox:checked').length === allCheckboxes.length;
-                document.getElementById('selectAll').checked = allChecked;
+        // Add color coding to select dropdowns based on selection
+        document.querySelectorAll('.promotion-select').forEach(select => {
+            select.addEventListener('change', function() {
+                // Remove all status classes
+                this.classList.remove('promote', 'graduate', 'retain', 'pending');
+                
+                // Add appropriate class
+                const value = this.value.toLowerCase().replace(' to ', '-').replace(' ', '-');
+                if (value.includes('promote')) {
+                    this.classList.add('promote');
+                } else if (value.includes('graduate')) {
+                    this.classList.add('graduate');
+                } else if (value.includes('retain')) {
+                    this.classList.add('retain');
+                } else {
+                    this.classList.add('pending');
+                }
             });
+            
+            // Initialize class on load
+            select.dispatchEvent(new Event('change'));
         });
         
-        // Finalize selected students
-        document.getElementById('finalizeSelectedBtn')?.addEventListener('click', function() {
-            const checkedBoxes = document.querySelectorAll('.student-checkbox:checked');
+        // ==============================
+        // SUCCESS MODAL FUNCTIONS
+        // ==============================
+        function showSuccessModal(message) {
+            const successModal = document.getElementById("successModal");
+            const successMessage = document.getElementById("successMessage");
             
-            if (checkedBoxes.length === 0) {
-                alert('Please select at least one student to finalize.');
-                return;
+            if (successMessage) {
+                successMessage.textContent = message;
             }
             
-            // Build confirmation message
-            let studentList = [];
-            let promotedCount = 0;
-            let retainedCount = 0;
-            let graduatedCount = 0;
-            
-            checkedBoxes.forEach(checkbox => {
-                const name = checkbox.getAttribute('data-name');
-                const status = checkbox.getAttribute('data-status');
-                studentList.push(`${name} (${status})`);
-                
-                if (status === 'Promoted') promotedCount++;
-                else if (status === 'Retained') retainedCount++;
-                else if (status === 'Graduated') graduatedCount++;
-            });
-            
-            let message = `Are you sure you want to finalize the following students?\n\n`;
-            message += `Promoted: ${promotedCount}\n`;
-            message += `Retained: ${retainedCount}\n`;
-            message += `Graduated: ${graduatedCount}\n\n`;
-            message += `Students:\n${studentList.join('\n')}\n\n`;
-            message += `This action cannot be undone.`;
-            
-            if (confirm(message)) {
-                document.getElementById('bulkFinalizeForm').submit();
+            if (successModal) {
+                successModal.classList.add("active");
+            }
+        }
+
+        function closeSuccessModal(shouldReload = false) {
+            const successModal = document.getElementById('successModal');
+            if (successModal) {
+                successModal.classList.remove('active');
+            }
+            // Only reload if explicitly requested
+            if (shouldReload === true) {
+                location.reload();
+            }
+        }
+        
+        // Make function globally accessible
+        window.closeSuccessModal = closeSuccessModal;
+        
+        // Close modal when clicking outside
+        window.addEventListener("click", function(event) {
+            const successModal = document.getElementById("successModal");
+            if (successModal && event.target === successModal) {
+                closeSuccessModal();
             }
         });
+        
+        // Handle form submission with loading modal
+        const promotionForm = document.getElementById('promotionForm');
+        if (promotionForm) {
+            promotionForm.addEventListener('submit', function(e) {
+                // Check if submitting Save All or Bulk Update
+                const submitBtn = e.submitter;
+                const isBulkUpdate = submitBtn && submitBtn.name === 'bulk_update_promotion';
+                
+                if (isBulkUpdate) {
+                    // For bulk update, check if students are selected
+                    const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+                    if (selectedCheckboxes.length === 0) {
+                        alert('Please select at least one student.');
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    const bulkStatus = document.getElementById('bulkStatus').value;
+                    if (bulkStatus === 'Pending') {
+                        alert('Please select a valid status (not Pending).');
+                        e.preventDefault();
+                        return;
+                    }
+                    
+                    // Show loading modal
+                    const loadingModal = document.getElementById('loadingModal');
+                    if (loadingModal) {
+                        loadingModal.classList.add('active');
+                    }
+                }
+                // For Save All, let the form submit normally (no AJAX)
+            });
+        }
     </script>
 </body>
 </html>

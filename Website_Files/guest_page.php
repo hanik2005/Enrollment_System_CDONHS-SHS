@@ -28,7 +28,7 @@
 <!-- ===== HERO SECTION ===== -->
 <div class="hero-section">
     <div class="hero-overlay">
-        <h1>School Management System</h1>
+        <h1>TABANGI KO SA DESIGN CHARLIE</h1>
         <p>
             Online Enrollment, Teacher Registration, and Academic Monitoring System
         </p>

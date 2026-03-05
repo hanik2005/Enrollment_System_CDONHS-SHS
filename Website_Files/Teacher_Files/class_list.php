@@ -9,10 +9,9 @@ if (!isset($_SESSION['user_id'])) {
 include "../../DB_Connection/Connection.php";
 
 $stmt = $connection->prepare("
-    SELECT u.*, ta.profile_image, ta.first_name, ta.last_name 
+    SELECT u.*, t.first_name, t.last_name, t.middle_name, t.extension_name
     FROM users u
-    INNER JOIN teachers s ON s.user_id = u.user_id
-    INNER JOIN teacher_applications ta ON s.application_id = ta.teacher_application_id
+    INNER JOIN teachers t ON t.user_id = u.user_id
     WHERE u.user_id = ? AND u.role_id = 3
 ");
 
@@ -27,10 +26,8 @@ if (!$user) {
     exit;
 }
 
-// Set profile image path
-$profileImagePath = !empty($user['profile_image']) 
-    ? "../../uploads/Profile/teacher/" . htmlspecialchars($user['profile_image']) 
-    : "../../Assets/profile_button.png";
+// Set profile image path (using default since teachers table doesn't have profile_image)
+$profileImagePath = "../../Assets/profile_button.png";
 
 ?>
 

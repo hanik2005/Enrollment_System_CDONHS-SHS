@@ -87,47 +87,31 @@ if (!empty($filter_status)) {
 
 $studentSql .= " ORDER BY sa.date_submitted DESC";
 
-// Get Teachers
+// Get Teachers (using teachers table)
 $teacherSql = "SELECT 
-    ta.teacher_application_id as application_id,
-    ta.first_name,
-    ta.last_name,
-    ta.middle_name,
-    ta.extension_name,
-    ta.date_of_birth,
-    ta.sex,
-    ta.civil_status,
-    ta.house_number_street,
-    ta.barangay,
-    ta.city_municipality,
-    ta.province,
-    ta.contact_number,
-    ta.email,
-    ta.facebook_profile,
-    ta.current_school,
-    ta.highest_education,
-    ta.specialization,
-    ta.resume_cv,
-    ta.prc_id_copy,
-    ta.certificates,
-    ta.other_documents,
-    ta.profile_image,
-    ta.application_status,
-    ta.remarks,
-    ta.date_submitted,
+    t.teacher_id as application_id,
+    t.first_name,
+    t.last_name,
+    t.middle_name,
+    t.extension_name,
+    t.advisor_id,
+    u.username,
+    u.status as application_status,
+    u.first_login as date_submitted,
     'Teacher' as user_type
-FROM teacher_applications ta
-WHERE 1=1";
+FROM teachers t
+JOIN users u ON t.user_id = u.user_id
+WHERE u.role_id = 3";
 
 if (!empty($search_name)) {
-    $teacherSql .= " AND (ta.first_name LIKE '%$search_name%' OR ta.last_name LIKE '%$search_name%' OR CONCAT(ta.first_name, ' ', ta.last_name) LIKE '%$search_name%')";
+    $teacherSql .= " AND (t.first_name LIKE '%$search_name%' OR t.last_name LIKE '%$search_name%' OR CONCAT(t.first_name, ' ', t.last_name) LIKE '%$search_name%')";
 }
 
 if (!empty($filter_status)) {
-    $teacherSql .= " AND ta.application_status = '$filter_status'";
+    $teacherSql .= " AND u.status = '$filter_status'";
 }
 
-$teacherSql .= " ORDER BY ta.date_submitted DESC";
+$teacherSql .= " ORDER BY t.last_name, t.first_name";
 
 $allResults = [];
 

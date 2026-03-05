@@ -35,8 +35,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Disability
     $withDisability = $_POST['withDisability'] ?? 'No';
-    $disabilityType = $_POST['disabilityType'] ?? null;
-    $manifestation = $_POST['manifestation'] ?? null;
     $pwdId = $_POST['pwdId'] ?? 'No';
     $pwdIdNumber = $_POST['pwdIdNumber'] ?? null;
 
@@ -92,14 +90,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $lastGradeCompleted = $_POST['lastGradeCompleted'] ?? null;
     $lastSchoolYearCompleted = $_POST['lastSchoolYearCompleted'] ?? null;
 
+    // Learning Program
+    $attendedLearningProgram = $_POST['attendedLearningProgram'] ?? 'No';
+    $learningProgramSpecify = $_POST['learningProgramSpecify'] ?? null;
+
     // Learning Modality
-    $blended = $_POST['blended'] ?? 0;
-    $modularPrint = $_POST['modularPrint'] ?? 0;
-    $modularDigital = $_POST['modularDigital'] ?? 0;
-    $online = $_POST['online'] ?? 0;
-    $homeschooling = $_POST['homeschooling'] ?? 0;
-    $educationalTv = $_POST['educationalTv'] ?? 0;
-    $radioBasedTv = $_POST['radioBasedTv'] ?? 0;
+    $blended = isset($_POST['blended']) && $_POST['blended'] == 1 ? 1 : 0;
+    $modularPrint = isset($_POST['modularPrint']) && $_POST['modularPrint'] == 1 ? 1 : 0;
+    $modularDigital = isset($_POST['modularDigital']) && $_POST['modularDigital'] == 1 ? 1 : 0;
+    $online = isset($_POST['online']) && $_POST['online'] == 1 ? 1 : 0;
+    $homeschooling = isset($_POST['homeschooling']) && $_POST['homeschooling'] == 1 ? 1 : 0;
+    $educationalTv = isset($_POST['educationalTv']) && $_POST['educationalTv'] == 1 ? 1 : 0;
+    $radioBasedTv = isset($_POST['radioBasedTv']) && $_POST['radioBasedTv'] == 1 ? 1 : 0;
 
     // Normalize phone numbers
     if($contactNumber) $contactNumber = preg_replace('/[^0-9]/', '', $contactNumber);
@@ -163,81 +165,154 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $studentIdCopy = uploadOptionalFile("studentIdCopy","STUDENTID",$uploadDir);
 
     // ===============================
-    // DATABASE INSERT
+    // DATABASE INSERT - Multiple Tables
     // ===============================
+    
+    // Start transaction for data integrity
+    $connection->begin_transaction();
+    
+    try {
+        // 1. Insert into student_applications (only core personal fields)
+        $applicationStatus = 'Pending';
+        $sql = "INSERT INTO student_applications(
+            lrn, last_name, first_name, middle_name, extension_name,
+            date_of_birth, sex, place_of_birth, religion, mother_tongue,
+            enrollment_type, application_status,
+            email, contact_number, facebook_profile
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    $sql = "INSERT INTO student_applications(
-    enrollment_type,
-    lrn,last_name,first_name,middle_name,extension_name,
-    date_of_birth,place_of_birth,sex,religion,mother_tongue,
-    indigenous_community,ip_specify,
-    four_ps_beneficiary,four_ps_household_id,
-    house_number,street,barangay,city_municipality,province,country,zip_code,
-    same_as_current,permanent_house_number,permanent_street,permanent_barangay,
-    permanent_city,permanent_province,permanent_country,permanent_zip_code,
-    father_last_name,father_first_name,father_middle_name,father_contact,
-    mother_last_name,mother_first_name,mother_middle_name,mother_contact,
-    guardian_last_name,guardian_first_name,guardian_middle_name,guardian_contact,
-    with_disability,disability_type,manifestation,pwd_id,pwd_id_number,
-    last_school_attended,school_id,last_grade_completed,last_school_year_completed,
-    blended,modular_print,modular_digital,online,homeschooling,educational_tv,radio_based_tv,
-    psa_birth_certificate,form_138,student_id_copy,
-    email,contact_number,facebook_profile,
-    application_status
-    ) VALUES (
-    ?,?,?,?,?,?,
-    ?,?,?,?,?,?,
-    ?,?,
-    ?,?,
-    ?,?,?,?,?,?,?,
-    ?,?,?,?,?,?,
-    ?,?,?,?,?,?,
-    ?,?,?,?,
-    ?,?,?,?,
-    ?,?,?,?,
-    ?,?,?,?,?,
-    ?,?,?,?,?,?,
-    ?,?,?,
-    ?,?,?,
-    'Pending'
-    )";
+        $stmt = $connection->prepare($sql);
+        $stmt->bind_param("sssssssssssssss", 
+            $lrn, $lastName, $firstName, $middleName, $extensionName,
+            $dateOfBirth, $sex, $placeOfBirth, $religion, $motherTongue,
+            $enrollmentType, $applicationStatus,
+            $email, $contactNumber, $facebookProfile
+        );
+        $stmt->execute();
+        $applicationId = $connection->insert_id;
+        $stmt->close();
 
-    $stmt = $connection->prepare($sql);
+        // 2. Insert into student_addresses
+        $addrSql = "INSERT INTO student_addresses(
+            application_id, house_number, street, barangay, city_municipality, 
+            province, country, zip_code, same_as_current,
+            permanent_house_number, permanent_street, permanent_barangay,
+            permanent_city, permanent_province, permanent_country, permanent_zip_code
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $addrStmt = $connection->prepare($addrSql);
+        $addrStmt->bind_param("isssssssssssssss",
+            $applicationId, $house_number, $street, $barangay, $city_municipality,
+            $province, $country, $zip_code, $sameAsCurrent,
+            $permanent_house_number, $permanent_street, $permanent_barangay,
+            $permanent_city, $permanent_province, $permanent_country, $permanent_zip_code
+        );
+        $addrStmt->execute();
+        $addrStmt->close();
 
-    $params = [
-    $enrollmentType,
-    $lrn,$lastName,$firstName,$middleName,$extensionName,
-    $dateOfBirth,$placeOfBirth,$sex,$religion,$motherTongue,
-    $indigenousCommunity,$ipSpecify,
-    $fourPsBeneficiary,$fourPsHouseholdId,
-    $house_number,$street,$barangay,$city_municipality,$province,$country,$zip_code,
-    $sameAsCurrent,$permanent_house_number,$permanent_street,$permanent_barangay,
-    $permanent_city,$permanent_province,$permanent_country,$permanent_zip_code,
-    $fatherLastName,$fatherFirstName,$fatherMiddleName,$fatherContact,
-    $motherLastName,$motherFirstName,$motherMiddleName,$motherContact,
-    $guardianLastName,$guardianFirstName,$guardianMiddleName,$guardianContact,
-    $withDisability,$disabilityType,$manifestation,$pwdId,$pwdIdNumber,
-    $lastSchoolAttended,$schoolId,$lastGradeCompleted,$lastSchoolYearCompleted,
-    $blended,$modularPrint,$modularDigital,$online,$homeschooling,$educationalTv,$radioBasedTv,
-    $psaBirthCertificate,$form138,$studentIdCopy,
-    $email,$contactNumber,$facebookProfile
-    ];
+        // 3. Insert into student_family
+        $familySql = "INSERT INTO student_family(
+            application_id, father_last_name, father_first_name, father_middle_name, father_contact,
+            mother_last_name, mother_first_name, mother_middle_name, mother_contact,
+            guardian_last_name, guardian_first_name, guardian_middle_name, guardian_contact
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $familyStmt = $connection->prepare($familySql);
+        $familyStmt->bind_param("issssssssssss",
+            $applicationId,
+            $fatherLastName, $fatherFirstName, $fatherMiddleName, $fatherContact,
+            $motherLastName, $motherFirstName, $motherMiddleName, $motherContact,
+            $guardianLastName, $guardianFirstName, $guardianMiddleName, $guardianContact
+        );
+        $familyStmt->execute();
+        $familyStmt->close();
 
-    $stmt->bind_param(str_repeat("s",count($params)),...$params);
+        // 4. Insert into student_learning_modality
+        $modalitySql = "INSERT INTO student_learning_modality(
+            application_id, blended, modular_print, modular_digital, online, homeschooling, educational_tv, radio_based_tv
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $modalityStmt = $connection->prepare($modalitySql);
+        $modalityStmt->bind_param("iiiiiiii",
+            $applicationId, $blended, $modularPrint, $modularDigital, $online, $homeschooling, $educationalTv, $radioBasedTv
+        );
+        $modalityStmt->execute();
+        $modalityStmt->close();
 
-    if($stmt->execute()){
+        // 5. Insert into student_documents
+        $docSql = "INSERT INTO student_documents(
+            application_id, psa_birth_certificate, form_138, student_id_copy
+        ) VALUES (?, ?, ?, ?)";
+        
+        $docStmt = $connection->prepare($docSql);
+        $docStmt->bind_param("isss",
+            $applicationId, $psaBirthCertificate, $form138, $studentIdCopy
+        );
+        $docStmt->execute();
+        $docStmt->close();
 
+        // 6. Insert into student_social_info
+        $socialSql = "INSERT INTO student_social_info(
+            application_id, indigenous_community, ip_specify, four_ps_beneficiary, four_ps_household_id
+        ) VALUES (?, ?, ?, ?, ?)";
+        
+        $socialStmt = $connection->prepare($socialSql);
+        $socialStmt->bind_param("issss",
+            $applicationId, $indigenousCommunity, $ipSpecify, $fourPsBeneficiary, $fourPsHouseholdId
+        );
+        $socialStmt->execute();
+        $socialStmt->close();
+
+        // 7. Insert into student_special_needs
+        $sneSql = "INSERT INTO student_special_needs(
+            application_id, with_disability, has_pwd_id, pwd_id_number
+        ) VALUES (?, ?, ?, ?)";
+        
+        $sneStmt = $connection->prepare($sneSql);
+        $sneStmt->bind_param("isss",
+            $applicationId, $withDisability, $pwdId, $pwdIdNumber
+        );
+        $sneStmt->execute();
+        $sneStmt->close();
+
+        // 8. Insert into student_learning_program
+        $learnProgramSql = "INSERT INTO student_learning_program(
+            application_id, attended_learning_program, learning_program_specify
+        ) VALUES (?, ?, ?)";
+        
+        $learnProgramStmt = $connection->prepare($learnProgramSql);
+        $learnProgramStmt->bind_param("iss",
+            $applicationId, $attendedLearningProgram, $learningProgramSpecify
+        );
+        $learnProgramStmt->execute();
+        $learnProgramStmt->close();
+
+        // 9. Insert into student_previous_school
+        $prevSql = "INSERT INTO student_previous_school(
+            application_id, last_school_attended, school_id, last_grade_completed, last_school_year_completed
+        ) VALUES (?, ?, ?, ?, ?)";
+        
+        $prevStmt = $connection->prepare($prevSql);
+        $prevStmt->bind_param("issss",
+            $applicationId, $lastSchoolAttended, $schoolId, $lastGradeCompleted, $lastSchoolYearCompleted
+        );
+        $prevStmt->execute();
+        $prevStmt->close();
+
+        // Commit transaction
+        $connection->commit();
+
+        // Send email confirmation
         $gradeLevel = $_POST['gradeLevel'] ?? '';
         $schoolYear = date("Y")."-".(date("Y")+1);
 
         try{
-
             $mail->setFrom('cdonhsshsacc@gmail.com','CDONHS-SHS Enrollment Office');
             $mail->addAddress($email);
             $mail->isHTML(true);
-            $mail->Subject="CDONHS-SHS Enrollment Application Submitted";
+            $mail->Subject = "CDONHS-SHS Enrollment Application Submitted";
 
-            $mail->Body="
+            $mail->Body = "
             <h3>Good day $firstName $lastName</h3>
             <p>Your enrollment application has been <b>submitted successfully</b>.</p>
             <p>Status: <b>PENDING</b></p>
@@ -249,7 +324,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             ";
 
             $mail->send();
-
         } catch (Exception $e) {
             error_log("Email failed: " . $mail->ErrorInfo);
         }
@@ -260,8 +334,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         </script>";
         exit;
 
-    } else {
-        echo "<script>alert('Error submitting application. Please try again.');window.history.back();</script>";
+    } catch (Exception $e) {
+        $connection->rollback();
+        echo "<script>alert('Error submitting application: " . addslashes($e->getMessage()) . "');window.history.back();</script>";
         exit;
     }
 

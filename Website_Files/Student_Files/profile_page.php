@@ -9,24 +9,39 @@ if (!isset($_SESSION['user_id'])) {
 include "../../DB_Connection/Connection.php";
 
 // Verify student session and get profile data
+// Now joining multiple tables for normalized database structure
 $stmt = $connection->prepare("
     SELECT s.student_id, s.enrollment_status, s.date_enrolled, s.enlistment_status,
            sa.first_name, sa.last_name, sa.middle_name, sa.extension_name,
-           sa.lrn, sa.date_of_birth, sa.sex,
-           sa.house_number, sa.street, sa.barangay, sa.city_municipality, sa.province, sa.country,
-           sa.contact_number, sa.email, sa.facebook_profile,
-           sa.last_school_attended, sa.last_school_year_completed, sa.enrollment_type,
-           sa.father_last_name, sa.father_first_name, sa.father_middle_name, sa.father_contact,
-           sa.mother_last_name, sa.mother_first_name, sa.mother_middle_name, sa.mother_contact,
-           sa.guardian_last_name, sa.guardian_first_name, sa.guardian_middle_name, sa.guardian_contact,
-           sa.place_of_birth, sa.religion, sa.mother_tongue, sa.indigenous_community, sa.ip_specify,
-           sa.four_ps_beneficiary, sa.four_ps_household_id,
-           sa.psa_birth_certificate, sa.form_138, sa.student_id_copy,
+           sa.lrn, sa.date_of_birth, sa.sex, sa.place_of_birth, sa.religion, sa.mother_tongue,
+           sa.email, sa.contact_number, sa.facebook_profile, sa.enrollment_type,
            sa.profile_image,
-           u.username, u.status
+           u.username, u.status,
+           -- Address from student_addresses
+           addr.house_number, addr.street, addr.barangay, addr.city_municipality, addr.province, addr.country, addr.zip_code,
+           addr.permanent_house_number, addr.permanent_street, addr.permanent_barangay, 
+           addr.permanent_city, addr.permanent_province, addr.permanent_country, addr.permanent_zip_code,
+           -- Family from student_family
+           fam.father_last_name, fam.father_first_name, fam.father_middle_name, fam.father_contact,
+           fam.mother_last_name, fam.mother_first_name, fam.mother_middle_name, fam.mother_contact,
+           fam.guardian_last_name, fam.guardian_first_name, fam.guardian_middle_name, fam.guardian_contact,
+           -- Social info from student_social_info
+           soc.indigenous_community, soc.ip_specify, soc.four_ps_beneficiary, soc.four_ps_household_id,
+           -- Documents from student_documents
+           doc.psa_birth_certificate, doc.form_138, doc.student_id_copy,
+           -- Previous school from student_previous_school
+           prev.last_school_attended, prev.last_grade_completed, prev.last_school_year_completed,
+           -- Special needs from student_special_needs
+           sne.with_disability, sne.has_pwd_id, sne.pwd_id_number
     FROM students s
     INNER JOIN users u ON s.user_id = u.user_id
     INNER JOIN student_applications sa ON s.application_id = sa.application_id
+    LEFT JOIN student_addresses addr ON sa.application_id = addr.application_id
+    LEFT JOIN student_family fam ON sa.application_id = fam.application_id
+    LEFT JOIN student_social_info soc ON sa.application_id = soc.application_id
+    LEFT JOIN student_documents doc ON sa.application_id = doc.application_id
+    LEFT JOIN student_previous_school prev ON sa.application_id = prev.application_id
+    LEFT JOIN student_special_needs sne ON sa.application_id = sne.application_id
     WHERE s.user_id = ?
 ");
 
@@ -55,6 +70,27 @@ $stmt->execute();
 $strandResult = $stmt->get_result();
 if ($strandResult->num_rows > 0) {
     $strandInfo = $strandResult->fetch_assoc();
+}
+
+// Get adviser info for the student
+$adviserInfo = null;
+$adviserStmt = $connection->prepare("
+    SELECT 
+        t.first_name as adviser_first_name, 
+        t.last_name as adviser_last_name,
+        t.middle_name as adviser_middle_name,
+        t.extension_name as adviser_extension
+    FROM student_strand ss
+    INNER JOIN section sec ON ss.section_id = sec.section_id
+    LEFT JOIN teacher_advisory ta ON sec.section_id = ta.section_id
+    LEFT JOIN teachers t ON ta.teacher_id = t.teacher_id
+    WHERE ss.student_id = ?
+");
+$adviserStmt->bind_param("i", $profile['student_id']);
+$adviserStmt->execute();
+$adviserResult = $adviserStmt->get_result();
+if ($adviserResult->num_rows > 0) {
+    $adviserInfo = $adviserResult->fetch_assoc();
 }
 
 // Handle success/error messages
@@ -337,6 +373,25 @@ $profileImagePath = !empty($profile['profile_image'])
                     <div class="profile-field">
                         <label>Section</label>
                         <input type="text" value="<?php echo htmlspecialchars($strandInfo['section_name']); ?>" disabled>
+                    </div>
+                    
+                    <div class="profile-field">
+                        <label>Adviser</label>
+                        <?php if ($adviserInfo && !empty($adviserInfo['adviser_first_name'])): ?>
+                            <?php 
+                                $adviserName = $adviserInfo['adviser_first_name'];
+                                if (!empty($adviserInfo['adviser_middle_name'])) {
+                                    $adviserName .= ' ' . substr($adviserInfo['adviser_middle_name'], 0, 1) . '.';
+                                }
+                                $adviserName .= ' ' . $adviserInfo['adviser_last_name'];
+                                if (!empty($adviserInfo['adviser_extension'])) {
+                                    $adviserName .= ' ' . $adviserInfo['adviser_extension'];
+                                }
+                            ?>
+                            <input type="text" value="<?php echo htmlspecialchars($adviserName); ?>" disabled>
+                        <?php else: ?>
+                            <input type="text" value="No adviser assigned yet" disabled>
+                        <?php endif; ?>
                     </div>
                     <?php endif; ?>
                 </div>

@@ -44,15 +44,22 @@ foreach ($updates as $item) {
     
     if (!$studentInfo) {
         $errorCount++;
+        error_log("Student not found for application_id: " . $applicationId);
         continue;
+    }
+    
+    // Check if email exists
+    if (empty($studentInfo['email'])) {
+        error_log("No email found for student application_id: " . $applicationId);
     }
     
     // Handle Rejected status
     if ($status === 'Rejected') {
-        // Send rejection email
-        try {
-            $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Admin');
-            $mail->addAddress($studentInfo['email']);
+        // Send rejection email only if email exists
+        if (!empty($studentInfo['email'])) {
+            try {
+                $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Admin');
+                $mail->addAddress($studentInfo['email']);
             $mail->isHTML(true);
             
             $mail->Subject = "Application Rejected - CDONHS-SHS";
@@ -84,12 +91,43 @@ foreach ($updates as $item) {
         }
         
         $mail->clearAddresses();
+        } // End if email exists
         
-        // Delete the application
-        $stmtDelete = $connection->prepare("DELETE FROM student_applications WHERE application_id = ?");
-        $stmtDelete->bind_param("i", $applicationId);
-        $stmtDelete->execute();
-        $stmtDelete->close();
+        // Delete the application and all related data from normalized tables
+        $connection->begin_transaction();
+        try {
+            // Delete from related tables first (due to foreign key constraints)
+            $tables = [
+                'student_addresses',
+                'student_family', 
+                'student_learning_modality',
+                'student_documents',
+                'student_social_info',
+                'student_special_needs',
+                'student_previous_school',
+                'student_learning_program'
+            ];
+            
+            foreach ($tables as $table) {
+                $deleteStmt = $connection->prepare("DELETE FROM {$table} WHERE application_id = ?");
+                $deleteStmt->bind_param("i", $applicationId);
+                $deleteStmt->execute();
+                $deleteStmt->close();
+            }
+            
+            // Finally delete from main table
+            $stmtDelete = $connection->prepare("DELETE FROM student_applications WHERE application_id = ?");
+            $stmtDelete->bind_param("i", $applicationId);
+            $stmtDelete->execute();
+            $stmtDelete->close();
+            
+            $connection->commit();
+        } catch (Exception $e) {
+            $connection->rollback();
+            error_log("Delete Error: " . $e->getMessage());
+            $errorCount++;
+            continue;
+        }
         
         $updatedCount++;
         continue;
@@ -142,10 +180,11 @@ foreach ($updates as $item) {
             
             $connection->commit();
             
-            // Send approval email with credentials
-            try {
-                $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Admin');
-                $mail->addAddress($studentInfo['email']);
+            // Send approval email with credentials only if email exists
+            if (!empty($studentInfo['email'])) {
+                try {
+                    $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Admin');
+                    $mail->addAddress($studentInfo['email']);
                 $mail->isHTML(true);
                 
                 $mail->Subject = "Application Approved - CDONHS-SHS";
@@ -181,6 +220,7 @@ foreach ($updates as $item) {
             }
             
             $mail->clearAddresses();
+            } // End if email exists
             
         } catch (Exception $e) {
             $connection->rollback();
@@ -199,10 +239,11 @@ foreach ($updates as $item) {
     $stmt->execute();
     $stmt->close();
     
-    // Send email notification for Pending status
-    try {
-        $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Admin');
-        $mail->addAddress($studentInfo['email']);
+    // Send email notification for Pending status only if email exists
+    if (!empty($studentInfo['email'])) {
+        try {
+            $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Admin');
+            $mail->addAddress($studentInfo['email']);
         $mail->isHTML(true);
         
         $mail->Subject = "Application Status Update - CDONHS-SHS";
@@ -231,13 +272,17 @@ foreach ($updates as $item) {
     }
     
     $mail->clearAddresses();
+    } // End if email exists for pending
+    
     $updatedCount++;
 }
 
 ob_end_clean();
 
+// Include email info in response for debugging
 echo json_encode([
     'success' => true,
-    'message' => "Applications updated successfully. Total: {$updatedCount}"
+    'message' => "Applications updated successfully. Total: {$updatedCount}",
+    'debug' => ['updated' => $updatedCount, 'errors' => $errorCount]
 ]);
 exit;

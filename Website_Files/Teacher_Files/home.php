@@ -9,10 +9,9 @@ if (!isset($_SESSION['user_id'])) {
 include "../../DB_Connection/Connection.php";
 
 $stmt = $connection->prepare("
-    SELECT u.*, ta.profile_image 
+    SELECT u.*, t.first_name, t.last_name, t.middle_name, t.extension_name
     FROM users u
-    INNER JOIN teachers s ON s.user_id = u.user_id
-    INNER JOIN teacher_applications ta ON s.application_id = ta.teacher_application_id
+    INNER JOIN teachers t ON t.user_id = u.user_id
     WHERE u.user_id = ? AND u.role_id = 3
 ");
 
@@ -27,10 +26,8 @@ if (!$user) {
     exit;
 }
 
-// Set profile image path
-$profileImagePath = !empty($user['profile_image']) 
-    ? "../../uploads/Profile/teacher/" . htmlspecialchars($user['profile_image']) 
-    : "../../Assets/profile_button.png";
+// Set profile image path (using default since teachers table doesn't have profile_image)
+$profileImagePath = "../../Assets/profile_button.png";
 
 ?>
 
@@ -67,7 +64,6 @@ $profileImagePath = !empty($user['profile_image'])
      </button>
 
     <div class="profile-dropdown">
-        <a href="profile_page.php">View Profile</a>
         <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
 
     </div>
@@ -82,13 +78,6 @@ $profileImagePath = !empty($user['profile_image'])
     <div class="dashboard-wrapper">
 
     <div class="dashboard-container">
-        <a href="profile_page.php" class="dashboard-card">
-            <img src="../../Assets/profile_button.png">
-            <h3>My Profile</h3>
-        </a>
-    </div>
-
-    <div class="dashboard-container">
         <a href="class_list.php" class="dashboard-card">
             <img src="../../Assets/class_list_button.png">
             <h3>Class List</h3>
@@ -96,31 +85,9 @@ $profileImagePath = !empty($user['profile_image'])
     </div>
 
     <div class="dashboard-container">
-        <a href="grading_page.php" class="dashboard-card">
-            <img src="../../Assets/grades_button.png">
-            <h3>Grading Management</h3>
-        </a>
-    </div>
-
-    <div class="dashboard-container">
         <a href="student_progress_page.php" class="dashboard-card">
             <img src="../../Assets/progress_button.png">
             <h3>Student Progress</h3>
-        </a>
-    </div>
-
-      <div class="dashboard-container">
-        <a href="form_137_138_page.php" class="dashboard-card">
-            <img src="../../Assets/form_137_138_image.png">
-            <h3>Form 137 or 138</h3>
-        </a>
-    </div>
-
-
-    <div class="dashboard-container">
-        <a href="honor_list.php" class="dashboard-card">
-            <img src="../../Assets/honors_list_image.png">
-            <h3>Honor List</h3>
         </a>
     </div>
 

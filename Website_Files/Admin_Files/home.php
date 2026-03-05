@@ -99,6 +99,13 @@ if (!$admin) {
         </a>
     </div>
 
+    <div class="dashboard-container">
+        <a href="teacher_advisory_page.php" class="dashboard-card">
+            <img src="../../Assets/teacher_application_image.png">
+            <h3>Teacher Advisory</h3>
+        </a>
+    </div>
+
 </div>
 
 
