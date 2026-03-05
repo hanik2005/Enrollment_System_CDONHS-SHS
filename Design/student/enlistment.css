@@ -1,0 +1,137 @@
+/* Student Enlistment Styles */
+
+.enlistment-container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.enlistment-container h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.enlistment-content {
+    display: flex;
+    gap: 20px;
+}
+
+.left-panel {
+    flex: 1;
+    min-width: 250px;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.left-panel h3 {
+    margin-top: 0;
+    color: #333;
+}
+
+.left-panel label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #555;
+}
+
+.left-panel select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.right-panel {
+    flex: 1;
+    padding: 15px;
+    background: #f9f9f9;
+    border-radius: 8px;
+}
+
+.right-panel h3 {
+    margin-top: 0;
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+/* Selection Summary Styles */
+#selection-summary {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 20px;
+}
+
+#selection-summary p {
+    color: #666;
+    margin-bottom: 15px;
+    font-style: italic;
+}
+
+#selection-summary ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#selection-summary li {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+}
+
+#selection-summary li:last-child {
+    border-bottom: none;
+}
+
+#selection-summary li strong {
+    color: #333;
+}
+
+#selection-summary li span {
+    color: #007bff;
+    font-weight: 500;
+}
+
+.submit-btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background: #0056b3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .enlistment-content {
+        flex-direction: column;
+    }
+    
+    .left-panel,
+    .right-panel {
+        flex: none;
+        width: 100%;
+    }
+}
