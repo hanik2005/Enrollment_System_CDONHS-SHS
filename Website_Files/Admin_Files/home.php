@@ -115,12 +115,6 @@ if (!$admin) {
 
 
 
-
-    <!-- <a href="admin_teacher_application_list.php">Teacher Application List</a>
-    <a href="admin_student_application_list.php">Student Application List</a>    
-    <a href="../Teacher_Online_Form.php">Enrollment Teacher</a>
-    <a href="../Student_Online_Form.php">Enrollment Student</a> -->
-
      <!-- footer -->
     <div class="footer">
     © 2026 Cagayan De Oro National High School - Senior High School  

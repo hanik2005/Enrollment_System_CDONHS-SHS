@@ -67,13 +67,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         } else {
             // Wrong password
-            header("Location: /SMS_CDONHS-SHS_WEBSITE/Website_Files/login.php?error=invalid");
+            header("Location: /Enrollment_System_CDONHS-SHS/Website_Files/login.php?error=invalid");
             exit();
         }
 
     } else {
         // Username not found
-        header("Location: /SMS_CDONHS-SHS_WEBSITE/Website_Files/login.php?error=invalid");
+        header("Location: /Enrollment_System_CDONHS-SHS/Website_Files/login.php?error=invalid");
         exit();
     }
 

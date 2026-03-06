@@ -138,7 +138,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // FILE UPLOAD
     // ===============================
 
-    $uploadDir = $_SERVER['DOCUMENT_ROOT']."/SMS_CDONHS-SHS_WEBSITE/uploads/Documents/student/";
+    $uploadDir = $_SERVER['DOCUMENT_ROOT']."/Enrollment_System_CDONHS-SHS/uploads/Documents/student/";
 
     if(!is_dir($uploadDir)){
         mkdir($uploadDir,0777,true);

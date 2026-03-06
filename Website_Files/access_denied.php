@@ -12,57 +12,9 @@ $feature_name = isset($_GET['feature']) ? htmlspecialchars($_GET['feature']) : '
     <title>Access Denied - CDONHS-SHS</title>
     <link rel="icon" href="Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="Design/main_design.css">
+    <link rel="stylesheet" href="Design/access_denied_design.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        
-        .access-denied-container {
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            text-align: center;
-            max-width: 500px;
-            margin: 20px;
-        }
-        
-        .access-denied-container h1 {
-            color: #dc3545;
-            margin-bottom: 20px;
-        }
-        
-        .access-denied-container p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.6;
-        }
-        
-        .back-btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-        }
-        
-        .back-btn:hover {
-            background-color: #0056b3;
-        }
-        
-        .warning-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-        }
+      
     </style>
 </head>
 <body>

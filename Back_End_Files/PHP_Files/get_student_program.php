@@ -34,7 +34,7 @@ if ($studentRow) {
 
         // Get program info from student_strand
         $stmtProgram = $connection->prepare("
-            SELECT ss.grade_level, s.strand_name, sec.section_name
+            SELECT ss.grade_level, s.strand_abbreviation, sec.section_name
             FROM student_strand ss
             LEFT JOIN strands s ON ss.strand_id = s.strand_id
             LEFT JOIN section sec ON ss.section_id = sec.section_id
@@ -47,7 +47,7 @@ if ($studentRow) {
         $resProgram = $stmtProgram->get_result();
         if ($row = $resProgram->fetch_assoc()) {
             $gradeLevel = $row['grade_level'];
-            $strandName = $row['strand_name'];
+            $strandName = $row['strand_abbreviation'];
             $sectionName = $row['section_name'];
         }
         $stmtProgram->close();

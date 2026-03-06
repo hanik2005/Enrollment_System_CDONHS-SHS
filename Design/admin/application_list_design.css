@@ -226,6 +226,27 @@ tr:hover {
     font-weight: bold;
 }
 
+.lrn-missing-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lrn-admin-note {
+    color: #92400e;
+    font-size: 0.76em;
+    line-height: 1.2;
+    font-weight: 600;
+}
+
+.lrn-admin-note-block {
+    display: block;
+    margin-top: 6px;
+    color: #92400e;
+    font-size: 0.78em;
+    font-weight: 600;
+}
+
 /* Form Styles */
 .form-inline {
     display: flex;
@@ -547,6 +568,11 @@ option:disabled {
     height: 18px;
     cursor: pointer;
     accent-color: #1e3a8a;
+}
+
+.row-checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 #selectAllCheckbox {

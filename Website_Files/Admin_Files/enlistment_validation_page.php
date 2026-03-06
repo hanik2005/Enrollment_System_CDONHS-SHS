@@ -1,5 +1,31 @@
 <?php
 include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
+
+$showSuccessModal = isset($_GET['success']) && $_GET['success'] === '1';
+$successMessage = "Students validated successfully!";
+
+if ($showSuccessModal) {
+    $updatedCount = isset($_GET['updated']) ? (int)$_GET['updated'] : 0;
+    $emailAttemptedCount = isset($_GET['emails_attempted']) ? (int)$_GET['emails_attempted'] : 0;
+    $emailSentCount = isset($_GET['emails_sent']) ? (int)$_GET['emails_sent'] : 0;
+    $emailFailedCount = isset($_GET['emails_failed']) ? (int)$_GET['emails_failed'] : 0;
+    $emailSkippedCount = isset($_GET['emails_skipped']) ? (int)$_GET['emails_skipped'] : 0;
+
+    $successMessage = "Validation completed for {$updatedCount} student(s).";
+
+    if ($emailAttemptedCount > 0) {
+        $successMessage .= " Email sent: {$emailSentCount}.";
+        if ($emailFailedCount > 0) {
+            $successMessage .= " Failed: {$emailFailedCount}.";
+        } else {
+            $successMessage .= " All required emails were sent successfully.";
+        }
+    }
+
+    if ($emailSkippedCount > 0) {
+        $successMessage .= " Skipped (no email found): {$emailSkippedCount}.";
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -189,15 +215,13 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
     </div>
 
     <!-- Success Modal -->
-    <?php if (isset($_GET['success'])): ?>
-    <div id="successModal" class="success-modal active">
+    <div id="successModal" class="success-modal <?= $showSuccessModal ? 'active' : '' ?>">
         <div class="success-content">
             <div class="success-icon">&#10004;</div>
-            <p>Students validated successfully!</p>
-            <button type="button" class="success-btn" onclick="closeSuccessModal()">OK</button>
+            <p id="successMessage"><?= htmlspecialchars($successMessage) ?></p>
+            <button type="button" class="btn btn-success" onclick="closeSuccessModal()">OK</button>
         </div>
     </div>
-    <?php endif; ?>
 
     <!-- footer -->
     <div class="footer">
@@ -227,8 +251,20 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
         // Remove the success parameter from URL without reloading
         const url = new URL(window.location.href);
         url.searchParams.delete('success');
+        url.searchParams.delete('updated');
+        url.searchParams.delete('emails_attempted');
+        url.searchParams.delete('emails_sent');
+        url.searchParams.delete('emails_failed');
+        url.searchParams.delete('emails_skipped');
         window.history.replaceState({}, document.title, url);
     }
+
+    window.addEventListener("click", function(event) {
+        const successModal = document.getElementById("successModal");
+        if (successModal && event.target === successModal) {
+            closeSuccessModal();
+        }
+    });
     </script>
 </body>
 </html>

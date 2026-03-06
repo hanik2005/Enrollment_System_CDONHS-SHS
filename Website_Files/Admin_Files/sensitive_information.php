@@ -60,15 +60,6 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
                 </div>
                 
                 <div class="filter-group">
-                    <label for="filter_user_type">User Type:</label>
-                    <select id="filter_user_type" name="filter_user_type">
-                        <option value="">All Users</option>
-                        <option value="Student" <?= $filter_user_type == 'Student' ? 'selected' : ''; ?>>Student</option>
-                        <option value="Teacher" <?= $filter_user_type == 'Teacher' ? 'selected' : ''; ?>>Teacher</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
                     <label for="filter_status">Enrollment Status:</label>
                     <select id="filter_status" name="filter_status">
                         <option value="">All Status</option>
@@ -94,8 +85,8 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
                 <div class="detail-card">
                     <button class="expand-btn" onclick="toggleDetails(this)">
                         <span>
-                            <span class="user-type-badge <?= $record['user_type'] === 'Student' ? 'badge-student' : 'badge-teacher'; ?>">
-                                <?= htmlspecialchars($record['user_type']); ?>
+                            <span class="user-type-badge badge-student">
+                                Student
                             </span>
                             <?= htmlspecialchars($record['first_name'] . ' ' . $record['last_name']); ?>
                             (<?= htmlspecialchars($record['email']); ?>)
@@ -394,7 +385,8 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
                                     <div class="detail-item">
                                         <span class="detail-label">PSA Birth Certificate</span>
                                         <?php if (!empty($record['psa_birth_certificate'])): ?>
-                                            <a href="../../uploads/<?= htmlspecialchars($record['psa_birth_certificate']); ?>" target="_blank" class="doc-link">✓ View Document</a>
+                                            <a href="../../uploads/Documents/student/<?= htmlspecialchars($record['psa_birth_certificate']); ?>" target="_blank" class="doc-link">✓ View Document</a>
+                                            <?php else: ?>
                                             <span class="doc-missing">Not Submitted</span>
                                         <?php endif; ?>
                                     </div>
@@ -417,7 +409,7 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
                                     <div class="detail-item">
                                         <span class="detail-label">Profile Image</span>
                                         <?php if (!empty($record['profile_image'])): ?>
-                                            <a href="../../uploads/Documents/student/<?= htmlspecialchars($record['profile_image']); ?>" target="_blank" class="doc-link">✓ View Image</a>
+                                            <a href="../../uploads/Profile/student/<?= htmlspecialchars($record['profile_image']); ?>" target="_blank" class="doc-link">✓ View Image</a>
                                         <?php else: ?>
                                             <span class="doc-missing">Not Submitted</span>
                                         <?php endif; ?>

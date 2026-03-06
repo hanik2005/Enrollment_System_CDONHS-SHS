@@ -3,8 +3,14 @@ include "../../DB_Connection/Connection.php";
 include "mailer_details.php";
 
 if (isset($_POST['confirm']) && isset($_POST['status'])) {
+    $updatedCount = 0;
+    $emailAttemptedCount = 0;
+    $emailSentCount = 0;
+    $emailFailedCount = 0;
+    $emailSkippedCount = 0;
 
     foreach ($_POST['status'] as $student_id => $status) {
+        $student_id = (int)$student_id;
 
         // Update student's enlistment status
         $stmt = $connection->prepare("
@@ -16,6 +22,7 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
         $stmt->bind_param("si", $status, $student_id);
         $stmt->execute();
         $stmt->close();
+        $updatedCount++;
 
         // If admin confirms as "Enlisted", send approval email
         if ($status === 'Enlisted') {
@@ -33,8 +40,10 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
             $stmtGetEmail->close();
 
             // Send approval email notification
-            if ($studentInfo) {
+            if ($studentInfo && !empty($studentInfo['email'])) {
+                $emailAttemptedCount++;
                 try {
+                    $mail->clearAllRecipients();
                     $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Enrollment Office');
                     $mail->addAddress($studentInfo['email']);
                     $mail->isHTML(true);
@@ -69,9 +78,13 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
                     ";
 
                     $mail->send();
+                    $emailSentCount++;
                 } catch (Exception $e) {
                     error_log("Mailer Error: " . $mail->ErrorInfo);
+                    $emailFailedCount++;
                 }
+            } else {
+                $emailSkippedCount++;
             }
         }
 
@@ -100,8 +113,10 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
             $stmtGetEmail->close();
 
             // Send rejection email notification
-            if ($studentInfo) {
+            if ($studentInfo && !empty($studentInfo['email'])) {
+                $emailAttemptedCount++;
                 try {
+                    $mail->clearAllRecipients();
                     $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Enrollment Office');
                     $mail->addAddress($studentInfo['email']);
                     $mail->isHTML(true);
@@ -136,14 +151,27 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
                     ";
 
                     $mail->send();
+                    $emailSentCount++;
                 } catch (Exception $e) {
                     error_log("Mailer Error: " . $mail->ErrorInfo);
+                    $emailFailedCount++;
                 }
+            } else {
+                $emailSkippedCount++;
             }
         }
     }
 
-    header("Location: ../../Website_Files/Admin_Files/enlistment_validation_page.php");
+    $query = http_build_query([
+        'success' => 1,
+        'updated' => $updatedCount,
+        'emails_attempted' => $emailAttemptedCount,
+        'emails_sent' => $emailSentCount,
+        'emails_failed' => $emailFailedCount,
+        'emails_skipped' => $emailSkippedCount
+    ]);
+
+    header("Location: ../../Website_Files/Admin_Files/enlistment_validation_page.php?" . $query);
     exit;
 }
 ?>

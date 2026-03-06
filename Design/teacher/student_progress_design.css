@@ -330,6 +330,111 @@
     color: #fbbf24;
 }
 
+ /* Promotion Status Styles */
+        .promotion-column {
+            min-width: 180px;
+        }
+
+        .promotion-select {
+            padding: 6px 10px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            background: #ffffff;
+            min-width: 140px;
+        }
+
+        .promotion-select:focus {
+            outline: none;
+            border-color: #1e3a8a;
+        }
+
+        .promotion-select.promote { background: #d1fae5; border-color: #059669; }
+        .promotion-select.graduate { background: #dbeafe; border-color: #2563eb; }
+        .promotion-select.retain { background: #fee2e2; border-color: #dc2626; }
+        .promotion-select.pending { background: #fef3c7; border-color: #d97706; }
+
+        .remarks-input {
+            padding: 6px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 12px;
+            width: 150px;
+        }
+
+        .save-btn {
+            padding: 6px 12px;
+            background: #1e3a8a;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .save-btn:hover {
+            background: #2563eb;
+        }
+
+        .saved-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #059669;
+            color: white;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* Bulk action styles */
+        .bulk-action-container {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .bulk-action-container label {
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+
+        .bulk-action-container select {
+            padding: 8px 12px;
+            border: 2px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .bulk-action-container input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 200px;
+        }
+
+        .confirm-btn {
+            padding: 10px 20px;
+            background: #059669;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .confirm-btn:hover {
+            background: #047857;
+        }
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .progress-container {

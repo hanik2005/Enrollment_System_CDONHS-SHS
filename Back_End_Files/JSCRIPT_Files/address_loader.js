@@ -1,79 +1,187 @@
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function () {
+    const provinceSelect = document.getElementById("provinceSelect");
+    const citySelect = document.getElementById("citySelect");
+    const barangaySelect = document.getElementById("barangaySelect");
+    const provinceInput = document.getElementById("provinceInput");
+    const cityInput = document.getElementById("cityInput");
+    const barangayInput = document.getElementById("barangayInput");
 
-const provinceSelect = document.getElementById("provinceSelect");
-const citySelect = document.getElementById("citySelect");
-const barangaySelect = document.getElementById("barangaySelect");
+    // Guard: do nothing on pages without address dropdowns.
+    if (!provinceSelect || !citySelect || !barangaySelect) {
+        return;
+    }
 
-const API = "https://psgc.gitlab.io/api";
+    const API = "https://psgc.gitlab.io/api";
 
-// LOAD PROVINCES
-fetch(API + "/provinces/")
-.then(res => res.json())
-.then(data => {
+    function createOption(value, label, extra = {}) {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
 
-data.forEach(province => {
+        Object.entries(extra).forEach(([key, val]) => {
+            option.dataset[key] = val;
+        });
 
-let option = document.createElement("option");
-option.value = province.code;
-option.textContent = province.name;
+        return option;
+    }
 
-provinceSelect.appendChild(option);
+    function resetSelect(select, placeholder, includeOther = true) {
+        select.innerHTML = "";
+        select.appendChild(createOption("", placeholder));
 
-});
+        if (includeOther) {
+            select.appendChild(createOption("Other", "Other (Specify)"));
+        }
+    }
 
-});
+    function clearLinkedInput(inputElement) {
+        if (!inputElement) {
+            return;
+        }
 
-// PROVINCE → CITIES + MUNICIPALITIES
-provinceSelect.addEventListener("change", function(){
+        inputElement.value = "";
+        inputElement.style.display = "none";
+        inputElement.required = false;
+    }
 
-citySelect.innerHTML = '<option value="">Select City / Municipality</option>';
-barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+    function setManualFallback(select, placeholder) {
+        resetSelect(select, placeholder, true);
+        const infoOption = createOption("", "Unable to load from PSGC API. Choose Other (Specify).");
+        infoOption.disabled = true;
+        select.appendChild(infoOption);
+    }
 
-if(!this.value) return;
+    async function fetchJson(url) {
+        const response = await fetch(url);
 
-Promise.all([
-fetch(API + "/provinces/" + this.value + "/cities/").then(res => res.json()),
-fetch(API + "/provinces/" + this.value + "/municipalities/").then(res => res.json())
-])
-.then(([cities, municipalities]) => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status} - ${url}`);
+        }
 
-[...cities, ...municipalities].forEach(place => {
+        return response.json();
+    }
 
-let option = document.createElement("option");
-option.value = place.code;
-option.textContent = place.name;
+    async function loadProvinces() {
+        try {
+            resetSelect(provinceSelect, "Select Province");
 
-citySelect.appendChild(option);
+            const provinces = await fetchJson(`${API}/provinces/`);
 
-});
+            provinces
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .forEach((province) => {
+                    // Store readable name in value for DB inserts.
+                    // Keep code in data-code for the next API call.
+                    provinceSelect.appendChild(
+                        createOption(province.name, province.name, { code: province.code })
+                    );
+                });
+        } catch (error) {
+            console.error("Failed to load provinces:", error);
+            setManualFallback(provinceSelect, "Select Province");
+        }
+    }
 
-});
+    async function loadCitiesAndMunicipalities(provinceCode) {
+        resetSelect(citySelect, "Select City / Municipality");
+        resetSelect(barangaySelect, "Select Barangay");
+        clearLinkedInput(cityInput);
+        clearLinkedInput(barangayInput);
 
-});
+        if (!provinceCode) {
+            return;
+        }
 
-// CITY / MUNICIPALITY → BARANGAYS
-citySelect.addEventListener("change", function(){
+        try {
+            const [cities, municipalities] = await Promise.all([
+                fetchJson(`${API}/provinces/${provinceCode}/cities/`),
+                fetchJson(`${API}/provinces/${provinceCode}/municipalities/`)
+            ]);
 
-barangaySelect.innerHTML = '<option value="">Select Barangay</option>';
+            const places = [
+                ...cities.map((item) => ({ ...item, placeType: "city" })),
+                ...municipalities.map((item) => ({ ...item, placeType: "municipality" }))
+            ].sort((a, b) => a.name.localeCompare(b.name));
 
-if(!this.value) return;
+            places.forEach((place) => {
+                // Value is name for readable storage; code+type for barangay API lookup.
+                citySelect.appendChild(
+                    createOption(place.name, place.name, {
+                        code: place.code,
+                        type: place.placeType
+                    })
+                );
+            });
+        } catch (error) {
+            console.error("Failed to load cities/municipalities:", error);
+            setManualFallback(citySelect, "Select City / Municipality");
+            setManualFallback(barangaySelect, "Select Barangay");
+        }
+    }
 
-fetch(API + "/cities/" + this.value + "/barangays/")
-.then(res => res.json())
-.then(data => {
+    async function loadBarangays(placeCode, placeType) {
+        resetSelect(barangaySelect, "Select Barangay");
+        clearLinkedInput(barangayInput);
 
-data.forEach(barangay => {
+        if (!placeCode) {
+            return;
+        }
 
-let option = document.createElement("option");
-option.value = barangay.name;
-option.textContent = barangay.name;
+        let endpointOrder = ["cities", "municipalities"];
+        if (placeType === "municipality") {
+            endpointOrder = ["municipalities", "cities"];
+        } else if (placeType === "city") {
+            endpointOrder = ["cities", "municipalities"];
+        }
 
-barangaySelect.appendChild(option);
+        let loaded = false;
+        let lastError = null;
 
-});
+        for (const endpoint of endpointOrder) {
+            try {
+                const barangays = await fetchJson(`${API}/${endpoint}/${placeCode}/barangays/`);
+                barangays
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .forEach((barangay) => {
+                        barangaySelect.appendChild(createOption(barangay.name, barangay.name));
+                    });
+                loaded = true;
+                break;
+            } catch (error) {
+                lastError = error;
+            }
+        }
 
-});
+        if (!loaded) {
+            console.error("Failed to load barangays:", lastError);
+            setManualFallback(barangaySelect, "Select Barangay");
+        }
+    }
 
-});
+    provinceSelect.addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const provinceCode = selectedOption?.dataset?.code || "";
+        if (provinceInput && this.value && this.value !== "Other") {
+            provinceInput.value = this.value;
+        }
+        loadCitiesAndMunicipalities(provinceCode);
+    });
 
+    citySelect.addEventListener("change", function () {
+        const selectedOption = this.options[this.selectedIndex];
+        const placeCode = selectedOption?.dataset?.code || "";
+        const placeType = selectedOption?.dataset?.type || "";
+        if (cityInput && this.value && this.value !== "Other") {
+            cityInput.value = this.value;
+        }
+        loadBarangays(placeCode, placeType);
+    });
+
+    barangaySelect.addEventListener("change", function () {
+        if (barangayInput && this.value && this.value !== "Other") {
+            barangayInput.value = this.value;
+        }
+    });
+
+    loadProvinces();
 });

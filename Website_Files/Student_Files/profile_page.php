@@ -93,6 +93,18 @@ if ($adviserResult->num_rows > 0) {
     $adviserInfo = $adviserResult->fetch_assoc();
 }
 
+$adviserName = "No adviser assigned yet";
+if ($adviserInfo && !empty($adviserInfo['adviser_first_name'])) {
+    $adviserName = $adviserInfo['adviser_first_name'];
+    if (!empty($adviserInfo['adviser_middle_name'])) {
+        $adviserName .= ' ' . substr($adviserInfo['adviser_middle_name'], 0, 1) . '.';
+    }
+    $adviserName .= ' ' . $adviserInfo['adviser_last_name'];
+    if (!empty($adviserInfo['adviser_extension'])) {
+        $adviserName .= ' ' . $adviserInfo['adviser_extension'];
+    }
+}
+
 // Handle success/error messages
 $message = "";
 $messageType = "";
@@ -146,7 +158,7 @@ $profileImagePath = !empty($profile['profile_image'])
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
 </head>
-<body>
+<body class="student-profile-page">
 
 <!-- Header -->
 <div class="header">
@@ -208,7 +220,7 @@ $profileImagePath = !empty($profile['profile_image'])
                     ?>
                     <img src="<?php echo $profileImagePath; ?>" alt="Profile Image" class="profile-image" id="profileImagePreview">
                     <label for="profile_image" class="profile-image-upload" title="Click to change profile image">
-                        <span>📷</span>
+                        <span aria-hidden="true">+</span>
                     </label>
                     <input type="file" id="profile_image" name="profile_image" accept="image/*" class="profile-image-input" onchange="previewImage(this)">
                 </div>
@@ -221,12 +233,36 @@ $profileImagePath = !empty($profile['profile_image'])
                     </span>
                 </div>
             </div>
+
+            <div class="academic-focus-card">
+                <div class="academic-focus-header">
+                    Current Class Assignment
+                </div>
+                <div class="academic-focus-grid">
+                    <div class="focus-item">
+                        <span class="focus-label">Grade Level</span>
+                        <span class="focus-value"><?php echo htmlspecialchars($strandInfo['grade_level'] ?? 'Not assigned'); ?></span>
+                    </div>
+                    <div class="focus-item">
+                        <span class="focus-label">Strand</span>
+                        <span class="focus-value"><?php echo htmlspecialchars($strandInfo['strand_name'] ?? 'Not assigned'); ?></span>
+                    </div>
+                    <div class="focus-item focus-item-primary">
+                        <span class="focus-label">Section</span>
+                        <span class="focus-value"><?php echo htmlspecialchars($strandInfo['section_name'] ?? 'Not assigned yet'); ?></span>
+                    </div>
+                    <div class="focus-item focus-item-primary">
+                        <span class="focus-label">Adviser</span>
+                        <span class="focus-value"><?php echo htmlspecialchars($adviserName); ?></span>
+                    </div>
+                </div>
+            </div>
             
             <div class="profile-content view-mode" id="profileContent">
                 
                 <!-- Personal Information -->
                 <div class="profile-section">
-                    <h3>📋 Personal Information</h3>
+                    <h3>Personal Information</h3>
                     
                     <div class="profile-field">
                         <label>First Name</label>
@@ -286,7 +322,7 @@ $profileImagePath = !empty($profile['profile_image'])
 
                 <!-- Contact Information -->
                 <div class="profile-section">
-                    <h3>📞 Contact Information</h3>
+                    <h3>Contact Information</h3>
                     
                     <div class="profile-field">
                         <label>Contact Number</label>
@@ -306,8 +342,8 @@ $profileImagePath = !empty($profile['profile_image'])
 
                 <!-- Address -->
                 <div class="profile-section full-width">
-                    <h3>🏠 Address</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <h3>Address Information</h3>
+                    <div class="address-grid">
                         <div class="profile-field">
                             <label>House No.</label>
                             <input type="text" name="house_number" value="<?php echo htmlspecialchars($profile['house_number'] ?? ''); ?>">
@@ -342,7 +378,7 @@ $profileImagePath = !empty($profile['profile_image'])
 
                 <!-- Academic Information (Read-only) -->
                 <div class="profile-section">
-                    <h3>🎓 Academic Information</h3>
+                    <h3>Academic Information</h3>
                     
                     <div class="profile-field">
                         <label>Enrollment Type</label>
@@ -370,35 +406,21 @@ $profileImagePath = !empty($profile['profile_image'])
                         <input type="text" value="<?php echo htmlspecialchars($strandInfo['strand_name']); ?>" disabled>
                     </div>
                     
-                    <div class="profile-field">
+                    <div class="profile-field focus-field">
                         <label>Section</label>
                         <input type="text" value="<?php echo htmlspecialchars($strandInfo['section_name']); ?>" disabled>
                     </div>
                     
-                    <div class="profile-field">
+                    <div class="profile-field focus-field">
                         <label>Adviser</label>
-                        <?php if ($adviserInfo && !empty($adviserInfo['adviser_first_name'])): ?>
-                            <?php 
-                                $adviserName = $adviserInfo['adviser_first_name'];
-                                if (!empty($adviserInfo['adviser_middle_name'])) {
-                                    $adviserName .= ' ' . substr($adviserInfo['adviser_middle_name'], 0, 1) . '.';
-                                }
-                                $adviserName .= ' ' . $adviserInfo['adviser_last_name'];
-                                if (!empty($adviserInfo['adviser_extension'])) {
-                                    $adviserName .= ' ' . $adviserInfo['adviser_extension'];
-                                }
-                            ?>
-                            <input type="text" value="<?php echo htmlspecialchars($adviserName); ?>" disabled>
-                        <?php else: ?>
-                            <input type="text" value="No adviser assigned yet" disabled>
-                        <?php endif; ?>
+                        <input type="text" value="<?php echo htmlspecialchars($adviserName); ?>" disabled>
                     </div>
                     <?php endif; ?>
                 </div>
 
                 <!-- Guardian Information -->
                 <div class="profile-section">
-                    <h3>👨‍👩‍👧 Guardian Information</h3>
+                    <h3>Guardian Information</h3>
                     
                     <div class="profile-field">
                         <label>Father's Name</label>
@@ -439,8 +461,8 @@ $profileImagePath = !empty($profile['profile_image'])
 
                 <!-- Documents -->
                 <div class="profile-section full-width">
-                    <h3>📄 Uploaded Documents</h3>
-                    <p style="color: #666; font-size: 0.9em; margin-bottom: 15px;">
+                    <h3>Uploaded Documents</h3>
+                    <p class="section-description">
                         Upload your documents if not yet submitted. Click on a document to view/download.
                     </p>
                     <div class="documents-grid">
@@ -453,10 +475,10 @@ $profileImagePath = !empty($profile['profile_image'])
                             <div class="document-info">
                                 <strong>PSA Birth Certificate</strong>
                                 <?php if (!empty($profile['psa_birth_certificate'])): ?>
-                                    <span class="document-status uploaded">✓ Uploaded</span>
+                                    <span class="document-status uploaded">&#10003; Uploaded</span>
                                     <a href="../../uploads/Documents/student/<?php echo htmlspecialchars($profile['psa_birth_certificate']); ?>" target="_blank" class="btn-view">View</a>
                                 <?php else: ?>
-                                    <span class="document-status not-uploaded">✗ Not Uploaded</span>
+                                    <span class="document-status not-uploaded">&#10007; Not Uploaded</span>
                                     <input type="file" name="psa_birth_certificate" accept=".pdf,.jpg,.jpeg,.png" class="document-upload">
                                 <?php endif; ?>
                             </div>
@@ -470,10 +492,10 @@ $profileImagePath = !empty($profile['profile_image'])
                             <div class="document-info">
                                 <strong>Form 138 (Report Card)</strong>
                                 <?php if (!empty($profile['form_138'])): ?>
-                                    <span class="document-status uploaded">✓ Uploaded</span>
+                                    <span class="document-status uploaded">&#10003; Uploaded</span>
                                     <a href="../../uploads/Documents/student/<?php echo htmlspecialchars($profile['form_138']); ?>" target="_blank" class="btn-view">View</a>
                                 <?php else: ?>
-                                    <span class="document-status not-uploaded">✗ Not Uploaded</span>
+                                    <span class="document-status not-uploaded">&#10007; Not Uploaded</span>
                                     <input type="file" name="form_138" accept=".pdf,.jpg,.jpeg,.png" class="document-upload">
                                 <?php endif; ?>
                             </div>
@@ -487,10 +509,10 @@ $profileImagePath = !empty($profile['profile_image'])
                             <div class="document-info">
                                 <strong>Student ID Copy</strong>
                                 <?php if (!empty($profile['student_id_copy'])): ?>
-                                    <span class="document-status uploaded">✓ Uploaded</span>
+                                    <span class="document-status uploaded">&#10003; Uploaded</span>
                                     <a href="../../uploads/Documents/student/<?php echo htmlspecialchars($profile['student_id_copy']); ?>" target="_blank" class="btn-view">View</a>
                                 <?php else: ?>
-                                    <span class="document-status not-uploaded">✗ Not Uploaded</span>
+                                    <span class="document-status not-uploaded">&#10007; Not Uploaded</span>
                                     <input type="file" name="student_id_copy" accept=".pdf,.jpg,.jpeg,.png" class="document-upload">
                                 <?php endif; ?>
                             </div>
@@ -515,78 +537,13 @@ $profileImagePath = !empty($profile['profile_image'])
 
 <!-- Footer -->
 <div class="footer">
-    © 2026 Cagayan De Oro National High School - Senior High School  
-    <br>
+    &copy; 2026 Cagayan De Oro National High School - Senior High School<br>
     School Management System
 </div>
 
 <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
-<script>
-    let isEditing = false;
-
-    function toggleEdit() {
-        isEditing = true;
-        document.getElementById('profileContent').classList.remove('view-mode');
-        document.getElementById('profileContent').classList.add('edit-mode');
-        document.getElementById('editBtn').style.display = 'none';
-        document.getElementById('saveBtn').style.display = 'inline-block';
-        document.getElementById('cancelBtn').style.display = 'inline-block';
-        
-        // Enable all inputs except disabled ones
-        const inputs = document.querySelectorAll('#profileContent input, #profileContent select');
-        inputs.forEach(input => {
-            if (!input.hasAttribute('disabled')) {
-                input.removeAttribute('readonly');
-            }
-        });
-    }
-
-    function cancelEdit() {
-        isEditing = false;
-        document.getElementById('profileContent').classList.add('view-mode');
-        document.getElementById('profileContent').classList.remove('edit-mode');
-        document.getElementById('editBtn').style.display = 'inline-block';
-        document.getElementById('saveBtn').style.display = 'none';
-        document.getElementById('cancelBtn').style.display = 'none';
-        
-        // Reset form
-        document.getElementById('profileForm').reset();
-        
-        // Disable inputs
-        const inputs = document.querySelectorAll('#profileContent input, #profileContent select');
-        inputs.forEach(input => {
-            if (!input.hasAttribute('disabled')) {
-                input.setAttribute('readonly', true);
-            }
-        });
-    }
-
-    // Initialize view mode
-    document.addEventListener('DOMContentLoaded', function() {
-        const inputs = document.querySelectorAll('#profileContent input, #profileContent select');
-        inputs.forEach(input => {
-            if (!input.hasAttribute('disabled')) {
-                input.setAttribute('readonly', true);
-            }
-        });
-    });
-
-    // Preview profile image before upload
-    function previewImage(input) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('profileImagePreview').src = e.target.result;
-            };
-            reader.readAsDataURL(input.files[0]);
-            
-            // Auto-enable save button when profile image is selected
-            if (!isEditing) {
-                toggleEdit();
-            }
-        }
-    }
-</script>
+<script src="../../Back_End_Files/JSCRIPT_Files/student_profile_function.js"></script>
 
 </body>
 </html>
+

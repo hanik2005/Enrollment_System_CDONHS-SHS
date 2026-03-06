@@ -5,6 +5,18 @@ include "../../DB_Connection/Connection.php";
 $grade_level = $_GET['grade_level'] ?? '';
 $strand_id   = $_GET['strand_id'] ?? '';
 
+$now = new DateTime('now', new DateTimeZone('Asia/Manila'));
+$currentMonth = (int)$now->format('n');
+$currentYear = (int)$now->format('Y');
+
+if ($currentMonth >= 8) {
+    $currentSemester = '1st Semester';
+    $currentSchoolYear = $currentYear . '-' . ($currentYear + 1);
+} else {
+    $currentSemester = '2nd Semester';
+    $currentSchoolYear = ($currentYear - 1) . '-' . $currentYear;
+}
+
 if ($grade_level && $strand_id) {
     try {
         // Get all sections for this grade and strand, ordered alphabetically
@@ -28,15 +40,16 @@ if ($grade_level && $strand_id) {
             $countStmt = $connection->prepare("
                 SELECT COUNT(*) as student_count
                 FROM student_strand
-                WHERE section_id = ? AND grade_level = ?
+                WHERE section_id = ? AND grade_level = ? AND semester = ? AND school_year = ?
             ");
-            $countStmt->bind_param("ii", $sec_id, $grade_level);
+            $countStmt->bind_param("iiss", $sec_id, $grade_level, $currentSemester, $currentSchoolYear);
             $countStmt->execute();
             $countResult = $countStmt->get_result();
             $countRow = $countResult->fetch_assoc();
+            $row['student_count'] = (int)$countRow['student_count'];
 
             // Separate available and full sections
-            if ($countRow['student_count'] < 50) {
+            if ($row['student_count'] < 50) {
                 $available_sections[] = $row;
             } else {
                 $full_sections[] = $row;

@@ -15,7 +15,9 @@ document.addEventListener("DOMContentLoaded", function() {
         selectAllCheckbox.addEventListener("change", function() {
             const isChecked = this.checked;
             rowCheckboxes.forEach(checkbox => {
-                checkbox.checked = isChecked;
+                if (!checkbox.disabled) {
+                    checkbox.checked = isChecked;
+                }
             });
         });
     }
@@ -59,11 +61,18 @@ document.addEventListener("DOMContentLoaded", function() {
             
             // Collect data from checked rows
             const updates = [];
+            const lrnMissingStudents = [];
             let hasValidationError = false;
             
             checkedCheckboxes.forEach(checkbox => {
                 const row = checkbox.closest(".application-row");
                 if (!row) return;
+
+                if (row.dataset.hasLrn === "0") {
+                    lrnMissingStudents.push(row.dataset.studentName || `Application #${row.dataset.applicationId}`);
+                    hasValidationError = true;
+                    return;
+                }
                 
                 const applicationId = row.dataset.applicationId;
                 const batchFields = row.querySelector(".batch-update-fields");
@@ -92,6 +101,10 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             
             if (hasValidationError) {
+                if (lrnMissingStudents.length > 0) {
+                    alert("Cannot confirm applications with missing LRN. Please edit the LRN first in Sensitive Information:\n- " + lrnMissingStudents.join("\n- "));
+                    return;
+                }
                 alert("Please enter remarks for all rejected applications.");
                 return;
             }

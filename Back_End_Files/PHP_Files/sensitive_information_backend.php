@@ -33,15 +33,12 @@ if (!$admin) {
 /* FILTER PARAMETERS         */
 /* ========================= */
 $search_name = isset($_GET['search_name']) ? trim($_GET['search_name']) : '';
-$filter_user_type = isset($_GET['filter_user_type']) ? trim($_GET['filter_user_type']) : '';
 $filter_status = isset($_GET['filter_status']) ? trim($_GET['filter_status']) : '';
 
 /* ===============================
-   GET STUDENTS AND TEACHERS APPLICATIONS
+   GET STUDENT APPLICATIONS ONLY
    Updated query to match actual database structure
    ======================================= */
-$results = [];
-
 // Get Students with proper JOINs
 $studentSql = "SELECT 
     sa.application_id,
@@ -123,49 +120,12 @@ if (!empty($filter_status)) {
 
 $studentSql .= " ORDER BY sa.date_submitted DESC";
 
-// Get Teachers (using teachers table)
-$teacherSql = "SELECT 
-    t.teacher_id as application_id,
-    t.first_name,
-    t.last_name,
-    t.middle_name,
-    t.extension_name,
-    t.advisor_id,
-    u.username,
-    u.status as application_status,
-    u.first_login as date_submitted,
-    'Teacher' as user_type
-FROM teachers t
-JOIN users u ON t.user_id = u.user_id
-WHERE u.role_id = 3";
-
-if (!empty($search_name)) {
-    $teacherSql .= " AND (t.first_name LIKE '%$search_name%' OR t.last_name LIKE '%$search_name%' OR CONCAT(t.first_name, ' ', t.last_name) LIKE '%$search_name%')";
-}
-
-if (!empty($filter_status)) {
-    $teacherSql .= " AND u.status = '$filter_status'";
-}
-
-$teacherSql .= " ORDER BY t.last_name, t.first_name";
-
 $allResults = [];
 
-if (empty($filter_user_type) || $filter_user_type === 'Student') {
-    $studentResult = $connection->query($studentSql);
-    if ($studentResult) {
-        while ($row = $studentResult->fetch_assoc()) {
-            $allResults[] = $row;
-        }
-    }
-}
-
-if (empty($filter_user_type) || $filter_user_type === 'Teacher') {
-    $teacherResult = $connection->query($teacherSql);
-    if ($teacherResult) {
-        while ($row = $teacherResult->fetch_assoc()) {
-            $allResults[] = $row;
-        }
+$studentResult = $connection->query($studentSql);
+if ($studentResult) {
+    while ($row = $studentResult->fetch_assoc()) {
+        $allResults[] = $row;
     }
 }
 
