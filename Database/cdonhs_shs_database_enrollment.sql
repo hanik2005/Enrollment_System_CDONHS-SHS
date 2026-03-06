@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 06, 2026 at 06:06 PM
+-- Generation Time: Mar 06, 2026 at 08:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -218,7 +218,8 @@ CREATE TABLE `students` (
 
 INSERT INTO `students` (`student_id`, `user_id`, `application_id`, `enrollment_status`, `date_enrolled`, `enlistment_status`, `school_year`) VALUES
 (6, 97, 2, 'Active', '2026-03-05', 'Enlisted', '2025-2026'),
-(8, 99, 3, 'Active', '2026-03-06', 'Enlisted', '2025-2026');
+(8, 99, 3, 'Active', '2026-03-06', 'Enlisted', '2025-2026'),
+(9, 100, 5, 'Active', '2026-03-06', 'Enlisted', '2025-2026');
 
 -- --------------------------------------------------------
 
@@ -252,7 +253,8 @@ CREATE TABLE `student_addresses` (
 
 INSERT INTO `student_addresses` (`address_id`, `application_id`, `house_number`, `street`, `barangay`, `city_municipality`, `province`, `country`, `zip_code`, `same_as_current`, `permanent_house_number`, `permanent_street`, `permanent_barangay`, `permanent_city`, `permanent_province`, `permanent_country`, `permanent_zip_code`) VALUES
 (2, 2, 'Blk 4 Lot 3', 'Buena Oro', 'Barangay 15', 'Cagayan de Oro City', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Barangay 15', 'Cagayan de Oro City', 'Misamis Oriental', 'Philippines', '9000'),
-(3, 3, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000');
+(3, 3, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000'),
+(5, 5, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000');
 
 -- --------------------------------------------------------
 
@@ -288,7 +290,8 @@ CREATE TABLE `student_applications` (
 
 INSERT INTO `student_applications` (`application_id`, `lrn`, `last_name`, `first_name`, `middle_name`, `extension_name`, `date_of_birth`, `sex`, `place_of_birth`, `religion`, `mother_tongue`, `enrollment_type`, `application_status`, `email`, `contact_number`, `remarks`, `date_submitted`, `facebook_profile`, `profile_image`) VALUES
 (2, '405220150089', 'Clarito', 'Nick Charles', 'Durangparang', '', '2005-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'Balik-Aral', 'Approved', 'nickcharlesclarito@gmail.com', '09944718764', 'dasgasga', '2026-03-05 20:59:38', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
-(3, '123892477492', 'Clarito', 'Andry', 'Durangparang', '', '2010-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nidu.clarito.coc@phinmaed.com', '09315510501', 'kdaslgajpgas', '2026-03-06 05:01:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL);
+(3, '123892477492', 'Clarito', 'Andry', 'Durangparang', '', '2010-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nidu.clarito.coc@phinmaed.com', '09315510501', 'kdaslgajpgas', '2026-03-06 05:01:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
+(5, '182785932075', 'Japlag', 'Jason Jay', 'Dumang', '', '2006-10-17', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nickhoyo2005@gmail.com', '09782357252', 'dasfvxdshsherrg', '2026-03-06 19:04:49', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL);
 
 -- --------------------------------------------------------
 
@@ -311,7 +314,8 @@ CREATE TABLE `student_documents` (
 
 INSERT INTO `student_documents` (`document_id`, `application_id`, `psa_birth_certificate`, `psa_birth_certificate_no`, `form_138`, `student_id_copy`) VALUES
 (2, 2, NULL, NULL, NULL, NULL),
-(3, 3, NULL, NULL, NULL, NULL);
+(3, 3, NULL, NULL, NULL, NULL),
+(5, 5, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -342,7 +346,8 @@ CREATE TABLE `student_family` (
 
 INSERT INTO `student_family` (`family_id`, `application_id`, `father_last_name`, `father_first_name`, `father_middle_name`, `father_contact`, `mother_last_name`, `mother_first_name`, `mother_middle_name`, `mother_contact`, `guardian_last_name`, `guardian_first_name`, `guardian_middle_name`, `guardian_contact`) VALUES
 (2, 2, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
-(3, 3, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', '');
+(3, 3, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
+(5, 5, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -368,7 +373,8 @@ CREATE TABLE `student_learning_modality` (
 
 INSERT INTO `student_learning_modality` (`modality_id`, `application_id`, `blended`, `modular_print`, `modular_digital`, `online`, `homeschooling`, `educational_tv`, `radio_based_tv`) VALUES
 (2, 2, 0, 0, 0, 0, 0, 0, 0),
-(3, 3, 0, 0, 0, 0, 0, 0, 0);
+(3, 3, 0, 0, 0, 0, 0, 0, 0),
+(5, 5, 0, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -389,7 +395,8 @@ CREATE TABLE `student_learning_program` (
 
 INSERT INTO `student_learning_program` (`program_id`, `application_id`, `attended_learning_program`, `learning_program_specify`) VALUES
 (2, 2, 'No', ''),
-(3, 3, 'No', '');
+(3, 3, 'No', ''),
+(5, 5, 'Yes', 'Home Schooling');
 
 -- --------------------------------------------------------
 
@@ -412,7 +419,8 @@ CREATE TABLE `student_previous_school` (
 
 INSERT INTO `student_previous_school` (`prev_school_id`, `application_id`, `last_grade_completed`, `last_school_year_completed`, `last_school_attended`, `school_id`) VALUES
 (2, 2, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', ''),
-(3, 3, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111');
+(3, 3, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111'),
+(5, 5, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111');
 
 -- --------------------------------------------------------
 
@@ -435,7 +443,8 @@ CREATE TABLE `student_social_info` (
 
 INSERT INTO `student_social_info` (`social_id`, `application_id`, `indigenous_community`, `ip_specify`, `four_ps_beneficiary`, `four_ps_household_id`) VALUES
 (2, 2, 'No', '', 'No', ''),
-(3, 3, 'No', '', 'No', '');
+(3, 3, 'No', '', 'No', ''),
+(5, 5, 'No', '', 'No', '');
 
 -- --------------------------------------------------------
 
@@ -465,7 +474,8 @@ CREATE TABLE `student_special_needs` (
 
 INSERT INTO `student_special_needs` (`sne_id`, `application_id`, `with_disability`, `has_pwd_id`, `pwd_id_number`, `special_education_needed`, `non_graded_sne`, `disability_category`, `disability_description`, `sped_services_needed`, `medical_diagnosis`, `assessment_date`, `assessed_by`) VALUES
 (2, 2, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
-(3, 3, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL);
+(3, 3, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
+(5, 5, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -489,7 +499,8 @@ CREATE TABLE `student_strand` (
 
 INSERT INTO `student_strand` (`student_strand_id`, `student_id`, `strand_id`, `grade_level`, `semester`, `school_year`, `section_id`) VALUES
 (1, 6, 5, 11, '2nd Semester', '2025-2026', 33),
-(2, 8, 5, 11, '2nd Semester', '2025-2026', 33);
+(2, 8, 5, 11, '2nd Semester', '2025-2026', 33),
+(3, 9, 5, 11, '2nd Semester', '2025-2026', 33);
 
 -- --------------------------------------------------------
 
@@ -651,7 +662,8 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `role_id`, `status`, `fi
 (90, 'teacher050', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (91, '146273816439', '$2y$10$JfdtFxxr8ov1gFjTpKWUWOYpIiTCo2KIC8qTrobIbYEPxrL1t6nCG', 1, 'Active', 0),
 (97, '405220150089', '$2y$10$k/VQwXg7RWJVmCl48AzxTuityJNyxLNYXkuRevdPeklf6V.JmX/Fe', 1, 'Active', 0),
-(99, '123892477492', '$2y$10$omOeBaVL1PKGuycXxrmZwugqpb6L1ePvCjHEuRR4hCFkzk7W/U11q', 1, 'Active', 0);
+(99, '123892477492', '$2y$10$omOeBaVL1PKGuycXxrmZwugqpb6L1ePvCjHEuRR4hCFkzk7W/U11q', 1, 'Active', 0),
+(100, '182785932075', '$2y$10$a1tlQWF.EXwNDnAWkigLteT9cRsmGhwsK59G033xnbOiWvZioLTBm', 1, 'Active', 0);
 
 --
 -- Indexes for dumped tables
@@ -845,67 +857,67 @@ ALTER TABLE `strands`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT for table `student_addresses`
 --
 ALTER TABLE `student_addresses`
-  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_applications`
 --
 ALTER TABLE `student_applications`
-  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_documents`
 --
 ALTER TABLE `student_documents`
-  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_family`
 --
 ALTER TABLE `student_family`
-  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_learning_modality`
 --
 ALTER TABLE `student_learning_modality`
-  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_learning_program`
 --
 ALTER TABLE `student_learning_program`
-  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_previous_school`
 --
 ALTER TABLE `student_previous_school`
-  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_social_info`
 --
 ALTER TABLE `student_social_info`
-  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_special_needs`
 --
 ALTER TABLE `student_special_needs`
-  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT for table `student_strand`
 --
 ALTER TABLE `student_strand`
-  MODIFY `student_strand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `student_strand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `teachers`
@@ -923,7 +935,7 @@ ALTER TABLE `teacher_advisory`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
 
 --
 -- Constraints for dumped tables
