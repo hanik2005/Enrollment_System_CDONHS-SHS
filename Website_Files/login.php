@@ -44,6 +44,7 @@ include '../Back_End_Files/PHP_Files/login_backend.php';
                     <input type="submit" value="Login">
                 </form>
                 <p><a href="forgot_password.php">Forgot Password?</a></p>
+                <p><a href="guest_page.php">Continue as Guest.</a></p>
             </div>
         </div>
     </div>

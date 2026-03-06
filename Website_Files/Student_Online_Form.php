@@ -7,16 +7,64 @@ if (!isFeatureEnabled('Student Enrollment')) {
     exit;
 }
 ?>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Online Enrollment</title>
     <link rel="icon" href="../Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="../Design/Online_Form_Design.css">
+    <script src="../Back_End_Files/JSCRIPT_Files/address_loader.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle light" id="themeToggle" aria-label="Toggle dark/light mode" type="button">
+        <!-- Sun icon (shown in light mode) -->
+        <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z"/>
+        </svg>
+        <!-- Moon icon (shown in dark mode) -->
+        <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/>
+        </svg>
+    </button>
+    
+    <script>
+        // Theme Toggle Functionality
+        (function() {
+            const themeToggle = document.getElementById('themeToggle');
+            const html = document.documentElement;
+            
+            // Check for saved theme preference or default to light
+            const savedTheme = localStorage.getItem('enrollmentTheme') || 'light';
+            html.setAttribute('data-theme', savedTheme);
+            themeToggle.classList.remove('light', 'dark');
+            themeToggle.classList.add(savedTheme);
+            
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                // Save preference
+                localStorage.setItem('enrollmentTheme', newTheme);
+                
+                // Apply theme
+                html.setAttribute('data-theme', newTheme);
+                themeToggle.classList.remove('light', 'dark');
+                themeToggle.classList.add(newTheme);
+            });
+        })();
+    </script>
 </head>
 <body>
+
+<!-- Back to Guest Home Button -->
+<a href="guest_page.php" class="back-button">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+    </svg>
+    <span>Back to Home</span>
+</a>
 
 <form action="../Back_End_Files/PHP_Files/student_enrollment_backend.php" 
       method="POST" enctype="multipart/form-data" id="enrollmentForm" novalidate>
@@ -27,7 +75,7 @@ if (!isFeatureEnabled('Student Enrollment')) {
         <div class="header-text">
             <h3>Republic of the Philippines</h3>
             <h3>Department of Education</h3>
-            <h2>CAGAYAN DE ORO NATIONAL HIGH SCHOOL - SENIOR HIGH</h2>
+            <h2 id="TITLE">CAGAYAN DE ORO NATIONAL HIGH SCHOOL - SENIOR HIGH</h2>
             <h1>ONLINE ENROLLMENT FORM</h1>
         </div>
     </div>
@@ -252,80 +300,30 @@ if (!isFeatureEnabled('Student Enrollment')) {
 
     <div class="form-grid">
 
+        
         <div class="form-group">
-            <label>House No.</label>
-            <input type="text" name="house_number" data-validate="capitalization" placeholder="Enter house number">
+            <label>Country</label>
+            <input type="text" name="country" value="Philippines" readonly>
             <span class="error-message"></span>
         </div>
-
+        
         <div class="form-group">
-            <label>Street</label>
-            <input type="text" name="street" data-validate="capitalization" placeholder="Enter street name">
-            <span class="error-message"></span>
-        </div>
-
-        <div class="form-group">
-            <label>Barangay <span class="required">*</span></label>
+            <label>Province <span class="required">*</span></label>
             <div class="dropdown-with-other">
-                <select name="barangaySelect" id="barangaySelect" onchange="handleDropdownWithOther(this, 'barangayInput')">
-                    <option value="">Select Barangay</option>
-                    <option value="Barangay 1">Barangay 1</option>
-                    <option value="Barangay 2">Barangay 2</option>
-                    <option value="Barangay 3">Barangay 3</option>
-                    <option value="Barangay 4">Barangay 4</option>
-                    <option value="Barangay 5">Barangay 5</option>
-                    <option value="Barangay 6">Barangay 6</option>
-                    <option value="Barangay 7">Barangay 7</option>
-                    <option value="Barangay 8">Barangay 8</option>
-                    <option value="Barangay 9">Barangay 9</option>
-                    <option value="Barangay 10">Barangay 10</option>
-                    <option value="Barangay 11">Barangay 11</option>
-                    <option value="Barangay 12">Barangay 12</option>
-                    <option value="Barangay 13">Barangay 13</option>
-                    <option value="Barangay 14">Barangay 14</option>
-                    <option value="Barangay 15">Barangay 15</option>
-                    <option value="Barangay 16">Barangay 16</option>
-                    <option value="Barangay 17">Barangay 17</option>
-                    <option value="Barangay 18">Barangay 18</option>
-                    <option value="Barangay 19">Barangay 19</option>
-                    <option value="Barangay 20">Barangay 20</option>
-                    <option value="Barangay 21">Barangay 21</option>
-                    <option value="Barangay 22">Barangay 22</option>
-                    <option value="Barangay 23">Barangay 23</option>
-                    <option value="Barangay 24">Barangay 24</option>
-                    <option value="Barangay 25">Barangay 25</option>
-                    <option value="Barangay 26">Barangay 26</option>
-                    <option value="Barangay 27">Barangay 27</option>
-                    <option value="Barangay 28">Barangay 28</option>
-                    <option value="Barangay 29">Barangay 29</option>
-                    <option value="Barangay 30">Barangay 30</option>
-                    <option value="Barangay 31">Barangay 31</option>
-                    <option value="Barangay 32">Barangay 32</option>
-                    <option value="Barangay 33">Barangay 33</option>
-                    <option value="Barangay 34">Barangay 34</option>
-                    <option value="Barangay 35">Barangay 35</option>
+                <select name="provinceSelect" id="provinceSelect" onchange="handleDropdownWithOther(this, 'provinceInput')">
+                    <option value="">Select Province</option>
                     <option value="Other">Other (Specify)</option>
                 </select>
-                <input type="text" name="barangay" id="barangayInput" placeholder="Specify barangay" style="display: none;" data-validate="required|capitalization">
+                <input type="text" name="province" id="provinceInput" placeholder="Specify province" style="display: none;" data-validate="required|capitalization">
             </div>
             <span class="error-message"></span>
         </div>
 
-        <div class="form-group">
+         <div class="form-group">
             <label>City / Municipality <span class="required">*</span></label>
             <div class="dropdown-with-other">
                 <select name="citySelect" id="citySelect" onchange="handleDropdownWithOther(this, 'cityInput')">
                     <option value="">Select City/Municipality</option>
-                    <option value="Cagayan de Oro City">Cagayan de Oro City</option>
-                    <option value="Iligan City">Iligan City</option>
-                    <option value="Marawi City">Marawi City</option>
-                    <option value="Oroquieta City">Oroquieta City</option>
-                    <option value="Ozamis City">Ozamis City</option>
-                    <option value="Tangub City">Tangub City</option>
-                    <option value="Gingoog City">Gingoog City</option>
-                    <option value="Butuan City">Butuan City</option>
-                    <option value="Cabadbaran City">Cabadbaran City</option>
-                    <option value="Bayugan City">Bayugan City</option>
                     <option value="Other">Other (Specify)</option>
                 </select>
                 <input type="text" name="city_municipality" id="cityInput" placeholder="Specify city/municipality" style="display: none;" data-validate="required|capitalization">
@@ -334,38 +332,31 @@ if (!isFeatureEnabled('Student Enrollment')) {
         </div>
 
         <div class="form-group">
-            <label>Province <span class="required">*</span></label>
+            <label>Barangay <span class="required">*</span></label>
             <div class="dropdown-with-other">
-                <select name="provinceSelect" id="provinceSelect" onchange="handleDropdownWithOther(this, 'provinceInput')">
-                    <option value="">Select Province</option>
-                    <option value="Misamis Oriental">Misamis Oriental</option>
-                    <option value="Misamis Occidental">Misamis Occidental</option>
-                    <option value="Lanao del Norte">Lanao del Norte</option>
-                    <option value="Lanao del Sur">Lanao del Sur</option>
-                    <option value="Maguindanao">Maguindanao</option>
-                    <option value="Sultan Kudarat">Sultan Kudarat</option>
-                    <option value="Cotabato">Cotabato</option>
-                    <option value="South Cotabato">South Cotabato</option>
-                    <option value="Saranggani">Saranggani</option>
-                    <option value="Agusan del Norte">Agusan del Norte</option>
-                    <option value="Agusan del Sur">Agusan del Sur</option>
-                    <option value="Surigao del Norte">Surigao del Norte</option>
-                    <option value="Surigao del Sur">Surigao del Sur</option>
-                    <option value="Dinagat Islands">Dinagat Islands</option>
-                    <option value="Bukidnon">Bukidnon</option>
-                    <option value="Camiguin">Camiguin</option>
+                <select name="barangaySelect" id="barangaySelect" onchange="handleDropdownWithOther(this, 'barangayInput')">
+                    <option value="">Select Barangay</option>
                     <option value="Other">Other (Specify)</option>
                 </select>
-                <input type="text" name="province" id="provinceInput" placeholder="Specify province" style="display: none;" data-validate="required|capitalization">
+                <input type="text" name="barangay" id="barangayInput" placeholder="Specify barangay" style="display: none;" data-validate="required|capitalization">
             </div>
             <span class="error-message"></span>
         </div>
 
+        
+
         <div class="form-group">
-            <label>Country</label>
-            <input type="text" name="country" value="Philippines" readonly>
+            <label>Street</label>
+            <input type="text" name="street" data-validate="capitalization" placeholder="Enter street name">
             <span class="error-message"></span>
         </div>
+
+        <div class="form-group">
+            <label>House No.</label>
+            <input type="text" name="house_number" data-validate="capitalization" placeholder="Enter house number">
+            <span class="error-message"></span>
+        </div>
+
 
         <div class="form-group">
             <label>Zip Code</label>
@@ -710,7 +701,7 @@ if (!isFeatureEnabled('Student Enrollment')) {
     </div>
 
 </form>
-
+<script src="../Back_End_Files/JSCRIPT_Files/address_loader.js"></script>
 <script>
     // Handle dropdown with "Other" option
     function handleDropdownWithOther(selectElement, inputId) {

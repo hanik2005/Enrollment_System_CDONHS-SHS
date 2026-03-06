@@ -492,6 +492,32 @@ option:disabled {
 
 }
 
+/* View Sensitive Information Button */
+.btn-view-sensitive {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 35px;
+    height: 35px;
+    background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(124, 58, 237, 0.3);
+}
+
+.btn-view-sensitive:hover {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(124, 58, 237, 0.4);
+}
+
+.btn-view-sensitive svg {
+    width: 18px;
+    height: 18px;
+}
+
 @media (max-width: 768px) {
     .filter-row {
         flex-direction: column;

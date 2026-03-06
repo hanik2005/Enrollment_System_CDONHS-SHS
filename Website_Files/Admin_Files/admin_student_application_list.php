@@ -170,7 +170,7 @@ if (!$result) {
                     <th>Student ID</th>
                     <th>Status</th>
                     <th>Remarks</th>
-                    <th>Action</th>
+                    <th>View</th>
                 </tr>
             </thead>
             <tbody>
@@ -227,7 +227,7 @@ if (!$result) {
                             </td>
 
                             <!-- FORM: REMARKS + STATUS -->
-                            <td colspan="2">
+                            <td>
                                 <div class="batch-update-fields" style="display: none;">
                                     <input type="hidden" class="application-id" value="<?= $row['application_id']; ?>">
                                     <textarea name="remarks" rows="2" class="remarks-small batch-remarks" placeholder="Enter remarks..."></textarea>
@@ -240,6 +240,19 @@ if (!$result) {
                                 <div class="original-form-fields">
                                     <span style="color: #666; font-size: 0.85em;">Use checkbox + Confirm to batch update</span>
                                 </div>
+                            </td>
+                            
+                            <!-- Action: View Sensitive Information -->
+                            <td>
+                                <a href="sensitive_information.php?search_name=<?= urlencode($row['first_name'] . ' ' . $row['last_name']); ?>" 
+                                   class="btn-view-sensitive" 
+                                   title="View Sensitive Information"
+                                   target="_blank">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </a>
                             </td>
                         </tr>
                     <?php endwhile; ?>

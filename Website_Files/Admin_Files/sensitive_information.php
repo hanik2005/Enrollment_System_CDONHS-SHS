@@ -129,13 +129,23 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
                                     <span class="detail-value"><?= htmlspecialchars($record['date_of_birth'] ?? 'N/A'); ?></span>
                                 </div>
                                 <div class="detail-item">
+                                    <span class="detail-label">Place of Birth</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['place_of_birth'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
                                     <span class="detail-label">Sex</span>
                                     <span class="detail-value"><?= htmlspecialchars(ucfirst($record['sex'] ?? 'N/A')); ?></span>
                                 </div>
+                                <?php if ($record['user_type'] === 'Student'): ?>
                                 <div class="detail-item">
-                                    <span class="detail-label">Civil Status</span>
-                                    <span class="detail-value"><?= htmlspecialchars(ucfirst($record['civil_status'] ?? 'N/A')); ?></span>
+                                    <span class="detail-label">Religion</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['religion'] ?? 'N/A'); ?></span>
                                 </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Mother Tongue</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['mother_tongue'] ?? 'N/A'); ?></span>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                         
@@ -185,35 +195,171 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
                         <div class="detail-section">
                             <h3>🎓 Education Information</h3>
                             <div class="detail-grid">
-                                <div class="detail-item">
-                                    <span class="detail-label">Current School</span>
-                                    <span class="detail-value"><?= htmlspecialchars($record['current_school'] ?? 'N/A'); ?></span>
-                                </div>
                                 <?php if ($record['user_type'] === 'Student'): ?>
                                 <div class="detail-item">
-                                    <span class="detail-label">School Classification</span>
-                                    <span class="detail-value"><?= htmlspecialchars(ucfirst($record['school_classification'] ?? 'N/A')); ?></span>
+                                    <span class="detail-label">LRN (Learner Reference Number)</span>
+                                    <?php if (!empty($record['lrn'])): ?>
+                                        <span class="detail-value lrn-value" id="lrn_display_<?= $record['application_id']; ?>">
+                                            <?= htmlspecialchars($record['lrn']); ?>
+                                        </span>
+                                        <button type="button" class="btn btn-edit-lrn" onclick="showLrnEditForm(<?= $record['application_id']; ?>)">
+                                            ✏️ Edit LRN
+                                        </button>
+                                        <!-- LRN Edit Form -->
+                                        <div id="lrn_edit_<?= $record['application_id']; ?>" class="lrn-edit-form" style="display: none;">
+                                            <form method="POST" style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                                                <input type="hidden" name="update_lrn" value="1">
+                                                <input type="hidden" name="application_id" value="<?= $record['application_id']; ?>">
+                                                <input type="text" name="new_lrn" value="<?= htmlspecialchars($record['lrn'] ?? ''); ?>" 
+                                                       placeholder="Enter 12-digit LRN" maxlength="12" pattern="[0-9]{12}"
+                                                       style="width: 200px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                                <button type="submit" class="btn btn-save" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                    💾 Save
+                                                </button>
+                                                <button type="button" class="btn btn-cancel" onclick="hideLrnEditForm(<?= $record['application_id']; ?>)" style="padding: 8px 16px; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="detail-value lrn-missing">Not Provided</span>
+                                        <button type="button" class="btn btn-add-lrn" onclick="showLrnEditForm(<?= $record['application_id']; ?>)">
+                                            ➕ Add LRN
+                                        </button>
+                                        <!-- LRN Edit Form -->
+                                        <div id="lrn_edit_<?= $record['application_id']; ?>" class="lrn-edit-form" style="display: none;">
+                                            <form method="POST" style="display: flex; gap: 10px; align-items: center; margin-top: 10px;">
+                                                <input type="hidden" name="update_lrn" value="1">
+                                                <input type="hidden" name="application_id" value="<?= $record['application_id']; ?>">
+                                                <input type="text" name="new_lrn" placeholder="Enter 12-digit LRN" maxlength="12" pattern="[0-9]{12}"
+                                                       style="width: 200px; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+                                                <button type="submit" class="btn btn-save" style="padding: 8px 16px; background: #10b981; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                    💾 Save
+                                                </button>
+                                                <button type="button" class="btn btn-cancel" onclick="hideLrnEditForm(<?= $record['application_id']; ?>)" style="padding: 8px 16px; background: #6b7280; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                                    Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-label">Enrollment Type</span>
                                     <span class="detail-value"><?= htmlspecialchars($record['enrollment_type'] ?? 'N/A'); ?></span>
                                 </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Year Graduated</span>
-                                    <span class="detail-value"><?= htmlspecialchars($record['year_graduated'] ?? 'N/A'); ?></span>
-                                </div>
-                                <?php else: ?>
-                                <div class="detail-item">
-                                    <span class="detail-label">Highest Education</span>
-                                    <span class="detail-value"><?= htmlspecialchars($record['highest_education'] ?? 'N/A'); ?></span>
-                                </div>
-                                <div class="detail-item">
-                                    <span class="detail-label">Specialization</span>
-                                    <span class="detail-value"><?= htmlspecialchars($record['specialization'] ?? 'N/A'); ?></span>
-                                </div>
                                 <?php endif; ?>
                             </div>
                         </div>
+                        
+                        <!-- Learning Program (Student Only) -->
+                        <?php if ($record['user_type'] === 'Student'): ?>
+                        <div class="detail-section">
+                            <h3>📚 Learning Program</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Attended Learning Program</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['attended_learning_program'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Learning Program Specify</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['learning_program_specify'] ?? 'N/A'); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Previous School Information (Student Only) -->
+                        <div class="detail-section">
+                            <h3>🏫 Previous School Information</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Last Grade Completed</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['last_grade_completed'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Last School Year Completed</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['last_school_year_completed'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item" style="grid-column: span 2;">
+                                    <span class="detail-label">Last School Attended</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['last_school_attended'] ?? 'N/A'); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Social Information (Student Only) -->
+                        <div class="detail-section">
+                            <h3>🌍 Social Information</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Indigenous Community</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['indigenous_community'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">IP Specify</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['ip_specify'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">4Ps Beneficiary</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['four_ps_beneficiary'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">4Ps Household ID</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['four_ps_household_id'] ?? 'N/A'); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Special Needs Information (Student Only) -->
+                        <div class="detail-section">
+                            <h3>♿ Special Needs Information</h3>
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">With Disability</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['with_disability'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Has PWD ID</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['has_pwd_id'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">PWD ID Number</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['pwd_id_number'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Special Education Needed</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['special_education_needed'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Non-Graded Special Needs</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['non_graded_sne'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Disability Category</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['disability_category'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item" style="grid-column: span 2;">
+                                    <span class="detail-label">Disability Description</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['disability_description'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">SPED Services Needed</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['sped_services_needed'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Medical Diagnosis</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['medical_diagnosis'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Assessment Date</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['assessment_date'] ?? 'N/A'); ?></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Assessed By</span>
+                                    <span class="detail-value"><?= htmlspecialchars($record['assessed_by'] ?? 'N/A'); ?></span>
+                                </div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
                         
                         <!-- Guardian Information (Student Only) -->
                         <?php if ($record['user_type'] === 'Student'): ?>
@@ -376,6 +522,14 @@ include "../../Back_End_Files/PHP_Files/sensitive_information_backend.php";
             
             content.classList.toggle('show');
             icon.classList.toggle('rotated');
+        }
+        
+        function showLrnEditForm(applicationId) {
+            document.getElementById('lrn_edit_' + applicationId).style.display = 'block';
+        }
+        
+        function hideLrnEditForm(applicationId) {
+            document.getElementById('lrn_edit_' + applicationId).style.display = 'none';
         }
     </script>
 </body>

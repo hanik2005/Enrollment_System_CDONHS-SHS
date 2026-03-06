@@ -179,3 +179,72 @@
         padding: 15px;
     }
 }
+
+/* ===== LRN EDIT STYLES ===== */
+.lrn-value {
+    font-weight: 600;
+    color: #1e3a8a;
+    font-family: monospace;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+.lrn-missing {
+    color: #999;
+    font-style: italic;
+}
+
+.btn-edit-lrn,
+.btn-add-lrn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+    margin-top: 5px;
+    transition: background 0.2s;
+}
+
+.btn-edit-lrn:hover,
+.btn-add-lrn:hover {
+    background: #2563eb;
+}
+
+.lrn-edit-form {
+    margin-top: 10px;
+    padding: 10px;
+    background: #f8fafc;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+}
+
+.lrn-edit-form input {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.lrn-edit-form input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+.btn-save {
+    background: #10b981 !important;
+}
+
+.btn-save:hover {
+    background: #059669 !important;
+}
+
+.btn-cancel {
+    background: #6b7280 !important;
+}
+
+.btn-cancel:hover {
+    background: #4b5563 !important;
+}

@@ -12,7 +12,7 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="../../Design/main_design.css">
     <link rel="stylesheet" href="../../Design/profile_dropdown.css">
-    <link rel="stylesheet" href="../../Design/dashboard_design.css">
+    <link rel="stylesheet" href="../../Design/admin/application_list_design.css">
     <link rel="stylesheet" href="../../Design/admin/enlistment_validation.css">
 </head>
 <body>
@@ -23,7 +23,7 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
             <span>CDONSHS-SHS</span>
         </div>
         <div class="center">
-            Admin
+            Admin - Enlistment Validation
         </div>
         <div class="right">
             <button class="profile-btn" type="button">
@@ -36,64 +36,67 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
         </div>
     </div>
 
-    <!-- Back Button -->
-    <div class="back-button-container">
-        <a href="home.php" class="back-button">← Back to Home</a>
+    <!-- Page Title -->
+    <div class="page-title">
+        <h1>Enlistment Validation</h1>
     </div>
 
-    <div class="enlistment-container">
-        <div class="enlistment-box">
-            <h2>Enlistment Validation</h2>
+    <!-- Navigation -->
+    <div class="nav-links">
+        <a href="home.php">← Back to Dashboard</a>
+    </div>
 
-            <!-- ================= FILTER SECTION ================= -->
-            <form method="GET">
-                <div class="filter-section">
-                    <div class="filter-group">
-                        <label>Search by Name:</label>
-                        <input type="text" name="search_name" class="filter-dropdown" placeholder="Enter student name..." value="<?= isset($_GET['search_name']) ? htmlspecialchars($_GET['search_name']) : '' ?>">
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Grade Level:</label>
-                        <select name="grade_level" class="filter-dropdown">
-                            <option value="">Select Grade Level</option>
-                            <option value="11" <?= ($grade=='11')?'selected':'' ?>>11</option>
-                            <option value="12" <?= ($grade=='12')?'selected':'' ?>>12</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Strand:</label>
-                        <select name="strand_id" class="filter-dropdown" onchange="this.form.submit()">
-                            <option value="">Select Strand</option>
-                            <?php foreach ($strands as $s): ?>
-                                <option value="<?= $s['strand_id'] ?>" <?= ($strand == $s['strand_id'])?'selected':'' ?>>
-                                    <?= $s['strand_name'] ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Section:</label>
-                        <select name="section_id" class="filter-dropdown" <?= empty($strand)?'disabled':'' ?>>
-                            <option value="">Select Section</option>
-                            <?php foreach ($sections as $sec): ?>
-                                <option value="<?= $sec['section_id'] ?>" <?= ($section == $sec['section_id'])?'selected':'' ?>>
-                                    <?= $sec['section_name'] ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="filter-buttons">
-                        <button type="submit" class="search-btn">Search</button>
-                        <a href="enlistment_validation_page.php" class="clear-filter-btn">Clear</a>
-                    </div>
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <form method="GET" class="filter-form">
+            <div class="filter-row">
+                <div class="filter-group">
+                    <label for="search_name">Search by Name:</label>
+                    <input type="text" id="search_name" name="search_name" placeholder="Enter student name..." value="<?= isset($_GET['search_name']) ? htmlspecialchars($_GET['search_name']) : '' ?>">
                 </div>
-            </form>
 
-            <!-- ================= TABLE SECTION ================= -->
+                <div class="filter-group">
+                    <label for="grade_level">Grade Level:</label>
+                    <select id="grade_level" name="grade_level">
+                        <option value="">Select Grade Level</option>
+                        <option value="11" <?= ($grade=='11')?'selected':'' ?>>11</option>
+                        <option value="12" <?= ($grade=='12')?'selected':'' ?>>12</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="strand_id">Strand:</label>
+                    <select id="strand_id" name="strand_id" onchange="this.form.submit()">
+                        <option value="">Select Strand</option>
+                        <?php foreach ($strands as $s): ?>
+                            <option value="<?= $s['strand_id'] ?>" <?= ($strand == $s['strand_id'])?'selected':'' ?>>
+                                <?= $s['strand_name'] ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label for="section_id">Section:</label>
+                    <select id="section_id" name="section_id" <?= empty($strand)?'disabled':'' ?>>
+                        <option value="">Select Section</option>
+                        <?php foreach ($sections as $sec): ?>
+                            <option value="<?= $sec['section_id'] ?>" <?= ($section == $sec['section_id'])?'selected':'' ?>>
+                                <?= $sec['section_name'] ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="filter-buttons">
+                    <button type="submit" class="btn btn-filter">🔍 Search</button>
+                    <a href="enlistment_validation_page.php" class="btn btn-reset">↻ Reset</a>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ================= TABLE SECTION ================= -->
             <form method="POST" action="../../Back_End_Files/PHP_Files/admin_enlistment_validation_backend.php" onsubmit="showLoadingModal()">
                 <div class="table-container">
                     <table class="validation-table">
@@ -108,6 +111,7 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
                                 <th>Strand</th>
                                 <th>Section</th>
                                 <th>Enlistment Status</th>
+                                <th>View</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -145,11 +149,22 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
                                         <option value="Rejected" <?= $row['enlistment_status']=="Rejected" ? "selected" : "" ?>>Rejected</option>
                                     </select>
                                 </td>
+                                <td>
+                                    <a href="sensitive_information.php?search_name=<?= urlencode($student_name); ?>" 
+                                       class="btn-view-sensitive" 
+                                       title="View Sensitive Information"
+                                       target="_blank">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </a>
+                                </td>
                             </tr>
                             <?php endwhile; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="8" class="no-results">No pending enlistments found.</td>
+                                <td colspan="10" class="no-results">No pending enlistments found.</td>
                             </tr>
                         <?php endif; ?>
                         </tbody>
@@ -157,8 +172,8 @@ include "../../Back_End_Files/PHP_Files/enlistment_validation_backend.php";
                 </div>
 
                 <div class="validation-buttons">
-                    <button type="submit" name="confirm" class="confirm-btn">Confirm</button>
-                    <a href="enlistment_validation_page.php" class="clear-filter-btn">Clear</a>
+                    <button type="submit" name="confirm" class="confirm-btn">✓ Confirm</button>
+                    <a href="enlistment_validation_page.php" class="btn btn-reset">↻ Reset</a>
                 </div>
             </form>
         </div>
