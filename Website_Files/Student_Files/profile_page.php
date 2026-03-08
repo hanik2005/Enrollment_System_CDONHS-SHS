@@ -153,7 +153,7 @@ $profileImagePath = !empty($profile['profile_image'])
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile - Student | CDONHS-SHS</title>
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/profile_page_design.css">
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
@@ -186,10 +186,10 @@ $profileImagePath = !empty($profile['profile_image'])
         <?php endif; ?>
     </div>
     <div class="right">
-        <button class="profile-btn" type="button">
+        <button class="legacy-menu-trigger" type="button">
             <img src="<?php echo $profileImagePath; ?>">
         </button>
-        <div class="profile-dropdown">
+        <div class="legacy-nav-links">
             <a href="home.php">Home</a>
             <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
         </div>
@@ -541,7 +541,7 @@ $profileImagePath = !empty($profile['profile_image'])
     School Management System
 </div>
 
-<script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+<script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
 <script src="../../Back_End_Files/JSCRIPT_Files/student_profile_function.js"></script>
 
 </body>

@@ -10,7 +10,7 @@ include "../../Back_End_Files/PHP_Files/document_correction_backend.php";
     <title>Document Correction Manager - CDONHS-SHS</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/admin/application_list_design.css">
     <link rel="stylesheet" href="../../Design/admin/document_correction_design.css">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
@@ -25,10 +25,15 @@ include "../../Back_End_Files/PHP_Files/document_correction_backend.php";
             Admin - Document Correction Manager
         </div>
         <div class="right">
-            <button class="profile-btn" type="button">
-                <img src="../../Assets/admin_profile.png" alt="Admin Profile">
+            <button class="home-menu-toggle" type="button" data-profile-src="../../Assets/admin_profile.png" data-profile-alt="Admin profile">
+                <span class="menu-icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="menu-label">Menu</span>
             </button>
-            <div class="profile-dropdown">
+            <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
@@ -164,7 +169,7 @@ include "../../Back_End_Files/PHP_Files/document_correction_backend.php";
         School Management System
     </div>
 
-    <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
     <script src="../../Back_End_Files/JSCRIPT_Files/document_correction_function.js"></script>
 </body>
 </html>

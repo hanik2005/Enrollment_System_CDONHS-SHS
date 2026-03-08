@@ -26,9 +26,22 @@ if (!$user) {
     exit;
 }
 
-// Set profile image path (using default since teachers table doesn't have profile_image)
 $profileImagePath = "../../Assets/profile_button.png";
 
+$nameParts = [];
+foreach (['first_name', 'middle_name', 'last_name', 'extension_name'] as $field) {
+    if (!empty($user[$field])) {
+        $nameParts[] = $user[$field];
+    }
+}
+$displayName = trim(implode(" ", $nameParts));
+if ($displayName === '') {
+    $displayName = $user['username'] ?? ($user['email'] ?? "Teacher User");
+}
+
+$facebookPageUrl = "https://www.facebook.com/CDONHSSrHigh";
+
+include "../../Back_End_Files/PHP_Files/get_teacher_advisory.php";
 ?>
 
 <!DOCTYPE html>
@@ -38,91 +51,124 @@ $profileImagePath = "../../Assets/profile_button.png";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
     <link rel="stylesheet" href="../../Design/main_design.css">
-     <link rel="stylesheet" href="../../Design/profile_dropdown.css">
-     <link rel="stylesheet" href="../../Design/dashboard_design.css">
-     
+    <link rel="stylesheet" href="../../Design/dashboard_design.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <title>Teacher Home</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
 <body>
-    <a class="skip-link" href="#main-content">Skip to main content</a>
-    <!-- header -->
-    <div class="header">
+<a class="skip-link" href="#main-content">Skip to main content</a>
+
+<div class="header">
     <div class="left">
         <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
         <span>CDONSHS-SHS</span>
     </div>
 
-    <?php include "../../Back_End_Files/PHP_Files/get_teacher_advisory.php"; ?>
     <div class="center">
         Advisory: <?php echo htmlspecialchars($advisoryText); ?>
     </div>
 
-
     <div class="right">
-       <button class="profile-btn" type="button" aria-label="Open profile menu">
-         <img src="<?php echo $profileImagePath; ?>" alt="Teacher profile">
-     </button>
+        <button class="home-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="teacher-home-menu">
+            <span class="menu-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="menu-label">Menu</span>
+        </button>
+    </div>
+</div>
 
-    <div class="profile-dropdown">
-        <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
-
-    </div>
-    </div>
-    </div>
+<div id="teacher-home-menu" class="home-menu-overlay" hidden>
+    <aside class="home-menu-panel" role="dialog" aria-modal="true" aria-label="Teacher navigation menu">
+        <div class="home-menu-top">
+            <button class="home-menu-close" type="button" aria-label="Close navigation menu">Close</button>
+        </div>
+        <div class="home-menu-profile">
+            <img src="<?php echo $profileImagePath; ?>" alt="Teacher profile">
+            <div>
+                <h3><?php echo htmlspecialchars($displayName); ?></h3>
+                <p>Teacher</p>
+            </div>
+        </div>
+        <nav class="home-menu-links" aria-label="Teacher page links">
+            <a href="class_list.php">Class List</a>
+            <a href="student_progress_page.php">Student Progress</a>
+            <a href="enrollment_summary_page.php">Enrollment Summary</a>
+            <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
+            <a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
+        </nav>
+    </aside>
+</div>
 
 <main id="main-content">
     <div class="dashboard">
+        <div class="dashboard-box home-dashboard-box">
+            <h2 class="home-dashboard-title">Teacher Dashboard</h2>
+            <p class="home-dashboard-subtitle">All teacher navigation is in the menu button. This dashboard highlights official updates and core school information.</p>
 
-  <div class="dashboard-box">
+            <section class="home-hero">
+                <div>
+                    <span class="home-hero-tag">Official School Updates</span>
+                    <h2>Cagayan de Oro National High School - Senior High School</h2>
+                    <p>Welcome, Teacher. Stay updated with school announcements, advisory reminders, and key academic updates from the official channel.</p>
+                    <div class="home-hero-actions">
+                        <a class="home-facebook-link" href="<?php echo $facebookPageUrl; ?>" target="_blank" rel="noopener noreferrer">View Official Facebook Announcements</a>
+                        <a class="home-secondary-link" href="#teacher-school-info">Explore School Information</a>
+                    </div>
+                </div>
+                <img class="home-hero-image" src="../../Assets/dashboard_samples/school_campus_aerial_web.png" alt="CDONHS-SHS campus">
+            </section>
 
-    <div class="dashboard-wrapper">
+            <div class="home-info-grid" id="teacher-school-info">
+                <section class="home-info-card">
+                    <h3>Announcements</h3>
+                    <p>Check enrollment, calendar, and activity advisories through the official school Facebook page.</p>
+                    <a class="home-facebook-link" href="<?php echo $facebookPageUrl; ?>" target="_blank" rel="noopener noreferrer">Open Facebook Updates</a>
+                </section>
 
-    <div class="dashboard-container">
-        <a href="class_list.php" class="dashboard-card">
-            <img src="../../Assets/class_list_button.png" alt="Class List icon">
-            <h3>Class List</h3>
-        </a>
+                <section class="home-info-card">
+                    <h3>Mission</h3>
+                    <p>To protect and promote the right of every Filipino to quality, equitable, culture-based, and complete basic education in a safe and motivating environment.</p>
+                </section>
+
+                <section class="home-info-card">
+                    <h3>Vision</h3>
+                    <p>We dream of Filipinos who passionately love their country and whose values and competencies enable them to realize their full potential and contribute to nation-building.</p>
+                </section>
+
+                <section class="home-info-card">
+                    <h3>Advisory Assignment</h3>
+                    <p><?php echo htmlspecialchars($advisoryText); ?></p>
+                </section>
+            </div>
+
+            <section class="home-gallery" aria-label="Featured school photos">
+                <h3>Featured School Photos</h3>
+                <div class="home-gallery-grid">
+                    <img src="../../Assets/dashboard_samples/classroom_students_2_web.jpg" alt="Classroom learning session">
+                    <img src="../../Assets/dashboard_samples/classroom_students_3_web.jpg" alt="Students studying together">
+                    <img src="../../Assets/dashboard_samples/students_group_1_web.jpg" alt="Student group activity">
+                </div>
+            </section>
+
+            <div class="home-info-grid">
+                <section class="home-info-card">
+                    <h3>Teaching Reminder</h3>
+                    <p>Review advisory notes, progress records, and enrollment summaries regularly to keep class data updated.</p>
+                </section>
+            </div>
+        </div>
     </div>
-
-    <div class="dashboard-container">
-        <a href="student_progress_page.php" class="dashboard-card">
-            <img src="../../Assets/progress_button.png" alt="Student Progress icon">
-            <h3>Student Progress</h3>
-        </a>
-    </div>
-
-    <div class="dashboard-container">
-        <a href="enrollment_summary_page.php" class="dashboard-card">
-            <img src="../../Assets/teacher_enrollment_image.png" alt="Enrollment Summary icon">
-            <h3>Enrollment Summary</h3>
-        </a>
-    </div>
-
-    <div class="dashboard-container">
-        <a href="teacher_advisory_notes_page.php" class="dashboard-card">
-            <img src="../../Assets/grades_button.png" alt="Advisory Notes icon">
-            <h3>Advisory Notes</h3>
-        </a>
-    </div>
-
-</div>
-</div>
-
-
-  </div>
 </main>
 
-
-
-
-     <!-- footer -->
-    <div class="footer">
-    &copy; 2026 Cagayan De Oro National High School - Senior High School  
+<div class="footer">
+    &copy; 2026 Cagayan De Oro National High School - Senior High School
     <br>
     School Management System
-    </div>
-<script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+</div>
+<script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
 </body>
 </html>
-

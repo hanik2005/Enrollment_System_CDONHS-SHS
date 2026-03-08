@@ -52,7 +52,7 @@ if ($currentMonth >= 8) {
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/student/enlistment.css">
     <title>Student Enlistment</title>
@@ -67,11 +67,11 @@ if ($currentMonth >= 8) {
     </div>
 
     <div class="right">
-        <button class="profile-btn" type="button">
+        <button class="legacy-menu-trigger" type="button">
             <img src="<?php echo $profileImagePath; ?>" alt="Profile">
         </button>
 
-        <div class="profile-dropdown">
+        <div class="legacy-nav-links">
             <a href="profile_page.php">View Profile</a>
             <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
         </div>
@@ -143,6 +143,6 @@ if ($currentMonth >= 8) {
 </div>
 
 <script src="../../Back_End_Files/JSCRIPT_Files/enlistment_get_boxes.js?v=<?php echo time(); ?>"></script>
-<script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+<script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
 </body>
 </html>

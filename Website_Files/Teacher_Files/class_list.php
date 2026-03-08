@@ -38,7 +38,7 @@ $profileImagePath = "../../Assets/profile_button.png";
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
     <link rel="stylesheet" href="../../Design/main_design.css">
-     <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+     <link rel="stylesheet" href="../../Design/home_pages_design.css">
      <link rel="stylesheet" href="../../Design/dashboard_design.css">
       <link rel="stylesheet" href="../../Design/teacher/classList_design.css">
     <title>Teacher Class List</title>
@@ -59,11 +59,11 @@ $profileImagePath = "../../Assets/profile_button.png";
 
 
     <div class="right">
-       <button class="profile-btn" type="button">
+       <button class="legacy-menu-trigger" type="button">
          <img src="<?php echo $profileImagePath; ?>">
      </button>
 
-    <div class="profile-dropdown">
+    <div class="legacy-nav-links">
         <a href="profile_page.php">View Profile</a>
         <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
 
@@ -183,6 +183,6 @@ $profileImagePath = "../../Assets/profile_button.png";
     <br>
     School Management System
     </div>
-<script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+<script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
 </body>
 </html>

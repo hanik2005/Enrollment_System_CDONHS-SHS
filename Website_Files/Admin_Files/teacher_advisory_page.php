@@ -11,7 +11,7 @@ include "../../Back_End_Files/PHP_Files/teacher_advisory_backend.php";
     <title>Teacher Advisory Management</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/admin/teacher_advisory.css">
 </head>
@@ -26,10 +26,10 @@ include "../../Back_End_Files/PHP_Files/teacher_advisory_backend.php";
             Admin
         </div>
         <div class="right">
-            <button class="profile-btn" type="button">
+            <button class="legacy-menu-trigger" type="button">
                 <img src="../../Assets/admin_profile.png">
             </button>
-            <div class="profile-dropdown">
+            <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
@@ -167,7 +167,7 @@ include "../../Back_End_Files/PHP_Files/teacher_advisory_backend.php";
         School Management System
     </div>
 
-    <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
     <script>
         // Available sections from PHP (organized by grade_level and strand_id)
         const sections = <?php echo json_encode($sections); ?>;

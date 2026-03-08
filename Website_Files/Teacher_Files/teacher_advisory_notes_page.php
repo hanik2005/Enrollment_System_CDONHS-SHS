@@ -17,7 +17,7 @@ function escapeNoteDataAttr(string $value): string
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/teacher/teacher_advisory_notes_design.css">
 </head>
@@ -31,10 +31,10 @@ function escapeNoteDataAttr(string $value): string
             Teacher Advisory Notes | Advisory: <?php echo htmlspecialchars($advisoryText); ?>
         </div>
         <div class="right">
-            <button class="profile-btn" type="button">
+            <button class="legacy-menu-trigger" type="button">
                 <img src="<?php echo $profileImagePath; ?>" alt="Teacher Profile">
             </button>
-            <div class="profile-dropdown">
+            <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
                 <a href="enrollment_summary_page.php">Enrollment Summary</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
@@ -171,7 +171,7 @@ function escapeNoteDataAttr(string $value): string
         School Management System
     </div>
 
-    <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
     <script src="../../Back_End_Files/JSCRIPT_Files/teacher_advisory_notes_function.js"></script>
 </body>
 </html>

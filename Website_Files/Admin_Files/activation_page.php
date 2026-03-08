@@ -78,7 +78,7 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
     <title>Activation Settings - CDONHS-SHS Admin</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/admin/activation_design.css">
 </head>
@@ -93,10 +93,10 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
             Admin
         </div>
         <div class="right">
-            <button class="profile-btn" type="button">
+            <button class="legacy-menu-trigger" type="button">
                 <img src="../../Assets/admin_profile.png">
             </button>
-            <div class="profile-dropdown">
+            <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
@@ -172,6 +172,6 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
         School Management System
     </div>
     
-    <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
 </body>
 </html>

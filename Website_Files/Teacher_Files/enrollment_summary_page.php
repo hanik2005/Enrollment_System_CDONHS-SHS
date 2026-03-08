@@ -11,7 +11,7 @@ include "../../Back_End_Files/PHP_Files/teacher_enrollment_summary_backend.php";
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/teacher/teacher_enrollment_summary_design.css">
 </head>
@@ -25,10 +25,10 @@ include "../../Back_End_Files/PHP_Files/teacher_enrollment_summary_backend.php";
             Class Enrollment Summary | Advisory: <?php echo htmlspecialchars($advisoryText); ?>
         </div>
         <div class="right">
-            <button class="profile-btn" type="button">
+            <button class="legacy-menu-trigger" type="button">
                 <img src="<?php echo $profileImagePath; ?>" alt="Teacher Profile">
             </button>
-            <div class="profile-dropdown">
+            <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
                 <a href="class_list.php">Class List</a>
                 <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
@@ -139,7 +139,7 @@ include "../../Back_End_Files/PHP_Files/teacher_enrollment_summary_backend.php";
         School Management System
     </div>
 
-    <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
     <script src="../../Back_End_Files/JSCRIPT_Files/teacher_enrollment_summary_function.js"></script>
 </body>
 </html>

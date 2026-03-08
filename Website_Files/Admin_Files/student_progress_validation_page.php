@@ -17,7 +17,7 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
     <title>Student Progress Validation - Admin</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <link rel="stylesheet" href="../../Design/main_design.css">
-    <link rel="stylesheet" href="../../Design/profile_dropdown.css">
+    <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/admin/application_list_design.css">
 </head>
 <body>
@@ -30,10 +30,15 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
             Admin - Student Progress Validation
         </div>
         <div class="right">
-            <button class="profile-btn" type="button">
-                <img src="../../Assets/admin_profile.png" alt="Admin Profile">
+            <button class="home-menu-toggle" type="button" data-profile-src="../../Assets/admin_profile.png" data-profile-alt="Admin profile">
+                <span class="menu-icon" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span class="menu-label">Menu</span>
             </button>
-            <div class="profile-dropdown">
+            <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
@@ -183,7 +188,7 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
         School Management System
     </div>
 
-    <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
     <script>
         var selectAll = document.getElementById('selectAllCheckbox');
         if (selectAll) {
