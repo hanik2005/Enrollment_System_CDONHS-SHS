@@ -1,0 +1,249 @@
+.notes-page {
+    background: #e5e7eb;
+    min-height: calc(100vh - 140px);
+    padding: 20px 30px 35px;
+}
+
+.notes-title-card {
+    background: #ffffff;
+    border-left: 6px solid #fbbf24;
+    border-radius: 12px;
+    padding: 18px 20px;
+    box-shadow: 0 5px 14px rgba(17, 24, 39, 0.08);
+    margin-bottom: 16px;
+}
+
+.notes-title-card h1 {
+    margin: 0 0 8px;
+    font-size: 24px;
+    color: #1e3a8a;
+}
+
+.notes-title-card p {
+    margin: 0;
+    color: #374151;
+    font-size: 14px;
+}
+
+.notes-alert {
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.alert-success {
+    background: #dcfce7;
+    border: 1px solid #22c55e;
+    color: #166534;
+}
+
+.alert-error {
+    background: #fee2e2;
+    border: 1px solid #ef4444;
+    color: #991b1b;
+}
+
+.notes-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+    margin-bottom: 14px;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #1e3a8a, #111827);
+    border: 2px solid #fbbf24;
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.stats-label {
+    color: #fbbf24;
+    text-transform: uppercase;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.stats-value {
+    color: #ffffff;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.notes-toolbar {
+    margin-bottom: 14px;
+}
+
+.notes-toolbar input {
+    width: 100%;
+    max-width: 420px;
+    padding: 10px 12px;
+    border: 2px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.notes-table-wrap {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.09);
+    overflow-x: auto;
+}
+
+.notes-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 920px;
+}
+
+.notes-table th,
+.notes-table td {
+    border: 1px solid #e5e7eb;
+    padding: 10px 12px;
+    font-size: 13px;
+}
+
+.notes-table th {
+    background: #1e3a8a;
+    color: #fbbf24;
+    text-transform: uppercase;
+}
+
+.notes-table tbody tr:nth-child(even) {
+    background: #f9fafb;
+}
+
+.notes-table tbody tr:hover {
+    background: #eef2ff;
+}
+
+.notes-empty {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    color: #4b5563;
+    box-shadow: 0 6px 18px rgba(17, 24, 39, 0.08);
+}
+
+.open-note-modal {
+    border: 0;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.btn-add {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.btn-edit {
+    background: #059669;
+    color: #ffffff;
+}
+
+.note-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 15px;
+}
+
+.note-modal.active {
+    display: flex;
+}
+
+.note-modal-content {
+    background: #ffffff;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 680px;
+    padding: 16px;
+    box-shadow: 0 14px 32px rgba(17, 24, 39, 0.25);
+}
+
+.note-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.note-modal-header h2 {
+    font-size: 18px;
+    color: #1e3a8a;
+    margin: 0;
+}
+
+.close-modal-btn {
+    border: 0;
+    background: transparent;
+    color: #6b7280;
+    font-size: 28px;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.note-modal-content label {
+    display: block;
+    margin: 8px 0 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #1f2937;
+}
+
+.note-modal-content textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 90px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+}
+
+.modal-actions {
+    margin-top: 14px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-cancel,
+.btn-save {
+    border: 0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.btn-cancel {
+    background: #d1d5db;
+    color: #111827;
+}
+
+.btn-save {
+    background: #1e3a8a;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .notes-page {
+        padding: 15px;
+    }
+
+    .notes-title-card h1 {
+        font-size: 20px;
+    }
+}

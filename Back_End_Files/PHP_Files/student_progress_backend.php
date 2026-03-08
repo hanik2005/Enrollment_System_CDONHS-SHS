@@ -1,273 +1,103 @@
 <?php
-// Get teacher's advisory
 include "../../Back_End_Files/PHP_Files/get_teacher_advisory.php";
 
-// Initialize variables
 $progressData = [];
 $successMessage = '';
 $errorMessage = '';
+$progressAvailableSchoolYears = [];
 
-// Function to get current school year
-function getCurrentSchoolYear() {
-    $currentMonth = date('n');
-    $currentYear = date('Y');
-    
-    // School year typically starts in June (month 6)
-    // If current month is June onwards, school year is currentYear-nextYear
-    // If current month is before June, school year is previousYear-currentYear
-    if ($currentMonth >= 6) {
-        return $currentYear . '-' . ($currentYear + 1);
-    } else {
+if (!function_exists('getCurrentSchoolYearForProgress')) {
+    function getCurrentSchoolYearForProgress(): string
+    {
+        $currentMonth = (int) date('n');
+        $currentYear = (int) date('Y');
+        if ($currentMonth >= 8) {
+            return $currentYear . '-' . ($currentYear + 1);
+        }
         return ($currentYear - 1) . '-' . $currentYear;
     }
 }
 
-// Handle Finalize Status POST request (from original code - keeping for compatibility)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['finalize_status'])) {
-    $student_id = intval($_POST['student_id'] ?? 0);
-    $new_status = trim($_POST['new_status'] ?? '');
-    
-    if ($student_id > 0 && in_array($new_status, ['Promoted', 'Retained', 'Graduated'])) {
-        // Start transaction
-        $connection->begin_transaction();
-        
-        try {
-            // Get current student strand info
-            $getCurrentStrand = $connection->prepare("
-                SELECT ss.*, s.enrollment_status 
-                FROM student_strand ss
-                INNER JOIN students s ON ss.student_id = s.student_id
-                WHERE ss.student_id = ?
-            ");
-            $getCurrentStrand->bind_param("i", $student_id);
-            $getCurrentStrand->execute();
-            $currentStrand = $getCurrentStrand->get_result()->fetch_assoc();
-            
-            if ($currentStrand) {
-                // Archive current strand info
-                $archiveStmt = $connection->prepare("
-                    INSERT INTO archived_student_strand (student_id, strand_id, grade_level, section_id, reason)
-                    VALUES (?, ?, ?, ?, ?)
-                ");
-                $reason = $new_status === 'Promoted' ? 'PROMOTION' : ($new_status === 'Graduated' ? 'PROMOTION' : 'MANUAL');
-                $archiveStmt->bind_param("iiiis", 
-                    $student_id, 
-                    $currentStrand['strand_id'], 
-                    $currentStrand['grade_level'], 
-                    $currentStrand['section_id'],
-                    $reason
-                );
-                $archiveStmt->execute();
-                
-                // Get current school year for update (only for Promoted and Retained)
-                $currentSchoolYear = getCurrentSchoolYear();
-                
-                if ($new_status === 'Promoted') {
-                    // Get next grade level section (same strand, next grade level, same section name)
-                    $currentGrade = $currentStrand['grade_level'];
-                    $nextGrade = $currentGrade + 1;
-                    
-                    // Get current section name
-                    $getSectionName = $connection->prepare("
-                        SELECT section_name FROM section WHERE section_id = ?
-                    ");
-                    $getSectionName->bind_param("i", $currentStrand['section_id']);
-                    $getSectionName->execute();
-                    $sectionResult = $getSectionName->get_result()->fetch_assoc();
-                    $currentSectionName = $sectionResult['section_name'] ?? 'A';
-                    
-                    // Find next grade level section with same strand and section name
-                    $getNextSection = $connection->prepare("
-                        SELECT section_id FROM section 
-                        WHERE strand_id = ? AND grade_level = ? AND section_name = ?
-                        LIMIT 1
-                    ");
-                    $getNextSection->bind_param("iis", $currentStrand['strand_id'], $nextGrade, $currentSectionName);
-                    $getNextSection->execute();
-                    $nextSectionResult = $getNextSection->get_result()->fetch_assoc();
-                    $nextSectionId = $nextSectionResult['section_id'] ?? null;
-                    
-                    if ($nextSectionId) {
-                        // Update student_strand to next grade level
-                        $updateStrand = $connection->prepare("
-                            UPDATE student_strand 
-                            SET grade_level = ?, section_id = ?
-                            WHERE student_id = ?
-                        ");
-                        $updateStrand->bind_param("iii", $nextGrade, $nextSectionId, $student_id);
-                        $updateStrand->execute();
-                        
-                        // Update enlistment status and school_year in students table
-                        $updateEnlistment = $connection->prepare("
-                            UPDATE students SET enlistment_status = 'Promoted', school_year = ?
-                            WHERE student_id = ?
-                        ");
-                        $updateEnlistment->bind_param("si", $currentSchoolYear, $student_id);
-                        $updateEnlistment->execute();
-                        
-                        $successMessage = "Student has been successfully promoted to Grade $nextGrade!";
-                    } else {
-                        $errorMessage = "No corresponding section found for Grade $nextGrade. Please contact administrator.";
-                    }
-                    
-                } elseif ($new_status === 'Graduated') {
-                    // Update student enrollment status to Graduated
-                    $updateGraduated = $connection->prepare("
-                        UPDATE students SET enrollment_status = 'Graduated', enlistment_status = 'Finished'
-                        WHERE student_id = ?
-                    ");
-                    $updateGraduated->bind_param("i", $student_id);
-                    $updateGraduated->execute();
-                    
-                    $successMessage = "Student has been marked as Graduated!";
-                    
-                } elseif ($new_status === 'Retained') {
-                    // Keep same grade level and section, update enlistment status and school_year
-                    $updateEnlistment = $connection->prepare("
-                        UPDATE students SET enlistment_status = 'Enlisted', school_year = ?
-                        WHERE student_id = ?
-                    ");
-                    $updateEnlistment->bind_param("si", $currentSchoolYear, $student_id);
-                    $updateEnlistment->execute();
-                    
-                    $successMessage = "Student has been marked as Retained.";
-                }
-            }
-            
-            $connection->commit();
-            
-        } catch (Exception $e) {
-            $connection->rollback();
-            $errorMessage = "Error updating student status: " . $e->getMessage();
-        }
+if (!function_exists('getCurrentSemesterForProgress')) {
+    function getCurrentSemesterForProgress(): string
+    {
+        $month = (int) date('n');
+        return ($month >= 8 && $month <= 12) ? '1st Semester' : '2nd Semester';
     }
 }
 
-// Handle Bulk Finalize POST request
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_finalize'])) {
-    $selectedStudents = $_POST['selected_students'] ?? [];
-    
-    if (!empty($selectedStudents)) {
-        $connection->begin_transaction();
-        
-        try {
-            $currentSchoolYear = getCurrentSchoolYear();
-            $promotedCount = 0;
-            $retainedCount = 0;
-            $graduatedCount = 0;
-            
-            foreach ($selectedStudents as $student_id) {
-                $student_id = intval($student_id);
-                
-                // Get student's current info
-                $getStatus = $connection->prepare("
-                    SELECT ss.grade_level, ss.strand_id, ss.section_id, s.enrollment_status
-                    FROM student_strand ss
-                    INNER JOIN students s ON ss.student_id = s.student_id
-                    WHERE ss.student_id = ?
-                ");
-                $getStatus->bind_param("i", $student_id);
-                $getStatus->execute();
-                $studentData = $getStatus->get_result()->fetch_assoc();
-                
-                if (!$studentData) continue;
-                
-                // Determine status (simplified - just use current grade for now)
-                $new_status = '';
-                $grade_level = $studentData['grade_level'];
-                
-                // Default: promote if grade 11, graduate if grade 12
-                if ($grade_level == 12) {
-                    $new_status = 'Graduated';
-                } else {
-                    $new_status = 'Promoted';
-                }
-                
-                // Archive current strand info
-                $archiveStmt = $connection->prepare("
-                    INSERT INTO archived_student_strand (student_id, strand_id, grade_level, section_id, reason)
-                    VALUES (?, ?, ?, ?, ?)
-                ");
-                $reason = $new_status === 'Retained' ? 'MANUAL' : 'PROMOTION';
-                $archiveStmt->bind_param("iiiis", 
-                    $student_id, 
-                    $studentData['strand_id'], 
-                    $studentData['grade_level'], 
-                    $studentData['section_id'],
-                    $reason
-                );
-                $archiveStmt->execute();
-                
-                if ($new_status === 'Promoted') {
-                    $nextGrade = $grade_level + 1;
-                    
-                    // Get current section name
-                    $getSectionName = $connection->prepare("
-                        SELECT section_name FROM section WHERE section_id = ?
-                    ");
-                    $getSectionName->bind_param("i", $studentData['section_id']);
-                    $getSectionName->execute();
-                    $sectionResult = $getSectionName->get_result()->fetch_assoc();
-                    $currentSectionName = $sectionResult['section_name'] ?? 'A';
-                    
-                    // Find next grade level section
-                    $getNextSection = $connection->prepare("
-                        SELECT section_id FROM section 
-                        WHERE strand_id = ? AND grade_level = ? AND section_name = ?
-                        LIMIT 1
-                    ");
-                    $getNextSection->bind_param("iis", $studentData['strand_id'], $nextGrade, $currentSectionName);
-                    $getNextSection->execute();
-                    $nextSectionResult = $getNextSection->get_result()->fetch_assoc();
-                    $nextSectionId = $nextSectionResult['section_id'] ?? null;
-                    
-                    if ($nextSectionId) {
-                        $updateStrand = $connection->prepare("
-                            UPDATE student_strand 
-                            SET grade_level = ?, section_id = ?
-                            WHERE student_id = ?
-                        ");
-                        $updateStrand->bind_param("iii", $nextGrade, $nextSectionId, $student_id);
-                        $updateStrand->execute();
-                        
-                        $updateEnlistment = $connection->prepare("
-                            UPDATE students SET enlistment_status = 'Promoted', school_year = ?
-                            WHERE student_id = ?
-                        ");
-                        $updateEnlistment->bind_param("si", $currentSchoolYear, $student_id);
-                        $updateEnlistment->execute();
-                        
-                        $promotedCount++;
-                    }
-                    
-                } elseif ($new_status === 'Graduated') {
-                    $updateGraduated = $connection->prepare("
-                        UPDATE students SET enrollment_status = 'Graduated', enlistment_status = 'Promoted'
-                        WHERE student_id = ?
-                    ");
-                    $updateGraduated->bind_param("i", $student_id);
-                    $updateGraduated->execute();
-                    
-                    $graduatedCount++;
-                }
-            }
-            
-            $connection->commit();
-            $successMessage = "Successfully finalized: $promotedCount promoted, $graduatedCount graduated.";
-            
-        } catch (Exception $e) {
-            $connection->rollback();
-            $errorMessage = "Error updating student statuses: " . $e->getMessage();
-        }
+if (!function_exists('ensurePromotionWorkflowTables')) {
+    function ensurePromotionWorkflowTables(mysqli $connection): bool
+    {
+        $createPromotionStatusTable = "
+            CREATE TABLE IF NOT EXISTS student_promotion_status (
+                promotion_status_id INT(11) NOT NULL AUTO_INCREMENT,
+                student_id INT(11) NOT NULL,
+                teacher_id INT(11) NOT NULL,
+                school_year VARCHAR(9) NOT NULL,
+                semester ENUM('1st Semester','2nd Semester') NOT NULL,
+                computed_status ENUM('Pending','Complete','Incomplete') NOT NULL DEFAULT 'Pending',
+                recommended_status VARCHAR(50) NOT NULL DEFAULT 'Pending',
+                teacher_remarks TEXT DEFAULT NULL,
+                approval_status ENUM('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+                is_approved TINYINT(1) NOT NULL DEFAULT 0,
+                admin_user_id INT(11) DEFAULT NULL,
+                admin_remarks TEXT DEFAULT NULL,
+                approved_at DATETIME DEFAULT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (promotion_status_id),
+                UNIQUE KEY uq_student_promotion_term (student_id, school_year, semester),
+                KEY idx_promotion_status_teacher (teacher_id),
+                KEY idx_promotion_status_admin (admin_user_id),
+                KEY idx_promotion_status_term (school_year, semester),
+                KEY idx_promotion_status_approval (approval_status)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+        ";
+
+        return $connection->query($createPromotionStatusTable) === true;
     }
 }
 
-// Fetch student progress data - SIMPLIFIED VERSION
-// Gets all students in the advisory section without grade calculations
-if (!empty($advisorySectionId)) {
-    // Get all students in the advisory section
-    $progressQuery = "
-        SELECT 
+$progressCurrentSchoolYear = getCurrentSchoolYearForProgress();
+$progressCurrentSemester = getCurrentSemesterForProgress();
+$progressSelectedSchoolYear = isset($_GET['school_year']) ? trim((string) $_GET['school_year']) : $progressCurrentSchoolYear;
+$progressSelectedSemester = isset($_GET['semester']) ? trim((string) $_GET['semester']) : $progressCurrentSemester;
+
+if (!in_array($progressSelectedSemester, ['1st Semester', '2nd Semester'], true)) {
+    $progressSelectedSemester = $progressCurrentSemester;
+}
+$progressTablesReady = ensurePromotionWorkflowTables($connection);
+
+if (!$progressTablesReady) {
+    $errorMessage = "Unable to prepare student progress tables: " . $connection->error;
+}
+
+if (!empty($advisorySectionId) && $progressTablesReady) {
+    $yearsStmt = $connection->prepare("
+        SELECT DISTINCT school_year
+        FROM student_strand
+        WHERE section_id = ?
+        ORDER BY school_year DESC
+    ");
+    $yearsStmt->bind_param("i", $advisorySectionId);
+    $yearsStmt->execute();
+    $yearsResult = $yearsStmt->get_result();
+    while ($yearRow = $yearsResult->fetch_assoc()) {
+        $progressAvailableSchoolYears[] = (string) $yearRow['school_year'];
+    }
+    $yearsStmt->close();
+
+    if (empty($progressAvailableSchoolYears)) {
+        $progressAvailableSchoolYears[] = $progressCurrentSchoolYear;
+    }
+
+    if (!in_array($progressSelectedSchoolYear, $progressAvailableSchoolYears, true)) {
+        $progressSelectedSchoolYear = $progressCurrentSchoolYear;
+    }
+
+    $progressStmt = $connection->prepare("
+        SELECT
             s.student_id,
             sa.lrn,
             sa.first_name,
@@ -275,53 +105,63 @@ if (!empty($advisorySectionId)) {
             sa.middle_name,
             sa.extension_name,
             ss.grade_level,
+            ss.school_year,
+            ss.semester,
             st.strand_name,
             sec.section_name,
             s.enrollment_status,
             s.enlistment_status,
-            s.school_year
+            COALESCE(sps.computed_status, 'Pending') AS computed_status,
+            COALESCE(sps.recommended_status, 'Pending') AS recommended_status,
+            COALESCE(sps.teacher_remarks, '') AS teacher_remarks,
+            COALESCE(sps.is_approved, 0) AS is_approved,
+            COALESCE(sps.approval_status, 'Pending') AS approval_status
         FROM students s
-        INNER JOIN student_strand ss ON s.student_id = ss.student_id AND ss.section_id = ?
-        INNER JOIN student_applications sa ON s.application_id = sa.application_id
-        INNER JOIN strands st ON ss.strand_id = st.strand_id
-        INNER JOIN section sec ON ss.section_id = sec.section_id
+        INNER JOIN student_strand ss
+            ON s.student_id = ss.student_id
+            AND ss.section_id = ?
+            AND ss.school_year = ?
+            AND ss.semester = ?
+        INNER JOIN student_applications sa
+            ON s.application_id = sa.application_id
+        INNER JOIN strands st
+            ON ss.strand_id = st.strand_id
+        INNER JOIN section sec
+            ON ss.section_id = sec.section_id
+        LEFT JOIN student_promotion_status sps
+            ON sps.student_id = s.student_id
+            AND sps.school_year = ss.school_year
+            AND sps.semester = ss.semester
         WHERE s.enrollment_status = 'Active'
-        ORDER BY sa.last_name, sa.first_name
-    ";
-    
-    $progressStmt = $connection->prepare($progressQuery);
-    $progressStmt->bind_param("i", $advisorySectionId);
+        ORDER BY sa.last_name ASC, sa.first_name ASC
+    ");
+
+    $progressStmt->bind_param("iss", $advisorySectionId, $progressSelectedSchoolYear, $progressSelectedSemester);
     $progressStmt->execute();
     $students = $progressStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-    
-    // Remove duplicates by student_id using associative array
+    $progressStmt->close();
+
     $uniqueStudents = [];
     foreach ($students as $student) {
-        $uniqueStudents[$student['student_id']] = $student;
+        $uniqueStudents[(int) $student['student_id']] = $student;
     }
-    $students = array_values($uniqueStudents);
-    
-    // Process students - simplified without grade calculations
-    $processedStudents = [];
-    foreach ($students as $student) {
-        // Set default calculated status based on grade level
-        // In a real system, this would come from grades
-        $student['overall_avg'] = null;
-        $student['calculated_status'] = 'Pending';
-        $student['quarter_count'] = 0;
-        
-        // Check if already finalized (has been promoted/graduated)
-        $checkArchive = $connection->prepare("
-            SELECT COUNT(*) as archived FROM archived_student_strand WHERE student_id = ?
-        ");
-        $checkArchive->bind_param("i", $student['student_id']);
-        $checkArchive->execute();
-        $archiveResult = $checkArchive->get_result()->fetch_assoc();
-        $student['is_finalized'] = $archiveResult['archived'] > 0;
-        
-        $processedStudents[] = $student;
+
+    foreach ($uniqueStudents as $student) {
+        $computedStatus = (string) ($student['computed_status'] ?? 'Pending');
+        if (!in_array($computedStatus, ['Pending', 'Complete', 'Incomplete'], true)) {
+            $computedStatus = 'Pending';
+        }
+        $computedLabel = $computedStatus;
+
+        $semester = (string) ($student['semester'] ?? $progressSelectedSemester);
+        $canPromote = $semester === '2nd Semester' && $computedStatus === 'Complete';
+
+        $student['computed_status'] = $computedStatus;
+        $student['computed_status_label'] = $computedLabel;
+        $student['can_promote'] = $canPromote;
+        $student['is_second_semester'] = $semester === '2nd Semester';
+
+        $progressData[] = $student;
     }
-    
-    $progressData = $processedStudents;
 }
 ?>

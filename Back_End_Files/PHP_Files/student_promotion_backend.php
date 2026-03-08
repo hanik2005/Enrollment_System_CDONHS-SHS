@@ -1,478 +1,309 @@
 <?php
-// Note: session_start() is already called in student_progress_page.php
-// DO NOT call it again here
-
-// Include mailer setup (same as other backend files)
-require_once $_SERVER['DOCUMENT_ROOT'] . '/Enrollment_System_CDONHS-SHS/Back_End_Files/PHP_Files/mailer_details.php';
-
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../login.php");
     exit;
 }
 
-/* ========================= */
-/* VERIFY TEACHER SESSION      */
-/* ========================= */
-$stmt = mysqli_prepare($connection, "
-    SELECT teacher_id 
-    FROM teachers 
-    WHERE user_id = ?
-");
-mysqli_stmt_bind_param($stmt, "i", $_SESSION['user_id']);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-$teacher = mysqli_fetch_assoc($result);
-
-if (!$teacher) {
-    session_destroy();
-    header("Location: ../login.php");
-    exit;
+if (!isset($connection)) {
+    include "../../DB_Connection/Connection.php";
 }
 
-$teacher_id = $teacher['teacher_id'];
-
-/* ==================== GET TEACHER'S ADVISORY INFO ==================== */
-
-// Get teacher's advisory grade level from teacher_advisory table
-$advisoryGradeLevel = null;
-$advisorySectionId = null;
-
-$getAdvisory = $connection->prepare("
-    SELECT grade_level, section_id
-    FROM teacher_advisory 
-    WHERE teacher_id = ?
-    LIMIT 1
-");
-
-if ($getAdvisory) {
-    $getAdvisory->bind_param("i", $teacher_id);
-    $getAdvisory->execute();
-    $advisoryResult = $getAdvisory->get_result();
-    if ($advisory = $advisoryResult->fetch_assoc()) {
-        $advisoryGradeLevel = $advisory['grade_level'];
-        $advisorySectionId = $advisory['section_id'];
-    }
+if (!isset($advisorySectionId)) {
+    include "../../Back_End_Files/PHP_Files/get_teacher_advisory.php";
 }
-
-// If not found in teacher_advisory, check section table for adviser_id
-if ($advisoryGradeLevel === null) {
-    $checkSection = $connection->prepare("
-        SELECT grade_level, section_id 
-        FROM section 
-        WHERE adviser_id = ?
-        LIMIT 1
-    ");
-    
-    if ($checkSection) {
-        $checkSection->bind_param("i", $teacher_id);
-        $checkSection->execute();
-        $sectionResult = $checkSection->get_result();
-        if ($section = $sectionResult->fetch_assoc()) {
-            $advisoryGradeLevel = $section['grade_level'];
-            $advisorySectionId = $section['section_id'];
-        }
-    }
-}
-
-/* ==================== EMAIL FUNCTION ==================== */
-
-function sendPromotionEmail($student_email, $student_name, $action_type, $teacher_remarks = '') {
-    global $mail;
-    
-    try {
-        // Reset mail object for new email
-        $mail->ClearAllRecipients();
-        $mail->clearAttachments();
-        $mail->clearReplyTos();
-        
-        $mail->setFrom('cdonhsshsacc@gmail.com', 'CDONHS-SHS Enrollment Office');
-        $mail->addAddress($student_email, $student_name);
-        
-        $mail->isHTML(true);
-        $mail->CharSet = 'UTF-8';
-        
-        if ($action_type === 'promote') {
-            $mail->Subject = 'Promotion Notice - Grade 12';
-            $mail->Body = "
-                <h2>Dear {$student_name},</h2>
-                <p>Greetings from Cagayan De Oro National High School - Senior High School!</p>
-                <p>We are pleased to inform you that you have been <strong>promoted to Grade 12</strong>.</p>
-                " . (!empty($teacher_remarks) ? "<p><strong>Remarks from your adviser:</strong> {$teacher_remarks}</p>" : "") . "
-                <p>Please proceed to the registrar's office for your enrollment details for the next school year.</p>
-                <p>Congratulations and keep up the good work!</p>
-                <br>
-                <p>Best regards,<br>CDONHS-SHS Administration</p>
-            ";
-        } elseif ($action_type === 'graduate') {
-            $mail->Subject = 'Graduation Notice - CDONHS-SHS';
-            $mail->Body = "
-                <h2>Dear {$student_name},</h2>
-                <p>Congratulations from Cagayan De Oro National High School - Senior High School!</p>
-                <p>We are proud to inform you that you have been recommended for <strong>GRADUATION</strong>.</p>
-                " . (!empty($teacher_remarks) ? "<p><strong>Remarks from your adviser:</strong> {$teacher_remarks}</p>" : "") . "
-                <p>Please proceed to the registrar's office for your graduation requirements and clearance.</p>
-                <p>Congratulations on your successful completion of Senior High School!</p>
-                <br>
-                <p>Best regards,<br>CDONHS-SHS Administration</p>
-            ";
-        } elseif ($action_type === 'retain') {
-            $mail->Subject = 'Academic Standing Notice - CDONHS-SHS';
-            $mail->Body = "
-                <h2>Dear {$student_name},</h2>
-                <p>Greetings from Cagayan De Oro National High School - Senior High School.</p>
-                <p>We would like to inform you that you have been marked as <strong>Retained</strong> for the current school year.</p>
-                " . (!empty($teacher_remarks) ? "<p><strong>Remarks from your adviser:</strong> {$teacher_remarks}</p>" : "") . "
-                <p>Please visit the registrar's office to discuss your academic plan and available options.</p>
-                <p>We are here to support you in your academic journey.</p>
-                <br>
-                <p>Best regards,<br>CDONHS-SHS Administration</p>
-            ";
-        }
-        
-        $mail->send();
-        return true;
-    } catch (Exception $e) {
-        error_log("Email sending failed: " . $mail->ErrorInfo);
-        return false;
-    }
-}
-
-/* ==================== HANDLING FORM SUBMISSION ==================== */
 
 $message = '';
 $message_type = '';
 
-// Get current school year (matching student_update_remarks.php format)
-$currentMonth = date('n');
-$currentYear = date('Y');
-if ($currentMonth >= 8) {
-    $current_school_year = $currentYear . '-' . ($currentYear + 1);
-} else {
-    $current_school_year = ($currentYear - 1) . '-' . $currentYear;
+if (!function_exists('getCurrentSchoolYearForProgress')) {
+    function getCurrentSchoolYearForProgress(): string
+    {
+        $currentMonth = (int) date('n');
+        $currentYear = (int) date('Y');
+        if ($currentMonth >= 8) {
+            return $currentYear . '-' . ($currentYear + 1);
+        }
+        return ($currentYear - 1) . '-' . $currentYear;
+    }
 }
 
-// Handle Save All Students
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_all_students'])) {
-    
+if (!function_exists('getCurrentSemesterForProgress')) {
+    function getCurrentSemesterForProgress(): string
+    {
+        $month = (int) date('n');
+        return ($month >= 8 && $month <= 12) ? '1st Semester' : '2nd Semester';
+    }
+}
+
+if (!function_exists('ensurePromotionWorkflowTables')) {
+    function ensurePromotionWorkflowTables(mysqli $connection): bool
+    {
+        $createPromotionTable = "
+            CREATE TABLE IF NOT EXISTS student_promotion_status (
+                promotion_status_id INT(11) NOT NULL AUTO_INCREMENT,
+                student_id INT(11) NOT NULL,
+                teacher_id INT(11) NOT NULL,
+                school_year VARCHAR(9) NOT NULL,
+                semester ENUM('1st Semester','2nd Semester') NOT NULL,
+                computed_status ENUM('Pending','Complete','Incomplete') NOT NULL DEFAULT 'Pending',
+                recommended_status VARCHAR(50) NOT NULL DEFAULT 'Pending',
+                teacher_remarks TEXT DEFAULT NULL,
+                approval_status ENUM('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+                is_approved TINYINT(1) NOT NULL DEFAULT 0,
+                admin_user_id INT(11) DEFAULT NULL,
+                admin_remarks TEXT DEFAULT NULL,
+                approved_at DATETIME DEFAULT NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                PRIMARY KEY (promotion_status_id),
+                UNIQUE KEY uq_student_promotion_term (student_id, school_year, semester)
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci
+        ";
+
+        return $connection->query($createPromotionTable) === true;
+    }
+}
+
+if (!function_exists('normalizeSemesterRecommendation')) {
+    function normalizeSemesterRecommendation(string $semester, string $computedStatus, int $gradeLevel, string $requestedStatus): string
+    {
+        if ($semester === '1st Semester') {
+            if ($computedStatus === 'Complete') {
+                return 'Promote to 2nd Semester';
+            }
+            if ($computedStatus === 'Incomplete') {
+                return 'Incomplete';
+            }
+            return 'Pending';
+        }
+
+        if ($computedStatus !== 'Complete') {
+            return 'Incomplete';
+        }
+
+        if ($gradeLevel === 11 && $requestedStatus === 'Promote to Grade 12') {
+            return 'Promote to Grade 12';
+        }
+
+        if ($gradeLevel === 12 && $requestedStatus === 'Graduate') {
+            return 'Graduate';
+        }
+
+        return 'Pending';
+    }
+}
+
+if (!function_exists('normalizeManualComputedStatus')) {
+    function normalizeManualComputedStatus(string $value): string
+    {
+        if ($value === 'Complete') {
+            return 'Complete';
+        }
+        if ($value === 'Incomplete') {
+            return 'Incomplete';
+        }
+        return 'Pending';
+    }
+}
+
+if (!function_exists('isAdvisoryStudentInTerm')) {
+    function isAdvisoryStudentInTerm(mysqli $connection, int $studentId, int $sectionId, string $schoolYear, string $semester): ?array
+    {
+        $validateStmt = $connection->prepare("
+            SELECT ss.grade_level
+            FROM student_strand ss
+            WHERE ss.student_id = ? AND ss.section_id = ? AND ss.school_year = ? AND ss.semester = ?
+            LIMIT 1
+        ");
+        $validateStmt->bind_param("iiss", $studentId, $sectionId, $schoolYear, $semester);
+        $validateStmt->execute();
+        $row = $validateStmt->get_result()->fetch_assoc();
+        $validateStmt->close();
+        return $row ?: null;
+    }
+}
+
+$teacherStmt = $connection->prepare("
+    SELECT teacher_id
+    FROM teachers
+    WHERE user_id = ?
+    LIMIT 1
+");
+$teacherStmt->bind_param("i", $_SESSION['user_id']);
+$teacherStmt->execute();
+$teacherData = $teacherStmt->get_result()->fetch_assoc();
+$teacherStmt->close();
+$teacher_id = (int) ($teacherData['teacher_id'] ?? 0);
+
+$currentSchoolYear = getCurrentSchoolYearForProgress();
+$currentSemester = getCurrentSemesterForProgress();
+$activeSchoolYear = isset($_POST['selected_school_year']) ? trim((string) $_POST['selected_school_year']) : $currentSchoolYear;
+$activeSemester = isset($_POST['selected_semester']) ? trim((string) $_POST['selected_semester']) : $currentSemester;
+
+if (!preg_match('/^\d{4}-\d{4}$/', $activeSchoolYear)) {
+    $activeSchoolYear = $currentSchoolYear;
+}
+if (!in_array($activeSemester, ['1st Semester', '2nd Semester'], true)) {
+    $activeSemester = $currentSemester;
+}
+
+$tablesReady = ensurePromotionWorkflowTables($connection);
+
+if (!$tablesReady) {
+    $message = "Unable to prepare student progress workflow tables: " . $connection->error;
+    $message_type = 'error';
+}
+
+if ((isset($_POST['save_all_students']) || isset($_POST['bulk_update_promotion'])) && empty($advisorySectionId)) {
+    $message = "No advisory section assigned. Cannot save recommendations.";
+    $message_type = 'error';
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_all_students']) && $tablesReady && !empty($advisorySectionId)) {
     $students = $_POST['students'] ?? [];
-    $updated_count = 0;
-    $emailed_count = 0;
-    
-    // Debug: log received data
-    error_log("=== SAVE ALL STUDENTS ===");
-    error_log("Students data: " . print_r($students, true));
-    
+    $savedCount = 0;
+
     if (!empty($students) && is_array($students)) {
-        foreach ($students as $student_id => $data) {
-            if (!is_array($data)) continue;
-            
-            $student_id = (int)$student_id;
-            if ($student_id <= 0) continue;
-            
-            $recommended_status = $data['recommended_status'] ?? 'Pending';
-            $teacher_remarks = trim($data['teacher_remarks'] ?? '');
-            $current_grade_level = (int)($data['current_grade_level'] ?? 11);
-            
-            // Skip if status is Pending
-            if ($recommended_status === 'Pending') {
+        foreach ($students as $studentId => $data) {
+            $studentId = (int) $studentId;
+            if ($studentId <= 0 || !is_array($data)) {
                 continue;
             }
-            
-            // Get student email from student_applications table (users table has no email column)
-            $emailStmt = $connection->prepare("
-                SELECT sa.first_name, sa.last_name, sa.email
-                FROM students s
-                INNER JOIN student_applications sa ON s.application_id = sa.application_id
-                WHERE s.student_id = ?
+
+            $advisoryRow = isAdvisoryStudentInTerm($connection, $studentId, (int) $advisorySectionId, $activeSchoolYear, $activeSemester);
+            if (!$advisoryRow) {
+                continue;
+            }
+
+            $gradeLevel = (int) ($advisoryRow['grade_level'] ?? 0);
+            $computedStatus = normalizeManualComputedStatus((string) ($data['computed_status'] ?? 'Pending'));
+            $requestedStatus = trim((string) ($data['recommended_status'] ?? 'Pending'));
+            $teacherRemarks = trim((string) ($data['teacher_remarks'] ?? ''));
+
+            $finalRecommendation = normalizeSemesterRecommendation(
+                $activeSemester,
+                $computedStatus,
+                $gradeLevel,
+                $requestedStatus
+            );
+
+            $saveStmt = $connection->prepare("
+                INSERT INTO student_promotion_status
+                    (student_id, teacher_id, school_year, semester, computed_status, recommended_status, teacher_remarks, approval_status, is_approved, admin_user_id, admin_remarks, approved_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', 0, NULL, NULL, NULL)
+                ON DUPLICATE KEY UPDATE
+                    teacher_id = VALUES(teacher_id),
+                    computed_status = VALUES(computed_status),
+                    recommended_status = VALUES(recommended_status),
+                    teacher_remarks = VALUES(teacher_remarks),
+                    approval_status = 'Pending',
+                    is_approved = 0,
+                    admin_user_id = NULL,
+                    admin_remarks = NULL,
+                    approved_at = NULL,
+                    updated_at = CURRENT_TIMESTAMP
             ");
-            
-            $student_email = '';
-            $student_name = '';
-            
-            if ($emailStmt) {
-                $emailStmt->bind_param("i", $student_id);
-                $emailStmt->execute();
-                $emailResult = $emailStmt->get_result();
-                if ($emailData = $emailResult->fetch_assoc()) {
-                    // Get email from student_applications
-                    $student_email = $emailData['email'] ?? '';
-                    $student_name = ($emailData['first_name'] ?? '') . ' ' . ($emailData['last_name'] ?? '');
-                    
-                    error_log("Found email for student $student_id: $student_email (from student_applications)");
-                } else {
-                    error_log("No email data found for student $student_id");
-                }
+            $saveStmt->bind_param(
+                "iisssss",
+                $studentId,
+                $teacher_id,
+                $activeSchoolYear,
+                $activeSemester,
+                $computedStatus,
+                $finalRecommendation,
+                $teacherRemarks
+            );
+
+            if ($saveStmt->execute()) {
+                $savedCount++;
             }
-            
-            // If still no email, log error
-            if (empty($student_email)) {
-                error_log("WARNING: Empty email for student $student_id - email will not be sent");
-            }
-            
-            // Process based on status
-            if ($recommended_status === 'Promote to Grade 12') {
-                // Get student's current strand
-                $strandStmt = $connection->prepare("
-                    SELECT strand_id FROM student_strand WHERE student_id = ?
-                ");
-                $strandStmt->bind_param("i", $student_id);
-                $strandStmt->execute();
-                $strandResult = $strandStmt->get_result();
-                $strandData = $strandResult->fetch_assoc();
-                $strand_id = $strandData['strand_id'] ?? null;
-                
-                $new_section_id = null;
-                
-                if ($strand_id) {
-                    // Find available section in Grade 12 with same strand (max 50 students)
-                    // Get sections ordered alphabetically (A, B, C, etc.)
-                    $sectionStmt = $connection->prepare("
-                        SELECT s.section_id, s.section_name,
-                               (SELECT COUNT(*) FROM student_strand ss 
-                                WHERE ss.section_id = s.section_id AND ss.grade_level = 12) as student_count
-                        FROM section s
-                        WHERE s.grade_level = 12 AND s.strand_id = ?
-                        ORDER BY s.section_name
-                    ");
-                    
-                    $sectionStmt->bind_param("i", $strand_id);
-                    $sectionStmt->execute();
-                    $sectionResult = $sectionStmt->get_result();
-                    
-                    while ($section = $sectionResult->fetch_assoc()) {
-                        if ($section['student_count'] < 50) {
-                            $new_section_id = $section['section_id'];
-                            break;
-                        }
-                    }
-                }
-                
-                // Update grade_level, section_id and school_year in student_strand
-                if ($new_section_id) {
-                    $updateStmt = $connection->prepare("
-                        UPDATE student_strand SET grade_level = 12, section_id = ? WHERE student_id = ?
-                    ");
-                    $updateStmt->bind_param("ii", $new_section_id, $student_id);
-                } else {
-                    $updateStmt = $connection->prepare("
-                        UPDATE student_strand SET grade_level = 12 WHERE student_id = ?
-                    ");
-                    $updateStmt->bind_param("i", $student_id);
-                }
-                
-                if ($updateStmt) {
-                    $updateStmt->execute();
-                    $updated_count++;
-                    
-                    // Also update school_year in students table
-                    $updateSchoolYear = $connection->prepare("UPDATE students SET school_year = ? WHERE student_id = ?");
-                    $updateSchoolYear->bind_param("si", $current_school_year, $student_id);
-                    $updateSchoolYear->execute();
-                    
-                    // Send email
-                    if (!empty($student_email)) {
-                        sendPromotionEmail($student_email, $student_name, 'promote', $teacher_remarks);
-                        $emailed_count++;
-                    }
-                }
-                
-            } elseif ($recommended_status === 'Graduate') {
-                // Update enrollment_status to Graduated, enlistment_status to Promoted, and school_year
-                $updateStmt = $connection->prepare("
-                    UPDATE students 
-                    SET enrollment_status = 'Graduated', enlistment_status = 'Promoted', school_year = ?
-                    WHERE student_id = ?
-                ");
-                $updateStmt->bind_param("si", $current_school_year, $student_id);
-                $updateStmt->execute();
-                $updated_count++;
-                
-                // Send email
-                if (!empty($student_email)) {
-                    sendPromotionEmail($student_email, $student_name, 'graduate', $teacher_remarks);
-                    $emailed_count++;
-                }
-                
-            } elseif ($recommended_status === 'Retained') {
-                // For retained: send email and update school_year
-                $updateSchoolYear = $connection->prepare("UPDATE students SET school_year = ? WHERE student_id = ?");
-                $updateSchoolYear->bind_param("si", $current_school_year, $student_id);
-                $updateSchoolYear->execute();
-                
-                if (!empty($student_email)) {
-                    sendPromotionEmail($student_email, $student_name, 'retain', $teacher_remarks);
-                    $emailed_count++;
-                }
-                
-                // Still count as updated (remarks saved)
-                $updated_count++;
-            }
+            $saveStmt->close();
         }
-        
-        if ($updated_count > 0) {
-            $message = "Successfully updated $updated_count student(s)";
-            if ($emailed_count > 0) {
-                $message .= " and sent $emailed_count email notification(s)";
-            }
-            $message .= "!";
-            $message_type = 'success';
-        } else {
-            $message = "No changes to save.";
-            $message_type = 'error';
-        }
+    }
+
+    if ($savedCount > 0) {
+        $message = "Saved {$savedCount} student recommendation(s) for {$activeSemester} ({$activeSchoolYear}). Waiting for admin validation.";
+        $message_type = 'success';
     } else {
-        $message = "No student data to save.";
+        $message = "No recommendations were saved. Check semester rules.";
         $message_type = 'error';
     }
 }
 
-// Handle bulk update with checkbox
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update_promotion'])) {
-    $selected_students = $_POST['selected_students'] ?? [];
-    $bulk_status = $_POST['bulk_status'] ?? 'Pending';
-    $bulk_remarks = $_POST['bulk_remarks'] ?? '';
-    
-    $updated_count = 0;
-    $emailed_count = 0;
-    
-    // Debug: Log received data
-    error_log("Bulk update - Status: " . $bulk_status);
-    error_log("Selected students count: " . count($selected_students));
-    
-    if (!empty($selected_students) && is_array($selected_students)) {
-        foreach ($selected_students as $student_id) {
-            $student_id = (int)$student_id;
-            if ($student_id <= 0) continue;
-            
-            // Get student email from student_applications table (users table has no email column)
-            $emailStmt = $connection->prepare("
-                SELECT sa.first_name, sa.last_name, sa.email
-                FROM students s
-                INNER JOIN student_applications sa ON s.application_id = sa.application_id
-                WHERE s.student_id = ?
-            ");
-            
-            $student_email = '';
-            $student_name = '';
-            
-            if ($emailStmt) {
-                $emailStmt->bind_param("i", $student_id);
-                $emailStmt->execute();
-                $emailResult = $emailStmt->get_result();
-                if ($emailData = $emailResult->fetch_assoc()) {
-                    // Get email from student_applications
-                    $student_email = $emailData['email'] ?? '';
-                    $student_name = ($emailData['first_name'] ?? '') . ' ' . ($emailData['last_name'] ?? '');
-                }
-            }
-            
-            // Process based on status
-            if ($bulk_status === 'Promote to Grade 12') {
-                // Get student's current strand
-                $strandStmt = $connection->prepare("
-                    SELECT strand_id FROM student_strand WHERE student_id = ?
-                ");
-                $strandStmt->bind_param("i", $student_id);
-                $strandStmt->execute();
-                $strandResult = $strandStmt->get_result();
-                $strandData = $strandResult->fetch_assoc();
-                $strand_id = $strandData['strand_id'] ?? null;
-                
-                $new_section_id = null;
-                
-                if ($strand_id) {
-                    // Find available section in Grade 12 with same strand (max 50 students)
-                    $sectionStmt = $connection->prepare("
-                        SELECT s.section_id, s.section_name,
-                               (SELECT COUNT(*) FROM student_strand ss 
-                                WHERE ss.section_id = s.section_id AND ss.grade_level = 12) as student_count
-                        FROM section s
-                        WHERE s.grade_level = 12 AND s.strand_id = ?
-                        ORDER BY s.section_name
-                    ");
-                    
-                    $sectionStmt->bind_param("i", $strand_id);
-                    $sectionStmt->execute();
-                    $sectionResult = $sectionStmt->get_result();
-                    
-                    while ($section = $sectionResult->fetch_assoc()) {
-                        if ($section['student_count'] < 50) {
-                            $new_section_id = $section['section_id'];
-                            break;
-                        }
-                    }
-                }
-                
-                // Update grade_level, section_id and school_year in student_strand (bulk)
-                if ($new_section_id) {
-                    $updateStmt = $connection->prepare("
-                        UPDATE student_strand SET grade_level = 12, section_id = ? WHERE student_id = ?
-                    ");
-                    $updateStmt->bind_param("ii", $new_section_id, $student_id);
-                } else {
-                    $updateStmt = $connection->prepare("
-                        UPDATE student_strand SET grade_level = 12 WHERE student_id = ?
-                    ");
-                    $updateStmt->bind_param("i", $student_id);
-                }
-                
-                if ($updateStmt) {
-                    $updateStmt->execute();
-                    $updated_count++;
-                    
-                    // Also update school_year in students table
-                    $updateSchoolYear = $connection->prepare("UPDATE students SET school_year = ? WHERE student_id = ?");
-                    $updateSchoolYear->bind_param("si", $current_school_year, $student_id);
-                    $updateSchoolYear->execute();
-                    
-                    if (!empty($student_email)) {
-                        sendPromotionEmail($student_email, $student_name, 'promote', $bulk_remarks);
-                        $emailed_count++;
-                    }
-                }
-                
-            } elseif ($bulk_status === 'Graduate') {
-                $updateStmt = $connection->prepare("
-                    UPDATE students 
-                    SET enrollment_status = 'Graduated', enlistment_status = 'Promoted', school_year = ?
-                    WHERE student_id = ?
-                ");
-                $updateStmt->bind_param("si", $current_school_year, $student_id);
-                $updateStmt->execute();
-                $updated_count++;
-                
-                if (!empty($student_email)) {
-                    sendPromotionEmail($student_email, $student_name, 'graduate', $bulk_remarks);
-                    $emailed_count++;
-                }
-                
-            } elseif ($bulk_status === 'Retained') {
-                // For retained: send email and update school_year (bulk)
-                $updateSchoolYear = $connection->prepare("UPDATE students SET school_year = ? WHERE student_id = ?");
-                $updateSchoolYear->bind_param("si", $current_school_year, $student_id);
-                $updateSchoolYear->execute();
-                
-                if (!empty($student_email)) {
-                    sendPromotionEmail($student_email, $student_name, 'retain', $bulk_remarks);
-                    $emailed_count++;
-                }
-                $updated_count++;
-            }
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['bulk_update_promotion']) && $tablesReady && !empty($advisorySectionId)) {
+    $selectedStudents = $_POST['selected_students'] ?? [];
+    $bulkStatus = trim((string) ($_POST['bulk_status'] ?? 'Pending'));
+    $bulkRemarks = trim((string) ($_POST['bulk_remarks'] ?? ''));
+    $savedCount = 0;
+
+    foreach ($selectedStudents as $studentIdRaw) {
+        $studentId = (int) $studentIdRaw;
+        if ($studentId <= 0) {
+            continue;
         }
-        
-        if ($updated_count > 0) {
-            $message = "Updated $updated_count student(s)";
-            if ($emailed_count > 0) {
-                $message .= " and sent $emailed_count email notification(s)";
-            }
-            $message .= " successfully!";
-            $message_type = 'success';
+
+        $advisoryRow = isAdvisoryStudentInTerm($connection, $studentId, (int) $advisorySectionId, $activeSchoolYear, $activeSemester);
+        if (!$advisoryRow) {
+            continue;
+        }
+
+        $gradeLevel = (int) ($advisoryRow['grade_level'] ?? 0);
+        if ($activeSemester === '1st Semester') {
+            $computedStatus = normalizeManualComputedStatus($bulkStatus);
         } else {
-            $message = "Please select a valid status.";
-            $message_type = 'error';
+            if ($bulkStatus === 'Promote to Grade 12' || $bulkStatus === 'Graduate') {
+                $computedStatus = 'Complete';
+            } elseif ($bulkStatus === 'Incomplete') {
+                $computedStatus = 'Incomplete';
+            } else {
+                $computedStatus = 'Pending';
+            }
         }
+        $finalRecommendation = normalizeSemesterRecommendation(
+            $activeSemester,
+            $computedStatus,
+            $gradeLevel,
+            $bulkStatus
+        );
+
+        $saveStmt = $connection->prepare("
+            INSERT INTO student_promotion_status
+                (student_id, teacher_id, school_year, semester, computed_status, recommended_status, teacher_remarks, approval_status, is_approved, admin_user_id, admin_remarks, approved_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, 'Pending', 0, NULL, NULL, NULL)
+            ON DUPLICATE KEY UPDATE
+                teacher_id = VALUES(teacher_id),
+                computed_status = VALUES(computed_status),
+                recommended_status = VALUES(recommended_status),
+                teacher_remarks = VALUES(teacher_remarks),
+                approval_status = 'Pending',
+                is_approved = 0,
+                admin_user_id = NULL,
+                admin_remarks = NULL,
+                approved_at = NULL,
+                updated_at = CURRENT_TIMESTAMP
+        ");
+        $saveStmt->bind_param(
+            "iisssss",
+            $studentId,
+            $teacher_id,
+            $activeSchoolYear,
+            $activeSemester,
+            $computedStatus,
+            $finalRecommendation,
+            $bulkRemarks
+        );
+
+        if ($saveStmt->execute()) {
+            $savedCount++;
+        }
+        $saveStmt->close();
+    }
+
+    if ($savedCount > 0) {
+        $message = "Saved {$savedCount} bulk recommendation(s) for {$activeSemester} ({$activeSchoolYear}). Waiting for admin validation.";
+        $message_type = 'success';
     } else {
-        $message = "Please select at least one student.";
+        $message = "No students were updated. Select students first.";
         $message_type = 'error';
     }
 }

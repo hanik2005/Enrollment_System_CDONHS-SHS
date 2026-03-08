@@ -1,0 +1,126 @@
+.doc-alert {
+    margin: 12px 24px;
+    padding: 12px 14px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.doc-alert-success {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: #166534;
+}
+
+.doc-alert-error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: #991b1b;
+}
+
+.student-email {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.doc-cell-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.doc-link-inline {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 700;
+    color: #2563eb;
+}
+
+.btn-mini {
+    font-size: 11px;
+    padding: 5px 8px;
+}
+
+.btn-delete {
+    background: #b91c1c;
+    border-color: #b91c1c;
+    color: #fff;
+}
+
+.btn-delete:hover {
+    background: #991b1b;
+    border-color: #991b1b;
+}
+
+.doc-missing-badge {
+    display: inline-block;
+    background: #fee2e2;
+    color: #991b1b;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.doc-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.45);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    padding: 14px;
+}
+
+.doc-modal.active {
+    display: flex;
+}
+
+.doc-modal-content {
+    width: 100%;
+    max-width: 520px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+    padding: 18px;
+}
+
+.doc-modal-content h3 {
+    margin: 0 0 10px;
+    color: #0f172a;
+}
+
+.doc-modal-content p {
+    margin: 0 0 10px;
+    color: #334155;
+}
+
+.doc-form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.doc-form-group textarea {
+    width: 100%;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px;
+    resize: vertical;
+}
+
+.doc-modal-actions {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+@media (max-width: 768px) {
+    .doc-alert {
+        margin: 10px 14px;
+    }
+}

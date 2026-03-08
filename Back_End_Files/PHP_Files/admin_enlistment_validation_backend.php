@@ -1,8 +1,35 @@
 <?php
+session_start();
+
 include "../../DB_Connection/Connection.php";
 include "mailer_details.php";
+include_once "audit_trail_helper.php";
+
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../../Website_Files/login.php");
+    exit;
+}
+
+$adminUserId = (int) $_SESSION['user_id'];
+$adminStmt = $connection->prepare("
+    SELECT user_id
+    FROM users
+    WHERE user_id = ? AND role_id = 2
+");
+$adminStmt->bind_param("i", $adminUserId);
+$adminStmt->execute();
+$admin = $adminStmt->get_result()->fetch_assoc();
+$adminStmt->close();
+
+if (!$admin) {
+    header("Location: ../../Website_Files/login.php");
+    exit;
+}
 
 if (isset($_POST['confirm']) && isset($_POST['status'])) {
+    $selectedStudents = array_map('intval', $_POST['selected_students'] ?? []);
+    $selectedLookup = !empty($selectedStudents) ? array_flip($selectedStudents) : [];
+
     $updatedCount = 0;
     $emailAttemptedCount = 0;
     $emailSentCount = 0;
@@ -11,6 +38,10 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
 
     foreach ($_POST['status'] as $student_id => $status) {
         $student_id = (int)$student_id;
+
+        if (!empty($selectedLookup) && !isset($selectedLookup[$student_id])) {
+            continue;
+        }
 
         // Update student's enlistment status
         $stmt = $connection->prepare("
@@ -28,7 +59,7 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
         if ($status === 'Enlisted') {
             // Get student's email and name for notification
             $stmtGetEmail = $connection->prepare("
-                SELECT sa.email, sa.first_name, sa.last_name
+                SELECT s.application_id, sa.email, sa.first_name, sa.last_name
                 FROM students s
                 INNER JOIN student_applications sa ON s.application_id = sa.application_id
                 WHERE s.student_id = ?
@@ -86,6 +117,19 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
             } else {
                 $emailSkippedCount++;
             }
+
+            logAdminAudit(
+                $connection,
+                'ENLISTMENT_APPROVED',
+                'students',
+                (string) $student_id,
+                "Approved enlistment for student #{$student_id}",
+                [
+                    'new_status' => $status,
+                    'student' => $studentInfo,
+                ],
+                $adminUserId
+            );
         }
 
         // If admin rejects, delete enlistment data and send email notification
@@ -101,7 +145,7 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
 
             // Get student's email and name for notification
             $stmtGetEmail = $connection->prepare("
-                SELECT sa.email, sa.first_name, sa.last_name
+                SELECT s.application_id, sa.email, sa.first_name, sa.last_name
                 FROM students s
                 INNER JOIN student_applications sa ON s.application_id = sa.application_id
                 WHERE s.student_id = ?
@@ -159,6 +203,31 @@ if (isset($_POST['confirm']) && isset($_POST['status'])) {
             } else {
                 $emailSkippedCount++;
             }
+
+            logAdminAudit(
+                $connection,
+                'ENLISTMENT_REJECTED',
+                'students',
+                (string) $student_id,
+                "Rejected enlistment for student #{$student_id}",
+                [
+                    'new_status' => $status,
+                    'student' => $studentInfo,
+                ],
+                $adminUserId
+            );
+        }
+
+        if ($status !== 'Enlisted' && $status !== 'Rejected') {
+            logAdminAudit(
+                $connection,
+                'ENLISTMENT_STATUS_UPDATED',
+                'students',
+                (string) $student_id,
+                "Updated enlistment status for student #{$student_id} to {$status}",
+                ['new_status' => $status],
+                $adminUserId
+            );
         }
     }
 

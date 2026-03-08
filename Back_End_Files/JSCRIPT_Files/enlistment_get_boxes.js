@@ -1,13 +1,16 @@
 // Global variables
 let currentSections = [];
 let currentStrands = [];
+let currentTracks = [];
 
 document.addEventListener("DOMContentLoaded", () => {
 
+    const trackSelect   = document.getElementById("track");
     const strandSelect   = document.getElementById("strand");
     const gradeSelect   = document.getElementById("grade_level");
     const sectionSelect = document.getElementById("section");
     const summaryGrade = document.getElementById("summary-grade");
+    const summaryTrack = document.getElementById("summary-track");
     const summaryStrand = document.getElementById("summary-strand");
     const summarySection = document.getElementById("summary-section");
 
@@ -18,17 +21,42 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(data => {
                 if (Array.isArray(data)) {
                     currentStrands = data;
-                    strandSelect.innerHTML = `<option value="">Select Strand</option>`;
-                    data.forEach(strand => {
-                        strandSelect.innerHTML += 
-                            `<option value="${strand.strand_id}">${strand.strand_name}</option>`;
+
+                    currentTracks = [...new Set(data.map(strand => strand.track_name).filter(Boolean))];
+                    trackSelect.innerHTML = `<option value="">Select Track</option>`;
+                    currentTracks.forEach(track => {
+                        trackSelect.innerHTML += `<option value="${track}">${track}</option>`;
                     });
+
+                    strandSelect.innerHTML = `<option value="">Select Track First</option>`;
                 }
             })
             .catch(err => console.error("Error loading strands:", err));
     }
 
     loadStrands();
+
+    function loadStrandsByTrack() {
+        const selectedTrack = trackSelect.value;
+
+        strandSelect.innerHTML = `<option value="">Select Strand</option>`;
+        sectionSelect.innerHTML = `<option value="">Select Section</option>`;
+        currentSections = [];
+
+        if (!selectedTrack) {
+            strandSelect.innerHTML = `<option value="">Select Track First</option>`;
+            updateSummary();
+            return;
+        }
+
+        const filtered = currentStrands.filter(s => s.track_name === selectedTrack);
+        filtered.forEach(strand => {
+            strandSelect.innerHTML +=
+                `<option value="${strand.strand_id}">${strand.strand_name}</option>`;
+        });
+
+        updateSummary();
+    }
 
     /* LOAD SECTIONS BY STRAND AND GRADE LEVEL */
     function loadSections() {
@@ -65,6 +93,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function updateSummary() {
         const grade = gradeSelect.value;
+        const track = trackSelect.value;
         const strand = strandSelect.value;
         const section = sectionSelect.value;
 
@@ -84,12 +113,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Update summary elements
         summaryGrade.textContent = grade ? grade : 'Not selected';
+        summaryTrack.textContent = track ? track : 'Not selected';
         summaryStrand.textContent = strandName;
         summarySection.textContent = sectionName;
     }
 
     // Event listeners
     gradeSelect.addEventListener("change", () => {
+        loadSections();
+        updateSummary();
+    });
+
+    trackSelect.addEventListener("change", () => {
+        loadStrandsByTrack();
         loadSections();
         updateSummary();
     });
@@ -113,11 +149,12 @@ document.getElementById("enlistment-form")
     e.preventDefault();
 
     const grade_level = document.getElementById("grade_level").value;
+    const track_name = document.getElementById("track").value;
     const strand_id   = document.getElementById("strand").value;
     const section_id  = document.getElementById("section").value;
 
-    if (!grade_level || !strand_id || !section_id) {
-        alert("Please select grade level, strand, and section.");
+    if (!grade_level || !track_name || !strand_id || !section_id) {
+        alert("Please select grade level, track, strand, and section.");
         return;
     }
 

@@ -4,11 +4,39 @@ ini_set('display_errors', 0);
 ini_set('display_startup_errors', 0);
 error_reporting(0);
 
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 ob_start(); // start output buffering
 header('Content-Type: application/json');
 
 include "../../DB_Connection/Connection.php";
 include "mailer_details.php";
+include_once "audit_trail_helper.php";
+
+if (!isset($_SESSION['user_id'])) {
+    ob_end_clean();
+    echo json_encode(['success' => false, 'message' => 'Unauthorized access']);
+    exit;
+}
+
+$adminUserId = (int) $_SESSION['user_id'];
+$adminStmt = $connection->prepare("
+    SELECT user_id
+    FROM users
+    WHERE user_id = ? AND role_id = 2
+");
+$adminStmt->bind_param("i", $adminUserId);
+$adminStmt->execute();
+$admin = $adminStmt->get_result()->fetch_assoc();
+$adminStmt->close();
+
+if (!$admin) {
+    ob_end_clean();
+    echo json_encode(['success' => false, 'message' => 'Admin access required']);
+    exit;
+}
 
 // read JSON from frontend
 $data = json_decode(file_get_contents("php://input"), true);
@@ -92,7 +120,7 @@ foreach ($updates as $item) {
         
         $mail->clearAddresses();
         } // End if email exists
-        
+
         // Delete the application and all related data from normalized tables
         $connection->begin_transaction();
         try {
@@ -128,6 +156,20 @@ foreach ($updates as $item) {
             $errorCount++;
             continue;
         }
+
+        logAdminAudit(
+            $connection,
+            'APPLICATION_REJECTED',
+            'student_applications',
+            (string) $applicationId,
+            "Rejected and removed application #{$applicationId}",
+            [
+                'status' => $status,
+                'remarks' => $remarks,
+                'student_name' => trim($studentInfo['first_name'] . ' ' . $studentInfo['last_name']),
+            ],
+            $adminUserId
+        );
         
         $updatedCount++;
         continue;
@@ -221,6 +263,21 @@ foreach ($updates as $item) {
             
             $mail->clearAddresses();
             } // End if email exists
+
+            logAdminAudit(
+                $connection,
+                'APPLICATION_APPROVED',
+                'student_applications',
+                (string) $applicationId,
+                "Approved application #{$applicationId}",
+                [
+                    'status' => $status,
+                    'remarks' => $remarks,
+                    'student_name' => trim($studentInfo['first_name'] . ' ' . $studentInfo['last_name']),
+                    'created_user_id' => $userId,
+                ],
+                $adminUserId
+            );
             
         } catch (Exception $e) {
             $connection->rollback();
@@ -273,6 +330,20 @@ foreach ($updates as $item) {
     
     $mail->clearAddresses();
     } // End if email exists for pending
+
+    logAdminAudit(
+        $connection,
+        'APPLICATION_STATUS_UPDATED',
+        'student_applications',
+        (string) $applicationId,
+        "Updated application #{$applicationId} to {$status}",
+        [
+            'status' => $status,
+            'remarks' => $remarks,
+            'student_name' => trim($studentInfo['first_name'] . ' ' . $studentInfo['last_name']),
+        ],
+        $adminUserId
+    );
     
     $updatedCount++;
 }
@@ -283,6 +354,9 @@ ob_end_clean();
 echo json_encode([
     'success' => true,
     'message' => "Applications updated successfully. Total: {$updatedCount}",
-    'debug' => ['updated' => $updatedCount, 'errors' => $errorCount]
+    'debug' => [
+        'updated' => $updatedCount,
+        'errors' => $errorCount
+    ]
 ]);
 exit;

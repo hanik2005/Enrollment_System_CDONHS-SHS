@@ -38,7 +38,7 @@ if ($teacherResult) {
             ta.grade_level,
             ta.strand_id,
             ta.section_id,
-            s.strand_name,
+            s.strand_abbreviation,
             sec.section_name
         FROM teacher_advisory ta
         JOIN strands s ON ta.strand_id = s.strand_id
@@ -54,7 +54,7 @@ if ($teacherResult) {
     if ($advisory) {
         $advisoryText =
             "Grade " . $advisory['grade_level'] .
-            " - " . $advisory['strand_name'] .
+            " - " . $advisory['strand_abbreviation'] .
             " - " . $advisory['section_name'];
         $advisorySectionId = $advisory['section_id'];
         $advisoryGradeLevel = $advisory['grade_level'];
@@ -67,7 +67,7 @@ if ($teacherResult) {
                 sec.grade_level,
                 sec.strand_id,
                 sec.section_id,
-                s.strand_name,
+                s.strand_abbreviation,
                 sec.section_name
             FROM section sec
             JOIN strands s ON sec.strand_id = s.strand_id
@@ -82,7 +82,7 @@ if ($teacherResult) {
         if ($advisoryFallback) {
             $advisoryText =
                 "Grade " . $advisoryFallback['grade_level'] .
-                " - " . $advisoryFallback['strand_name'] .
+                " - " . $advisoryFallback['strand_abbreviation'] .
                 " - " . $advisoryFallback['section_name'];
             $advisorySectionId = $advisoryFallback['section_id'];
             $advisoryGradeLevel = $advisoryFallback['grade_level'];

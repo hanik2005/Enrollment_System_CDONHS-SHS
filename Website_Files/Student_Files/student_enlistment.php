@@ -81,7 +81,7 @@ if ($currentMonth >= 8) {
 <div class="enlistment-container">
     <div class="enlistment-hero">
         <h2>Student Enlistment</h2>
-        <p>Review your current term, then select your grade level, strand, and section.</p>
+        <p>Review your current term, then select your grade level, track, strand, and section.</p>
         <div class="term-badges">
             <span class="term-badge">Semester: <?php echo htmlspecialchars($currentSemester); ?></span>
             <span class="term-badge">School Year: <?php echo htmlspecialchars($currentSchoolYear); ?></span>
@@ -100,9 +100,14 @@ if ($currentMonth >= 8) {
                     <option value="12">12</option>
                 </select>
 
+                <label for="track">Track</label>
+                <select id="track" name="track" required>
+                    <option value="">Select Track</option>
+                </select>
+
                 <label for="strand">Strand</label>
                 <select id="strand" name="strand" required>
-                    <option value="">Select Strand</option>
+                    <option value="">Select Track First</option>
                 </select>
 
                 <label for="section">Section</label>
@@ -114,11 +119,12 @@ if ($currentMonth >= 8) {
             <div class="right-panel panel-card">
                 <h3>Selected Enlistment Details</h3>
                 <div id="selection-summary">
-                    <p>Please select your grade level, strand, and section.</p>
+                    <p>Please select your grade level, track, strand, and section.</p>
                     <ul>
                         <li><strong>Semester:</strong> <span id="summary-semester"><?php echo htmlspecialchars($currentSemester); ?></span></li>
                         <li><strong>School Year:</strong> <span id="summary-school-year"><?php echo htmlspecialchars($currentSchoolYear); ?></span></li>
                         <li><strong>Grade Level:</strong> <span id="summary-grade">Not selected</span></li>
+                        <li><strong>Track:</strong> <span id="summary-track">Not selected</span></li>
                         <li><strong>Strand:</strong> <span id="summary-strand">Not selected</span></li>
                         <li><strong>Section:</strong> <span id="summary-section">Not selected</span></li>
                     </ul>

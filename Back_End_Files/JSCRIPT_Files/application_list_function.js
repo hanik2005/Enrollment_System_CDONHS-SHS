@@ -2,69 +2,184 @@
 // Application List Functionality
 // ==============================
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Initialize batch update functionality
+document.addEventListener("DOMContentLoaded", function () {
+    const REMARKS_STORAGE_KEY = "admin_app_remarks_";
 
-    // ==============================
-    // SELECT ALL CHECKBOX FUNCTIONALITY
-    // ==============================
     const selectAllCheckbox = document.getElementById("selectAllCheckbox");
     const rowCheckboxes = document.querySelectorAll(".row-checkbox");
+    const confirmBatchBtn = document.getElementById("confirmBatchBtn");
+    const loadingModal = document.getElementById("loadingModal");
 
+    const remarksModal = document.getElementById("remarksModal");
+    const remarksModalInput = document.getElementById("remarksModalInput");
+    const remarksModalStudentName = document.getElementById("remarksModalStudentName");
+    const saveRemarksBtn = document.getElementById("saveRemarksBtn");
+    const cancelRemarksBtn = document.getElementById("cancelRemarksBtn");
+
+    let activeRemarksRow = null;
+
+    function getRowApplicationId(row) {
+        return row?.dataset?.applicationId || "";
+    }
+
+    function getRemarksStorageKey(applicationId) {
+        return REMARKS_STORAGE_KEY + applicationId;
+    }
+
+    function updateRemarksDisplay(row) {
+        if (!row) return;
+        const remarksField = row.querySelector(".batch-remarks");
+        const indicator = row.querySelector(".remarks-indicator");
+        const preview = row.querySelector(".remarks-preview");
+        if (!remarksField || !indicator || !preview) return;
+
+        const value = remarksField.value.trim();
+        if (value !== "") {
+            indicator.textContent = "Saved remarks";
+            indicator.classList.add("remarks-has-value");
+            preview.textContent = value.length > 60 ? value.substring(0, 60) + "..." : value;
+        } else {
+            indicator.textContent = "No saved remarks";
+            indicator.classList.remove("remarks-has-value");
+            preview.textContent = "Click Add/Edit Remarks to input and save.";
+        }
+    }
+
+    function initializeRemarksFromStorage(row) {
+        if (!row) return;
+        const appId = getRowApplicationId(row);
+        const remarksField = row.querySelector(".batch-remarks");
+        if (!appId || !remarksField) return;
+
+        const saved = localStorage.getItem(getRemarksStorageKey(appId));
+        if (saved !== null) {
+            remarksField.value = saved;
+        }
+        updateRemarksDisplay(row);
+    }
+
+    function toggleRowBatchFields(row, isChecked) {
+        const batchFields = row?.querySelector(".batch-update-fields");
+        if (batchFields) {
+            batchFields.style.display = isChecked ? "block" : "none";
+        }
+    }
+
+    document.querySelectorAll(".application-row").forEach((row) => {
+        initializeRemarksFromStorage(row);
+    });
+
+    // ==============================
+    // REMARKS MODAL
+    // ==============================
+    function openRemarksModal(row) {
+        if (!row || !remarksModal) return;
+        activeRemarksRow = row;
+
+        const studentName = row.dataset.studentName || "Student";
+        const remarksField = row.querySelector(".batch-remarks");
+        remarksModalStudentName.textContent = "Student: " + studentName;
+        remarksModalInput.value = remarksField ? remarksField.value : "";
+        remarksModal.classList.add("active");
+        remarksModalInput.focus();
+    }
+
+    function closeRemarksModal() {
+        if (!remarksModal) return;
+        remarksModal.classList.remove("active");
+        activeRemarksRow = null;
+    }
+
+    document.querySelectorAll(".btn-remarks-edit").forEach((button) => {
+        button.addEventListener("click", function () {
+            const row = this.closest(".application-row");
+            openRemarksModal(row);
+        });
+    });
+
+    if (saveRemarksBtn) {
+        saveRemarksBtn.addEventListener("click", function () {
+            if (!activeRemarksRow) return;
+            const remarksField = activeRemarksRow.querySelector(".batch-remarks");
+            const appId = getRowApplicationId(activeRemarksRow);
+            const savedValue = remarksModalInput.value.trim();
+
+            if (remarksField) {
+                remarksField.value = savedValue;
+            }
+
+            if (appId) {
+                if (savedValue !== "") {
+                    localStorage.setItem(getRemarksStorageKey(appId), savedValue);
+                } else {
+                    localStorage.removeItem(getRemarksStorageKey(appId));
+                }
+            }
+
+            updateRemarksDisplay(activeRemarksRow);
+            closeRemarksModal();
+        });
+    }
+
+    if (cancelRemarksBtn) {
+        cancelRemarksBtn.addEventListener("click", closeRemarksModal);
+    }
+
+    window.addEventListener("click", function (event) {
+        if (event.target === remarksModal) {
+            closeRemarksModal();
+        }
+    });
+
+    // ==============================
+    // SELECT ALL CHECKBOX
+    // ==============================
     if (selectAllCheckbox) {
-        selectAllCheckbox.addEventListener("change", function() {
+        selectAllCheckbox.addEventListener("change", function () {
             const isChecked = this.checked;
-            rowCheckboxes.forEach(checkbox => {
+            rowCheckboxes.forEach((checkbox) => {
                 if (!checkbox.disabled) {
                     checkbox.checked = isChecked;
+                    const row = checkbox.closest(".application-row");
+                    toggleRowBatchFields(row, isChecked);
                 }
             });
         });
     }
 
-    // Update "select all" checkbox when individual checkboxes change
-    rowCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener("change", function() {
-            const allChecked = Array.from(rowCheckboxes).every(cb => cb.checked);
-            const someChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
-            
+    rowCheckboxes.forEach((checkbox) => {
+        checkbox.addEventListener("change", function () {
+            const enabledCheckboxes = Array.from(rowCheckboxes).filter((cb) => !cb.disabled);
+            const allChecked = enabledCheckboxes.length > 0 && enabledCheckboxes.every((cb) => cb.checked);
+            const someChecked = enabledCheckboxes.some((cb) => cb.checked);
+
             if (selectAllCheckbox) {
                 selectAllCheckbox.checked = allChecked;
                 selectAllCheckbox.indeterminate = someChecked && !allChecked;
             }
-            
-            // Show/hide batch update fields based on selection
+
             const row = checkbox.closest(".application-row");
-            if (row) {
-                const batchFields = row.querySelector(".batch-update-fields");
-                if (batchFields) {
-                    batchFields.style.display = checkbox.checked ? "block" : "none";
-                }
-            }
+            toggleRowBatchFields(row, checkbox.checked);
         });
     });
 
     // ==============================
-    // CONFIRM BATCH BUTTON
+    // CONFIRM SELECTED
     // ==============================
-    const confirmBatchBtn = document.getElementById("confirmBatchBtn");
-
     if (confirmBatchBtn) {
-        confirmBatchBtn.addEventListener("click", function() {
-            // Get all checked checkboxes
+        confirmBatchBtn.addEventListener("click", function () {
             const checkedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
-            
+
             if (checkedCheckboxes.length === 0) {
                 alert("Please select at least one row to confirm.");
                 return;
             }
-            
-            // Collect data from checked rows
+
             const updates = [];
             const lrnMissingStudents = [];
             let hasValidationError = false;
-            
-            checkedCheckboxes.forEach(checkbox => {
+
+            checkedCheckboxes.forEach((checkbox) => {
                 const row = checkbox.closest(".application-row");
                 if (!row) return;
 
@@ -73,127 +188,106 @@ document.addEventListener("DOMContentLoaded", function() {
                     hasValidationError = true;
                     return;
                 }
-                
+
                 const applicationId = row.dataset.applicationId;
                 const batchFields = row.querySelector(".batch-update-fields");
-                
-                if (batchFields) {
-                    const remarks = batchFields.querySelector(".batch-remarks")?.value.trim() || "";
-                    const status = batchFields.querySelector(".batch-status")?.value || "Pending";
-                    const advisorySelect = batchFields.querySelector(".batch-advisory");
-                    const advisory = advisorySelect ? advisorySelect.value : null;
-                    
-                    // Validate: if status is Rejected, remarks are required
-                    if (status === "Rejected" && remarks === "") {
-                        hasValidationError = true;
-                        return;
-                    }
-                    
-                    const updateData = {
-                        application_id: applicationId,
-                        remarks: remarks,
-                        status: status,
-                        advisory: advisory
-                    };
-                    
-                    updates.push(updateData);
+                if (!batchFields) return;
+
+                const remarks = batchFields.querySelector(".batch-remarks")?.value.trim() || "";
+                const status = batchFields.querySelector(".batch-status")?.value || "Pending";
+
+                if (status === "Rejected" && remarks === "") {
+                    hasValidationError = true;
+                    return;
                 }
+
+                updates.push({
+                    application_id: applicationId,
+                    remarks: remarks,
+                    status: status,
+                    advisory: null
+                });
             });
-            
+
             if (hasValidationError) {
                 if (lrnMissingStudents.length > 0) {
-                    alert("Cannot confirm applications with missing LRN. Please edit the LRN first in Sensitive Information:\n- " + lrnMissingStudents.join("\n- "));
+                    alert(
+                        "Cannot confirm applications with missing LRN. Please edit the LRN first in Sensitive Information:\n- " +
+                            lrnMissingStudents.join("\n- ")
+                    );
                     return;
                 }
                 alert("Please enter remarks for all rejected applications.");
                 return;
             }
-            
+
             if (updates.length === 0) {
                 alert("No applications to update.");
                 return;
             }
-            
-            // Select the appropriate backend file - always use student_update_remarks.php
-            const backendFile = "../../Back_End_Files/PHP_Files/student_update_remarks.php";
-            
-            // Show loading modal
-            const loadingModal = document.getElementById("loadingModal");
+
             if (loadingModal) {
                 loadingModal.classList.add("active");
             }
 
-            // Send to backend
-            fetch(backendFile, {
+            fetch("../../Back_End_Files/PHP_Files/student_update_remarks.php", {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify({
-                    updates: updates
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ updates: updates })
+            })
+                .then((res) => res.json())
+                .then((resp) => {
+                    if (loadingModal) {
+                        loadingModal.classList.remove("active");
+                    }
+                    if (resp.success) {
+                        showSuccessModal(resp.message || "Applications updated successfully!");
+                    } else {
+                        alert(resp.message || "Failed to update applications.");
+                    }
                 })
-            })
-            .then(res => res.json())
-            .then(resp => {
-                // Debug: show response in console
-                console.log('Server response:', resp);
-                
-                // Hide loading modal
-                if (loadingModal) {
-                    loadingModal.classList.remove("active");
-                }
-                
-                if (resp.success) {
-                    showSuccessModal(resp.message || "Applications updated successfully!");
-                } else {
-                    alert(resp.message || "Failed to update applications.");
-                }
-            })
-            .catch(err => {
-                // Hide loading modal on error
-                if (loadingModal) {
-                    loadingModal.classList.remove("active");
-                }
-                
-                alert("Error updating applications. Please try again.");
-            });
+                .catch(() => {
+                    if (loadingModal) {
+                        loadingModal.classList.remove("active");
+                    }
+                    alert("Error updating applications. Please try again.");
+                });
         });
     }
 
     // ==============================
-    // SUCCESS MODAL FUNCTIONS
+    // SUCCESS MODAL
     // ==============================
     function showSuccessModal(message) {
         const successModal = document.getElementById("successModal");
         const successMessage = document.getElementById("successMessage");
-        
+
         if (successMessage) {
             successMessage.textContent = message;
         }
-        
+
         if (successModal) {
             successModal.classList.add("active");
         }
     }
 
     function closeSuccessModal(shouldReload = true) {
-        const successModal = document.getElementById('successModal');
+        const successModal = document.getElementById("successModal");
         if (successModal) {
-            successModal.classList.remove('active');
+            successModal.classList.remove("active");
         }
-        // Reload page or just remove URL parameter
         if (shouldReload) {
             location.reload();
         } else {
             const url = new URL(window.location.href);
-            url.searchParams.delete('success');
+            url.searchParams.delete("success");
             window.history.replaceState({}, document.title, url);
         }
     }
-    
-    // Make function globally accessible
+
     window.closeSuccessModal = closeSuccessModal;
-    
-    // Close modal when clicking outside
-    window.addEventListener("click", function(event) {
+
+    window.addEventListener("click", function (event) {
         const successModal = document.getElementById("successModal");
         if (successModal && event.target === successModal) {
             closeSuccessModal();

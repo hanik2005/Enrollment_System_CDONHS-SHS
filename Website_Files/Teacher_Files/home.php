@@ -45,6 +45,7 @@ $profileImagePath = "../../Assets/profile_button.png";
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <!-- header -->
     <div class="header">
     <div class="left">
@@ -59,8 +60,8 @@ $profileImagePath = "../../Assets/profile_button.png";
 
 
     <div class="right">
-       <button class="profile-btn" type="button">
-         <img src="<?php echo $profileImagePath; ?>">
+       <button class="profile-btn" type="button" aria-label="Open profile menu">
+         <img src="<?php echo $profileImagePath; ?>" alt="Teacher profile">
      </button>
 
     <div class="profile-dropdown">
@@ -70,7 +71,7 @@ $profileImagePath = "../../Assets/profile_button.png";
     </div>
     </div>
 
-
+<main id="main-content">
     <div class="dashboard">
 
   <div class="dashboard-box">
@@ -79,15 +80,29 @@ $profileImagePath = "../../Assets/profile_button.png";
 
     <div class="dashboard-container">
         <a href="class_list.php" class="dashboard-card">
-            <img src="../../Assets/class_list_button.png">
+            <img src="../../Assets/class_list_button.png" alt="Class List icon">
             <h3>Class List</h3>
         </a>
     </div>
 
     <div class="dashboard-container">
         <a href="student_progress_page.php" class="dashboard-card">
-            <img src="../../Assets/progress_button.png">
+            <img src="../../Assets/progress_button.png" alt="Student Progress icon">
             <h3>Student Progress</h3>
+        </a>
+    </div>
+
+    <div class="dashboard-container">
+        <a href="enrollment_summary_page.php" class="dashboard-card">
+            <img src="../../Assets/teacher_enrollment_image.png" alt="Enrollment Summary icon">
+            <h3>Enrollment Summary</h3>
+        </a>
+    </div>
+
+    <div class="dashboard-container">
+        <a href="teacher_advisory_notes_page.php" class="dashboard-card">
+            <img src="../../Assets/grades_button.png" alt="Advisory Notes icon">
+            <h3>Advisory Notes</h3>
         </a>
     </div>
 
@@ -96,16 +111,18 @@ $profileImagePath = "../../Assets/profile_button.png";
 
 
   </div>
+</main>
 
 
 
 
      <!-- footer -->
     <div class="footer">
-    © 2026 Cagayan De Oro National High School - Senior High School  
+    &copy; 2026 Cagayan De Oro National High School - Senior High School  
     <br>
     School Management System
     </div>
 <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
 </body>
 </html>
+

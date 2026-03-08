@@ -8,25 +8,22 @@ if (!isset($_SESSION['user_id'])) {
 
 include "../../DB_Connection/Connection.php";
 
-/* Check if Student Progress Page is enabled */
 include_once "../../Back_End_Files/PHP_Files/check_activation.php";
 if (!isFeatureEnabled('Student Progress Page')) {
     header("Location: ../access_denied.php?feature=Student Progress Page");
     exit;
 }
 
-/* VERIFY TEACHER SESSION */
 $stmt = $connection->prepare("
     SELECT u.*, t.first_name, t.last_name, t.middle_name, t.extension_name
     FROM users u
     INNER JOIN teachers t ON t.user_id = u.user_id
     WHERE u.user_id = ? AND u.role_id = 3
 ");
-
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
-$result = $stmt->get_result();
-$user = $result->fetch_assoc();
+$user = $stmt->get_result()->fetch_assoc();
+$stmt->close();
 
 if (!$user) {
     session_destroy();
@@ -34,12 +31,10 @@ if (!$user) {
     exit;
 }
 
-// Set profile image path (using default since teachers table doesn't have profile_image)
 $profileImagePath = "../../Assets/profile_button.png";
 
 include "../../Back_End_Files/PHP_Files/student_progress_backend.php";
 include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
-
 ?>
 
 <!DOCTYPE html>
@@ -56,7 +51,6 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
@@ -67,7 +61,7 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
         </div>
         <div class="right">
             <button class="profile-btn" type="button">
-                <img src="<?php echo $profileImagePath; ?>">
+                <img src="<?php echo $profileImagePath; ?>" alt="Teacher Profile">
             </button>
             <div class="profile-dropdown">
                 <a href="home.php">Home</a>
@@ -77,200 +71,283 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
         </div>
     </div>
 
-    <!-- Back Button -->
     <div class="back-button-container">
-        <a href="home.php" class="back-button">← Back to Home</a>
+        <a href="home.php" class="back-button">&larr; Back to Home</a>
     </div>
 
-    <!-- Main Content -->
     <div class="progress-container">
-        <!-- Messages -->
         <?php if (!empty($message)): ?>
             <?php if ($message_type === 'success'): ?>
             <script>
-                document.addEventListener('DOMContentLoaded', function() {
+                document.addEventListener('DOMContentLoaded', function () {
                     showSuccessModal('<?php echo addslashes($message); ?>');
                 });
             </script>
             <?php else: ?>
-            <div class="alert alert-error">
-                <?php echo htmlspecialchars($message); ?>
-            </div>
+            <div class="alert alert-error"><?php echo htmlspecialchars($message); ?></div>
             <?php endif; ?>
         <?php endif; ?>
 
-        <!-- Table Header -->
+        <?php if (!empty($errorMessage)): ?>
+            <div class="alert alert-error"><?php echo htmlspecialchars($errorMessage); ?></div>
+        <?php endif; ?>
+
         <div class="table-header">
-            <h2>Student Promotion Status</h2>
-            <p class="subtitle">Select promotion status for your advisory students</p>
-            <?php if (!empty($advisoryText)): ?>
-                <p class="advisory-info">Advisory: <?php echo htmlspecialchars($advisoryText); ?></p>
+            <h2>Student Progress Recommendation</h2>
+            <p class="subtitle">
+                Selected Term: <?php echo htmlspecialchars($progressSelectedSemester); ?> (<?php echo htmlspecialchars($progressSelectedSchoolYear); ?>)
+            </p>
+            <?php if ($progressSelectedSemester === '1st Semester'): ?>
+                <p class="advisory-info">
+                    Semester 1 rule: teacher sets Complete/Incomplete only. Complete means Promote to 2nd Semester (for admin approval).
+                </p>
+            <?php else: ?>
+                <p class="advisory-info">
+                    Semester 2 rule: set completion first, then recommend Promote/Graduate for complete students.
+                </p>
             <?php endif; ?>
+        </div>
+
+        <div class="filter-section">
+            <form method="GET" class="filter-form">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="school_year">School Year</label>
+                        <select name="school_year" id="school_year">
+                            <?php foreach ($progressAvailableSchoolYears as $schoolYearOption): ?>
+                                <option value="<?php echo htmlspecialchars($schoolYearOption); ?>" <?php echo $progressSelectedSchoolYear === $schoolYearOption ? 'selected' : ''; ?>>
+                                    <?php echo htmlspecialchars($schoolYearOption); ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="semester">Semester</label>
+                        <select name="semester" id="semester">
+                            <option value="1st Semester" <?php echo $progressSelectedSemester === '1st Semester' ? 'selected' : ''; ?>>1st Semester</option>
+                            <option value="2nd Semester" <?php echo $progressSelectedSemester === '2nd Semester' ? 'selected' : ''; ?>>2nd Semester</option>
+                        </select>
+                    </div>
+                    <div class="filter-buttons">
+                        <button type="submit" class="btn btn-filter">View Term</button>
+                        <a href="student_progress_page.php" class="btn btn-reset">Reset</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="filter-section">
+            <div class="filter-form">
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label for="progressSearch">Search Student</label>
+                        <input type="text" id="progressSearch" placeholder="Type student name...">
+                    </div>
+                    <div class="filter-group">
+                        <label for="progressCompletionFilter">Completion Status</label>
+                        <select id="progressCompletionFilter">
+                            <option value="">All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Complete">Complete</option>
+                            <option value="Incomplete">Incomplete</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="progressValidationFilter">Admin Validation</label>
+                        <select id="progressValidationFilter">
+                            <option value="">All</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="filter-buttons">
+                        <button type="button" class="btn btn-filter" id="applyProgressFilters">Apply</button>
+                        <button type="button" class="btn btn-reset" id="resetProgressFilters">Reset</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <?php if (empty($progressData)): ?>
             <div class="no-results">
-                <p>No students found in your advisory section.</p>
+                <p>No students found in your advisory section for <?php echo htmlspecialchars($progressSelectedSemester); ?>.</p>
             </div>
         <?php else: ?>
             <div class="table-wrapper">
                 <form method="POST" id="promotionForm">
-                
-                <!-- Bulk Action Bar -->
-                <div class="bulk-action-container">
-                    <label>Bulk Action:</label>
-                    <select name="bulk_status" id="bulkStatus">
-                        <option value="Pending">Pending</option>
-                        <?php if ($advisoryGradeLevel == 11): ?>
-                        <option value="Promote to Grade 12">Promote to Grade 12</option>
-                        <?php endif; ?>
-                        <?php if ($advisoryGradeLevel == 12): ?>
-                        <option value="Graduate">Graduate</option>
-                        <?php endif; ?>
-                        <option value="Retained">Retained</option>
-                    </select>
-                    <input type="text" name="bulk_remarks" id="bulkRemarks" placeholder="Add remarks for all...">
-                    <button type="submit" name="bulk_update_promotion" class="confirm-btn">✓ Confirm Selected</button>
-                </div>
+                    <input type="hidden" name="selected_school_year" value="<?php echo htmlspecialchars($progressSelectedSchoolYear); ?>">
+                    <input type="hidden" name="selected_semester" value="<?php echo htmlspecialchars($progressSelectedSemester); ?>">
+                    <div class="bulk-action-container">
+                        <label for="bulkStatus">Bulk Action:</label>
+                        <select name="bulk_status" id="bulkStatus">
+                            <?php if ($progressSelectedSemester === '1st Semester'): ?>
+                                <option value="Complete">Complete</option>
+                                <option value="Incomplete">Incomplete</option>
+                                <option value="Pending">Pending</option>
+                            <?php else: ?>
+                                <option value="Pending">Pending</option>
+                                <?php if ((int) $advisoryGradeLevel === 11): ?>
+                                    <option value="Promote to Grade 12">Promote to Grade 12</option>
+                                <?php endif; ?>
+                                <?php if ((int) $advisoryGradeLevel === 12): ?>
+                                    <option value="Graduate">Graduate</option>
+                                <?php endif; ?>
+                                <option value="Incomplete">Incomplete</option>
+                            <?php endif; ?>
+                        </select>
+                        <input type="text" name="bulk_remarks" id="bulkRemarks" placeholder="Add remarks for selected students...">
+                        <button type="submit" name="bulk_update_promotion" class="confirm-btn">Confirm Selected</button>
+                    </div>
 
-                <table class="progress-table" id="progressTable">
-                    <thead>
-                        <tr>
-                            <th style="width: 50px; text-align: center;">
-                                <input type="checkbox" id="selectAll" title="Select All">
-                            </th>
-                            <th>No</th>
-                            <th>Student Name</th>
-                            <th>Grade Level</th>
-                            <th>Strand</th>
-                            <th>Section</th>
-                            <th class="promotion-column">Promotion Status</th>
-                            <th>Teacher Remarks</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php 
-                        $count = 1;
-                        
-                        // Get promotion status for all students
-                        $promotion_statuses = [];
-                        
-                        $currentMonth = date('n');
-                        $currentYear = date('Y');
-                        if ($currentMonth >= 6) {
-                            $school_year = $currentYear . '-' . ($currentYear + 1);
-                        } else {
-                            $school_year = ($currentYear - 1) . '-' . $currentYear;
-                        }
-                        
-                        // Simple query without complex binding
-                        $promoQuery = $connection->query("
-                            SELECT student_id, recommended_status, teacher_remarks, is_approved
-                            FROM student_promotion_status 
-                            WHERE school_year = '$school_year'
-                        ");
-                        
-                        if ($promoQuery) {
-                            while ($promo = $promoQuery->fetch_assoc()) {
-                                $promotion_statuses[$promo['student_id']] = $promo;
-                            }
-                        }
-                        
-                        foreach ($progressData as $student): 
-                            $fullName = $student['last_name'] . ', ' . $student['first_name'];
-                            if (!empty($student['middle_name'])) {
-                                $fullName .= ' ' . substr($student['middle_name'], 0, 1) . '.';
-                            }
-                            if (!empty($student['extension_name'])) {
-                                $fullName .= ' ' . $student['extension_name'];
-                            }
-
-                            // Get promotion status
-                            $promoStatus = $promotion_statuses[$student['student_id']]['recommended_status'] ?? 'Pending';
-                            $promoRemarks = $promotion_statuses[$student['student_id']]['teacher_remarks'] ?? '';
-                            $isApproved = $promotion_statuses[$student['student_id']]['is_approved'] ?? 0;
-                            
-                            $promoClass = strtolower(str_replace(' ', '-', str_replace(' to ', '-', $promoStatus)));
-                            
-                            // Determine available options based on teacher's advisory grade level
-                            $showPromoteOption = ($advisoryGradeLevel == 11);
-                            $showGraduateOption = ($advisoryGradeLevel == 12);
-                        ?>
+                    <table class="progress-table" id="progressTable">
+                        <thead>
                             <tr>
-                                <td style="text-align: center;">
-                                    <input type="checkbox" name="selected_students[]" 
-                                           value="<?php echo $student['student_id']; ?>" 
-                                           class="student-checkbox">
-                                </td>
-                                <td><?php echo $count++; ?></td>
-                                <td><?php echo htmlspecialchars($fullName); ?></td>
-                                <td>Grade <?php echo htmlspecialchars($student['grade_level']); ?></td>
-                                <td><?php echo htmlspecialchars($student['strand_name']); ?></td>
-                                <td><?php echo htmlspecialchars($student['section_name']); ?></td>
-                                <td>
-                                    <input type="hidden" name="students[<?php echo $student['student_id']; ?>][student_id]" value="<?php echo $student['student_id']; ?>">
-                                    <input type="hidden" name="students[<?php echo $student['student_id']; ?>][current_grade_level]" value="<?php echo $student['grade_level']; ?>">
-                                    <select name="students[<?php echo $student['student_id']; ?>][recommended_status]" class="promotion-select <?php echo $promoClass; ?>">
-                                        <option value="Pending" <?php echo $promoStatus === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                        <?php if ($showPromoteOption): ?>
-                                        <option value="Promote to Grade 12" <?php echo $promoStatus === 'Promote to Grade 12' ? 'selected' : ''; ?>>Promote to Grade 12</option>
-                                        <?php endif; ?>
-                                        <?php if ($showGraduateOption): ?>
-                                        <option value="Graduate" <?php echo $promoStatus === 'Graduate' ? 'selected' : ''; ?>>Graduate</option>
-                                        <?php endif; ?>
-                                        <option value="Retained" <?php echo $promoStatus === 'Retained' ? 'selected' : ''; ?>>Retained</option>
-                                    </select>
-                                </td>
-                                <td>
-                                    <input type="text" name="students[<?php echo $student['student_id']; ?>][teacher_remarks]" class="remarks-input" 
-                                           value="<?php echo htmlspecialchars($promoRemarks); ?>" 
-                                           placeholder="Add remarks...">
-                                </td>
-                                <td>
-                                    <?php if ($isApproved): ?>
-                                        <span class="saved-badge">Approved</span>
-                                    <?php else: ?>
-                                        <span style="color: #6b7280; font-size: 12px;">Pending</span>
-                                    <?php endif; ?>
-                                </td>
+                                <th style="width: 50px; text-align: center;">
+                                    <input type="checkbox" id="selectAll" title="Select All">
+                                </th>
+                                <th>No</th>
+                                <th>Student Name</th>
+                                <th>Grade</th>
+                                <th>Semester</th>
+                                <th>Completion Status</th>
+                                <th>Recommendation</th>
+                                <th>Teacher Remarks</th>
+                                <th>Admin Validation</th>
                             </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-                
-                <!-- Save All Button -->
-                <div style="margin-top: 20px; text-align: right;">
-                    <button type="submit" name="save_all_students" class="save-btn" style="padding: 12px 24px; font-size: 14px;">
-                        💾 Save All Changes
-                    </button>
-                </div>
+                        </thead>
+                        <tbody>
+                            <?php $count = 1; ?>
+                            <?php foreach ($progressData as $student): ?>
+                                <?php
+                                $fullName = $student['last_name'] . ', ' . $student['first_name'];
+                                if (!empty($student['middle_name'])) {
+                                    $fullName .= ' ' . substr($student['middle_name'], 0, 1) . '.';
+                                }
+                                if (!empty($student['extension_name'])) {
+                                    $fullName .= ' ' . $student['extension_name'];
+                                }
+
+                                $computedStatus = (string) ($student['computed_status'] ?? 'Pending');
+                                $recommendedStatus = (string) ($student['recommended_status'] ?? 'Pending');
+                                $approvalStatus = (string) ($student['approval_status'] ?? 'Pending');
+                                $isApproved = (int) ($student['is_approved'] ?? 0) === 1;
+                                $gradeLevel = (int) ($student['grade_level'] ?? 0);
+
+                                $recommendationClass = strtolower(str_replace([' ', 'to'], ['-', ''], $recommendedStatus));
+                                $selectDisabled = $isApproved ? 'disabled' : '';
+                                ?>
+                                <tr
+                                    data-student-name="<?php echo htmlspecialchars(strtolower($fullName)); ?>"
+                                    data-computed-status="<?php echo htmlspecialchars($computedStatus); ?>"
+                                    data-approval-status="<?php echo htmlspecialchars($approvalStatus); ?>"
+                                >
+                                    <td style="text-align: center;">
+                                        <input type="checkbox"
+                                               name="selected_students[]"
+                                               value="<?php echo (int) $student['student_id']; ?>"
+                                               class="student-checkbox"
+                                               <?php echo $isApproved ? 'disabled' : ''; ?>>
+                                    </td>
+                                    <td><?php echo $count++; ?></td>
+                                    <td><?php echo htmlspecialchars($fullName); ?></td>
+                                    <td>Grade <?php echo (int) $gradeLevel; ?></td>
+                                    <td><?php echo htmlspecialchars((string) $student['semester']); ?></td>
+                                    <td>
+                                        <select name="students[<?php echo (int) $student['student_id']; ?>][computed_status]"
+                                                class="promotion-select"
+                                                <?php echo $selectDisabled; ?>>
+                                            <option value="Pending" <?php echo $computedStatus === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                                            <option value="Complete" <?php echo $computedStatus === 'Complete' ? 'selected' : ''; ?>>Complete</option>
+                                            <option value="Incomplete" <?php echo $computedStatus === 'Incomplete' ? 'selected' : ''; ?>>Incomplete</option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" name="students[<?php echo (int) $student['student_id']; ?>][student_id]" value="<?php echo (int) $student['student_id']; ?>">
+                                        <input type="hidden" name="students[<?php echo (int) $student['student_id']; ?>][grade_level]" value="<?php echo (int) $gradeLevel; ?>">
+
+                                        <?php if ($progressSelectedSemester === '1st Semester'): ?>
+                                            <input type="hidden" name="students[<?php echo (int) $student['student_id']; ?>][recommended_status]" value="Pending">
+                                            <select class="promotion-select <?php echo htmlspecialchars($recommendationClass); ?>" disabled>
+                                                <option value="Auto" selected>Auto: Promote to 2nd Semester / Incomplete</option>
+                                            </select>
+                                        <?php else: ?>
+                                            <select name="students[<?php echo (int) $student['student_id']; ?>][recommended_status]"
+                                                    class="promotion-select <?php echo htmlspecialchars($recommendationClass); ?>"
+                                                    <?php echo $selectDisabled; ?>>
+                                                <option value="Pending" <?php echo $recommendedStatus === 'Pending' ? 'selected' : ''; ?>>Pending</option>
+                                                <?php if ($computedStatus === 'Complete' && $gradeLevel === 11): ?>
+                                                    <option value="Promote to Grade 12" <?php echo $recommendedStatus === 'Promote to Grade 12' ? 'selected' : ''; ?>>
+                                                        Promote to Grade 12
+                                                    </option>
+                                                <?php endif; ?>
+                                                <?php if ($computedStatus === 'Complete' && $gradeLevel === 12): ?>
+                                                    <option value="Graduate" <?php echo $recommendedStatus === 'Graduate' ? 'selected' : ''; ?>>
+                                                        Graduate
+                                                    </option>
+                                                <?php endif; ?>
+                                                <?php if ($computedStatus !== 'Complete'): ?>
+                                                    <option value="Incomplete" <?php echo $recommendedStatus === 'Incomplete' ? 'selected' : ''; ?>>
+                                                        Incomplete
+                                                    </option>
+                                                <?php endif; ?>
+                                            </select>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <input type="text"
+                                               name="students[<?php echo (int) $student['student_id']; ?>][teacher_remarks]"
+                                               class="remarks-input"
+                                               value="<?php echo htmlspecialchars((string) ($student['teacher_remarks'] ?? '')); ?>"
+                                               placeholder="Add remarks..."
+                                               <?php echo $isApproved ? 'readonly' : ''; ?>>
+                                    </td>
+                                    <td>
+                                        <?php if ($approvalStatus === 'Approved'): ?>
+                                            <span class="saved-badge">Approved</span>
+                                        <?php elseif ($approvalStatus === 'Rejected'): ?>
+                                            <span class="pending-badge">Rejected</span>
+                                        <?php else: ?>
+                                            <span style="color:#6b7280;font-size:12px;">Pending Admin</span>
+                                        <?php endif; ?>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+
+                    <div id="progressNoMatch" class="no-results" style="display:none; margin-top:12px;">
+                        <p>No students match the current filters.</p>
+                    </div>
+
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button type="submit" name="save_all_students" class="save-btn" style="padding: 12px 24px; font-size: 14px;">
+                            Save for Admin Validation
+                        </button>
+                    </div>
                 </form>
             </div>
         <?php endif; ?>
     </div>
 
-    <!-- Footer -->
     <div class="footer">
-        © 2026 Cagayan De Oro National High School - Senior High School  
+        &copy; 2026 Cagayan De Oro National High School - Senior High School
         <br>
         School Management System
     </div>
 
-    <!-- Loading Modal -->
     <div id="loadingModal" class="loading-modal">
         <div class="loading-content">
             <div class="spinner"></div>
             <p>Processing... Please wait.</p>
-            <span class="loading-subtext">Sending notifications and updating records.</span>
+            <span class="loading-subtext">Saving recommendations for admin validation.</span>
         </div>
     </div>
 
-    <!-- Success Modal -->
     <div id="successModal" class="success-modal">
         <div class="success-content">
-            <div class="success-icon">✓</div>
-            <p id="successMessage">Operation completed successfully!</p>
+            <div class="success-icon">&#10004;</div>
+            <p id="successMessage">Operation completed successfully.</p>
             <button type="button" class="btn btn-success" onclick="closeSuccessModal()">OK</button>
         </div>
     </div>

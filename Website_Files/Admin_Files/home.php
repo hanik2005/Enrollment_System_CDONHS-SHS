@@ -44,6 +44,7 @@ if (!$admin) {
      <link rel="stylesheet" href="../../Design/dashboard_design.css">
 </head>
 <body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
     <!-- header -->
     <div class="header">
     <div class="left">
@@ -54,8 +55,8 @@ if (!$admin) {
         Admin
     </div>
     <div class="right">
-         <button class="profile-btn" type="button">
-        <img src="../../Assets/admin_profile.png">
+         <button class="profile-btn" type="button" aria-label="Open profile menu">
+        <img src="../../Assets/admin_profile.png" alt="Admin profile">
     </button>
 
     <div class="profile-dropdown">
@@ -65,6 +66,7 @@ if (!$admin) {
     </div>
     </div>
 
+<main id="main-content">
     <div class="dashboard">
 
   <div class="dashboard-box">
@@ -73,54 +75,89 @@ if (!$admin) {
 
     <div class="dashboard-container">
         <a href="admin_student_application_list.php" class="dashboard-card">
-            <img src="../../Assets/application_button.jpg">
+            <img src="../../Assets/application_button.jpg" alt="Application List icon">
             <h3>Application List</h3>
         </a>
     </div>
 
     <div class="dashboard-container">
         <a href="sensitive_information.php" class="dashboard-card">
-            <img src="../../Assets/Visible.png">
+            <img src="../../Assets/Visible.png" alt="Sensitive Information icon">
             <h3>Sensitive Information</h3>
         </a>
     </div>
 
     <div class="dashboard-container">
         <a href="activation_page.php" class="dashboard-card">
-            <img src="../../Assets/activation_button.png">
+            <img src="../../Assets/activation_button.png" alt="Activation Page icon">
             <h3>Activation Page</h3>
         </a>
     </div>
 
     <div class="dashboard-container">
         <a href="enlistment_validation_page.php" class="dashboard-card">
-            <img src="../../Assets/enlistment_validation.png">
+            <img src="../../Assets/enlistment_validation.png" alt="Enlistment Validation icon">
             <h3>Enlistment Validation</h3>
         </a>
     </div>
 
     <div class="dashboard-container">
         <a href="teacher_advisory_page.php" class="dashboard-card">
-            <img src="../../Assets/teacher_application_image.png">
+            <img src="../../Assets/teacher_application_image.png" alt="Teacher Advisory icon">
             <h3>Teacher Advisory</h3>
         </a>
     </div>
 
-</div>
+    <div class="dashboard-container">
+        <a href="document_compliance_page.php" class="dashboard-card">
+            <img src="../../Assets/Visible.png" alt="Document Compliance icon">
+            <h3>Document Compliance</h3>
+        </a>
+    </div>
 
+    <div class="dashboard-container">
+        <a href="reports_dashboard_page.php" class="dashboard-card">
+            <img src="../../Assets/enlistment_validation.png" alt="Reports Dashboard icon">
+            <h3>Reports Dashboard</h3>
+        </a>
+    </div>
 
+    <div class="dashboard-container">
+        <a href="document_correction_page.php" class="dashboard-card">
+            <img src="../../Assets/application_button.jpg" alt="Document Correction icon">
+            <h3>Document Correction</h3>
+        </a>
+    </div>
+
+    <div class="dashboard-container">
+        <a href="audit_trail_page.php" class="dashboard-card">
+            <img src="../../Assets/activation_button.png" alt="Audit Trail icon">
+            <h3>Audit Trail</h3>
+        </a>
+    </div>
+
+    <div class="dashboard-container">
+        <a href="student_progress_validation_page.php" class="dashboard-card">
+            <img src="../../Assets/progress_button.png" alt="Student Progress Validation icon">
+            <h3>Student Progress Validation</h3>
+        </a>
+    </div>
+
+    </div>
   </div>
 
 </div>
+</main>
 
 
 
      <!-- footer -->
     <div class="footer">
-    © 2026 Cagayan De Oro National High School - Senior High School  
+    &copy; 2026 Cagayan De Oro National High School - Senior High School  
     <br>
     School Management System
     </div>
     <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
 </body>
 </html>
+

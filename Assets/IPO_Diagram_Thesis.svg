@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="1100" viewBox="0 0 1800 1100">
+  <defs>
+    <style>
+      .title { font: 700 34px 'Times New Roman', serif; fill: #111827; }
+      .subtitle { font: 500 20px 'Times New Roman', serif; fill: #374151; }
+      .hdr { font: 700 30px 'Times New Roman', serif; fill: #ffffff; letter-spacing: 1px; }
+      .node { font: 500 18px 'Times New Roman', serif; fill: #111827; }
+      .nnum { font: 700 18px 'Times New Roman', serif; fill: #0f172a; }
+      .cap { font: 500 18px 'Times New Roman', serif; fill: #374151; font-style: italic; }
+    </style>
+    <marker id="arrow" markerWidth="14" markerHeight="10" refX="11" refY="5" orient="auto">
+      <polygon points="0,0 14,5 0,10" fill="#334155" />
+    </marker>
+  </defs>
+
+  <rect x="0" y="0" width="1800" height="1100" fill="#f8fafc" />
+
+  <text x="900" y="70" text-anchor="middle" class="title">Input-Process-Output (IPO) Diagram</text>
+  <text x="900" y="105" text-anchor="middle" class="subtitle">CDONHS-SHS Enrollment Management System</text>
+
+  <rect x="70" y="145" width="500" height="840" rx="10" fill="#ffffff" stroke="#1f2937" stroke-width="2.2" />
+  <rect x="650" y="145" width="500" height="840" rx="10" fill="#ffffff" stroke="#1f2937" stroke-width="2.2" />
+  <rect x="1230" y="145" width="500" height="840" rx="10" fill="#ffffff" stroke="#1f2937" stroke-width="2.2" />
+
+  <rect x="70" y="145" width="500" height="82" rx="10" fill="#1f4e79" />
+  <rect x="650" y="145" width="500" height="82" rx="10" fill="#2f6f44" />
+  <rect x="1230" y="145" width="500" height="82" rx="10" fill="#7a3e00" />
+
+  <text x="320" y="198" text-anchor="middle" class="hdr">INPUT</text>
+  <text x="900" y="198" text-anchor="middle" class="hdr">PROCESS</text>
+  <text x="1480" y="198" text-anchor="middle" class="hdr">OUTPUT</text>
+
+  <rect x="92" y="255" width="456" height="100" rx="8" fill="#eef5fb" stroke="#94a3b8" />
+  <rect x="672" y="255" width="456" height="100" rx="8" fill="#eefaf1" stroke="#94a3b8" />
+  <rect x="1252" y="255" width="456" height="100" rx="8" fill="#fff4eb" stroke="#94a3b8" />
+
+  <rect x="92" y="380" width="456" height="100" rx="8" fill="#eef5fb" stroke="#94a3b8" />
+  <rect x="672" y="380" width="456" height="100" rx="8" fill="#eefaf1" stroke="#94a3b8" />
+  <rect x="1252" y="380" width="456" height="100" rx="8" fill="#fff4eb" stroke="#94a3b8" />
+
+  <rect x="92" y="505" width="456" height="100" rx="8" fill="#eef5fb" stroke="#94a3b8" />
+  <rect x="672" y="505" width="456" height="100" rx="8" fill="#eefaf1" stroke="#94a3b8" />
+  <rect x="1252" y="505" width="456" height="100" rx="8" fill="#fff4eb" stroke="#94a3b8" />
+
+  <rect x="92" y="630" width="456" height="100" rx="8" fill="#eef5fb" stroke="#94a3b8" />
+  <rect x="672" y="630" width="456" height="100" rx="8" fill="#eefaf1" stroke="#94a3b8" />
+  <rect x="1252" y="630" width="456" height="100" rx="8" fill="#fff4eb" stroke="#94a3b8" />
+
+  <rect x="92" y="755" width="456" height="100" rx="8" fill="#eef5fb" stroke="#94a3b8" />
+  <rect x="672" y="755" width="456" height="100" rx="8" fill="#eefaf1" stroke="#94a3b8" />
+  <rect x="1252" y="755" width="456" height="100" rx="8" fill="#fff4eb" stroke="#94a3b8" />
+
+  <rect x="92" y="880" width="456" height="85" rx="8" fill="#eef5fb" stroke="#94a3b8" />
+  <rect x="672" y="880" width="456" height="85" rx="8" fill="#eefaf1" stroke="#94a3b8" />
+  <rect x="1252" y="880" width="456" height="85" rx="8" fill="#fff4eb" stroke="#94a3b8" />
+
+  <text x="108" y="286" class="nnum">1.</text>
+  <text x="130" y="286" class="node">Student application and requirements data</text>
+  <text x="130" y="314" class="node">(personal, address, family, documents)</text>
+  <text x="688" y="286" class="nnum">1.</text>
+  <text x="710" y="286" class="node">Validate, sanitize, and store application</text>
+  <text x="710" y="314" class="node">in normalized enrollment tables</text>
+  <text x="1268" y="286" class="nnum">1.</text>
+  <text x="1290" y="286" class="node">Enrollment application recorded</text>
+  <text x="1290" y="314" class="node">with initial Pending status</text>
+
+  <text x="108" y="411" class="nnum">2.</text>
+  <text x="130" y="411" class="node">Admin application decisions and remarks</text>
+  <text x="688" y="411" class="nnum">2.</text>
+  <text x="710" y="411" class="node">Approve/reject/update application,</text>
+  <text x="710" y="439" class="node">create student user for approvals</text>
+  <text x="1268" y="411" class="nnum">2.</text>
+  <text x="1290" y="411" class="node">Updated status and generated</text>
+  <text x="1290" y="439" class="node">student credentials</text>
+
+  <text x="108" y="536" class="nnum">3.</text>
+  <text x="130" y="536" class="node">Login credentials and CAPTCHA</text>
+  <text x="688" y="536" class="nnum">3.</text>
+  <text x="710" y="536" class="node">Authenticate hashed password,</text>
+  <text x="710" y="564" class="node">set role session and route dashboard</text>
+  <text x="1268" y="536" class="nnum">3.</text>
+  <text x="1290" y="536" class="node">Authorized role-based access</text>
+  <text x="1290" y="564" class="node">(Student/Admin/Teacher)</text>
+
+  <text x="108" y="661" class="nnum">4.</text>
+  <text x="130" y="661" class="node">Student enlistment choices</text>
+  <text x="130" y="689" class="node">(grade level, strand, section)</text>
+  <text x="688" y="661" class="nnum">4.</text>
+  <text x="710" y="661" class="node">Validate section capacity and save</text>
+  <text x="710" y="689" class="node">term assignment for admin validation</text>
+  <text x="1268" y="661" class="nnum">4.</text>
+  <text x="1290" y="661" class="node">Enlistment status set to Pending</text>
+  <text x="1290" y="689" class="node">with section assignment record</text>
+
+  <text x="108" y="786" class="nnum">5.</text>
+  <text x="130" y="786" class="node">Admin enlistment validation actions</text>
+  <text x="688" y="786" class="nnum">5.</text>
+  <text x="710" y="786" class="node">Confirm as Enlisted or Rejected,</text>
+  <text x="710" y="814" class="node">update student enlistment state</text>
+  <text x="1268" y="786" class="nnum">5.</text>
+  <text x="1290" y="786" class="node">Final enlistment result</text>
+  <text x="1290" y="814" class="node">(Enlisted/Rejected/Promoted)</text>
+
+  <text x="108" y="911" class="nnum">6.</text>
+  <text x="130" y="911" class="node">OTP email + new password input</text>
+  <text x="688" y="911" class="nnum">6.</text>
+  <text x="710" y="911" class="node">Verify OTP, hash new password,</text>
+  <text x="710" y="939" class="node">mark reset token used</text>
+  <text x="1268" y="911" class="nnum">6.</text>
+  <text x="1290" y="911" class="node">Password reset completed and</text>
+  <text x="1290" y="939" class="node">account access restored</text>
+
+  <line x1="548" y1="305" x2="664" y2="305" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+  <line x1="1128" y1="305" x2="1244" y2="305" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+
+  <line x1="548" y1="430" x2="664" y2="430" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+  <line x1="1128" y1="430" x2="1244" y2="430" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+
+  <line x1="548" y1="555" x2="664" y2="555" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+  <line x1="1128" y1="555" x2="1244" y2="555" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+
+  <line x1="548" y1="680" x2="664" y2="680" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+  <line x1="1128" y1="680" x2="1244" y2="680" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+
+  <line x1="548" y1="805" x2="664" y2="805" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+  <line x1="1128" y1="805" x2="1244" y2="805" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+
+  <line x1="548" y1="922" x2="664" y2="922" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+  <line x1="1128" y1="922" x2="1244" y2="922" stroke="#334155" stroke-width="2.8" marker-end="url(#arrow)" />
+
+  <text x="900" y="1035" text-anchor="middle" class="cap">
+    Figure X. Formal IPO model of the CDONHS-SHS Enrollment Management System with explicit row-level flow connections.
+  </text>
+</svg>

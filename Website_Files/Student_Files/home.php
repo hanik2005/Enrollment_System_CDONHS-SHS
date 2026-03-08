@@ -52,6 +52,7 @@ include "../../Back_End_Files/PHP_Files/check_enrollment.php";
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to main content</a>
 
 <!-- header -->
     <div class="header">
@@ -80,8 +81,8 @@ include "../../Back_End_Files/PHP_Files/check_enrollment.php";
     </div>
     <div class="right">
 
-    <button class="profile-btn" type="button">
-        <img src="<?php echo $profileImagePath; ?>">
+    <button class="profile-btn" type="button" aria-label="Open profile menu">
+        <img src="<?php echo $profileImagePath; ?>" alt="Student profile">
     </button>
 
     <div class="profile-dropdown">
@@ -93,6 +94,7 @@ include "../../Back_End_Files/PHP_Files/check_enrollment.php";
     </div>
     </div>
 
+<main id="main-content">
   <div class="dashboard">
 
   <div class="dashboard-box">
@@ -101,7 +103,7 @@ include "../../Back_End_Files/PHP_Files/check_enrollment.php";
 
     <div class="dashboard-container">
         <a href="profile_page.php" class="dashboard-card">
-            <img src="../../Assets/profile_button.png">
+            <img src="../../Assets/profile_button.png" alt="My Profile icon">
             <h3>My Profile</h3>
         </a>
     </div>
@@ -109,17 +111,17 @@ include "../../Back_End_Files/PHP_Files/check_enrollment.php";
     <div class="dashboard-container">
     <?php if (!$isEnlisted && !$isPending && !$Promoted): ?>
         <a href="student_enlistment.php" class="dashboard-card">
-            <img src="../../Assets/enlistment_button.png">
+            <img src="../../Assets/enlistment_button.png" alt="Enlistment icon">
             <h3>Enlistment</h3>
         </a>
     <?php elseif ($isPending): ?>
         <div class="dashboard-card" style="opacity:0.5; pointer-events:none;">
-            <img src="../../Assets/enlistment_button.png">
+            <img src="../../Assets/enlistment_button.png" alt="Pending enlistment icon">
             <h3>Pending Enlistment</h3>
         </div>
     <?php else: ?>
         <div class="dashboard-card" style="opacity:0.5; pointer-events:none;">
-            <img src="../../Assets/enlistment_button.png">
+            <img src="../../Assets/enlistment_button.png" alt="Enlisted status icon">
             <h3>Already Enlisted</h3>
         </div>
     <?php endif; ?>
@@ -129,18 +131,18 @@ include "../../Back_End_Files/PHP_Files/check_enrollment.php";
   </div>
 
 </div>
+</div>
 
-
-
-
-
+</main>
 
     <!-- footer -->
     <div class="footer">
-    © 2026 Cagayan De Oro National High School - Senior High School  
+    &copy; 2026 Cagayan De Oro National High School - Senior High School  
     <br>
     School Management System
     </div>
 <script src="../../Back_End_Files/JSCRIPT_Files/profile_dropdown_function.js"></script>
 </body>
 </html>
+
+

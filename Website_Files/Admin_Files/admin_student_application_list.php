@@ -123,6 +123,11 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                         <?php
                             $hasLrn = !empty(trim((string) ($row['lrn'] ?? '')));
                             $studentFullName = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+                            $existingRemarks = trim((string) ($row['remarks'] ?? ''));
+                            $remarksPreview = $existingRemarks;
+                            if (strlen($remarksPreview) > 60) {
+                                $remarksPreview = substr($remarksPreview, 0, 60) . '...';
+                            }
                         ?>
                         <tr class="application-row" data-application-id="<?= $row['application_id']; ?>" data-has-lrn="<?= $hasLrn ? '1' : '0'; ?>" data-student-name="<?= htmlspecialchars($studentFullName); ?>">
                             <td>
@@ -188,15 +193,24 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                             <td>
                                 <div class="batch-update-fields" style="display: none;">
                                     <input type="hidden" class="application-id" value="<?= $row['application_id']; ?>">
-                                    <textarea name="remarks" rows="2" class="remarks-small batch-remarks" placeholder="Enter remarks..."></textarea>
+                                    <input type="hidden" name="remarks" class="batch-remarks" value="<?= htmlspecialchars($existingRemarks, ENT_QUOTES); ?>">
                                     <select name="application_status" class="batch-status">
-                                        <option value="Pending">Pending</option>
-                                        <option value="Approved">Approved</option>
-                                        <option value="Rejected">Rejected</option>
+                                        <option value="Pending" <?= ($row['application_status'] === 'Pending') ? 'selected' : ''; ?>>Pending</option>
+                                        <option value="Approved" <?= ($row['application_status'] === 'Approved') ? 'selected' : ''; ?>>Approved</option>
+                                        <option value="Rejected" <?= ($row['application_status'] === 'Rejected') ? 'selected' : ''; ?>>Rejected</option>
                                     </select>
                                 </div>
                                 <div class="original-form-fields">
-                                    <span style="color: #666; font-size: 0.85em;">Use checkbox + Confirm to batch update</span>
+                                    <button type="button" class="btn btn-remarks-edit">Add/Edit Remarks</button>
+                                    <div class="remarks-state">
+                                        <span class="remarks-indicator <?= $existingRemarks !== '' ? 'remarks-has-value' : ''; ?>">
+                                            <?= $existingRemarks !== '' ? 'Saved remarks' : 'No saved remarks'; ?>
+                                        </span>
+                                        <span class="remarks-preview">
+                                            <?= $existingRemarks !== '' ? htmlspecialchars($remarksPreview) : 'Click Add/Edit Remarks to input and save.'; ?>
+                                        </span>
+                                    </div>
+                                    <span style="color: #666; font-size: 0.85em;">Use checkbox + Confirm to apply saved remarks/status</span>
                                     <?php if (!$hasLrn): ?>
                                         <span class="lrn-admin-note-block">Cannot confirm while LRN is missing.</span>
                                     <?php endif; ?>
@@ -250,6 +264,19 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
             <div class="success-icon">✓</div>
             <p id="successMessage">Operation completed successfully!</p>
             <button type="button" class="btn btn-success" onclick="closeSuccessModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Remarks Modal -->
+    <div id="remarksModal" class="remarks-modal">
+        <div class="remarks-modal-content">
+            <h3>Edit Remarks</h3>
+            <p id="remarksModalStudentName" class="remarks-modal-student">Student:</p>
+            <textarea id="remarksModalInput" rows="5" placeholder="Type your remarks here..."></textarea>
+            <div class="remarks-modal-actions">
+                <button type="button" class="btn btn-save" id="saveRemarksBtn">Save</button>
+                <button type="button" class="btn btn-reset" id="cancelRemarksBtn">Cancel</button>
+            </div>
         </div>
     </div>
 

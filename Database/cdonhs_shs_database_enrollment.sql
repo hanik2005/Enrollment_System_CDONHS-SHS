@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 06, 2026 at 08:12 PM
+-- Generation Time: Mar 08, 2026 at 12:53 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -42,6 +42,61 @@ INSERT INTO `activation_settings` (`id`, `activation_name`, `activation_status`)
 (2, 'Form 137 and 138 Page', 1),
 (3, 'Student Progress Page', 1),
 (4, 'Teacher Registration', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_audit_trail`
+--
+
+CREATE TABLE `admin_audit_trail` (
+  `audit_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` int(11) DEFAULT NULL,
+  `action_type` varchar(120) NOT NULL,
+  `entity_type` varchar(120) DEFAULT NULL,
+  `entity_id` varchar(120) DEFAULT NULL,
+  `description` text NOT NULL,
+  `metadata` longtext DEFAULT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `admin_audit_trail`
+--
+
+INSERT INTO `admin_audit_trail` (`audit_id`, `user_id`, `action_type`, `entity_type`, `entity_id`, `description`, `metadata`, `ip_address`, `created_at`) VALUES
+(1, 19, 'DOCUMENT_CORRECTION_REQUESTED', 'student_documents', '2', 'Requested correction for Form 138 (application #2)', '{\"document_field\":\"form_138\",\"document_label\":\"Form 138\",\"reason\":\"send another one\",\"student_name\":\"Nick Charles Clarito\",\"student_email\":\"nickcharlesclarito@gmail.com\",\"parent_sms\":{\"attempted\":2,\"sent\":0,\"failed\":2,\"skipped\":0,\"details\":[{\"status\":\"failed\",\"label\":\"Father\",\"number\":\"+639826473264\",\"error\":\"SMS gateway is not configured. Set SMS_ENABLED=true and SMS_API_KEY.\"},{\"status\":\"failed\",\"label\":\"Mother\",\"number\":\"+639262360968\",\"error\":\"SMS gateway is not configured. Set SMS_ENABLED=true and SMS_API_KEY.\"}]}}', '::1', '2026-03-08 05:29:14'),
+(2, 19, 'DOCUMENT_DELETED', 'student_documents', '2', 'Deleted Form 138 for application #2', '{\"document_field\":\"form_138\",\"document_label\":\"Form 138\",\"deleted_filename\":\"1772942522_FORM_138_2.pdf\",\"student_name\":\"Nick Charles Clarito\"}', '::1', '2026-03-08 05:30:00'),
+(3, 19, 'DOCUMENT_CORRECTION_REQUESTED', 'student_documents', '2', 'Requested correction for PSA Birth Certificate (application #2)', '{\"document_field\":\"psa_birth_certificate\",\"document_label\":\"PSA Birth Certificate\",\"reason\":\"dasdafgagag\",\"student_name\":\"Nick Charles Clarito\",\"student_email\":\"nickcharlesclarito@gmail.com\",\"parent_sms\":{\"attempted\":2,\"sent\":0,\"failed\":2,\"skipped\":0,\"details\":[{\"status\":\"failed\",\"label\":\"Father\",\"number\":\"+639944719534\",\"error\":\"SMS gateway is not configured. Set SMS_ENABLED=true and SMS_API_KEY.\"},{\"status\":\"failed\",\"label\":\"Mother\",\"number\":\"+639262360968\",\"error\":\"SMS gateway is not configured. Set SMS_ENABLED=true and SMS_API_KEY.\"}]}}', '::1', '2026-03-08 05:39:03'),
+(4, 19, 'DOCUMENT_CORRECTION_REQUESTED', 'student_documents', '2', 'Requested correction for PSA Birth Certificate (application #2)', '{\"document_field\":\"psa_birth_certificate\",\"document_label\":\"PSA Birth Certificate\",\"reason\":\"this is wrong\",\"student_name\":\"Nick Charles Clarito\",\"student_email\":\"nickcharlesclarito@gmail.com\",\"parent_sms\":{\"attempted\":0,\"sent\":0,\"failed\":0,\"skipped\":1,\"details\":[{\"status\":\"skipped\",\"reason\":\"SMS gateway disabled. Configure Back_End_Files\\/PHP_Files\\/sms_config.php\"}]}}', '::1', '2026-03-08 05:46:40'),
+(5, 19, 'DOCUMENT_CORRECTION_REQUESTED', 'student_documents', '2', 'Requested correction for PSA Birth Certificate (application #2)', '{\"document_field\":\"psa_birth_certificate\",\"document_label\":\"PSA Birth Certificate\",\"reason\":\"dasdggvxz\",\"student_name\":\"Nick Charles Clarito\",\"student_email\":\"nickcharlesclarito@gmail.com\"}', '::1', '2026-03-08 06:15:41'),
+(6, 19, 'APPLICATION_APPROVED', 'student_applications', '6', 'Approved application #6', '{\"status\":\"Approved\",\"remarks\":\"Badgao ka???\",\"student_name\":\"Charlie Nathaniel Viador\",\"created_user_id\":101}', '::1', '2026-03-08 06:43:00'),
+(7, 19, 'STUDENT_SEMESTER_PROMOTED', 'student_strand', '6', 'Approved semester promotion for student #6 to 2nd Semester', '{\"school_year\":\"2025-2026\",\"semester_from\":\"1st Semester\",\"semester_to\":\"2nd Semester\",\"approved_by\":19}', '::1', '2026-03-08 09:24:06'),
+(8, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '2', 'Approved teacher student-progress recommendation #2', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to 2nd Semester.\"}', '::1', '2026-03-08 09:24:07'),
+(9, 19, 'STUDENT_SEMESTER_PROMOTED', 'student_strand', '8', 'Approved semester promotion for student #8 to 2nd Semester', '{\"school_year\":\"2025-2026\",\"semester_from\":\"1st Semester\",\"semester_to\":\"2nd Semester\",\"approved_by\":19}', '::1', '2026-03-08 09:24:07'),
+(10, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '1', 'Approved teacher student-progress recommendation #1', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to 2nd Semester.\"}', '::1', '2026-03-08 09:24:07'),
+(11, 19, 'STUDENT_SEMESTER_PROMOTED', 'student_strand', '9', 'Approved semester promotion for student #9 to 2nd Semester', '{\"school_year\":\"2025-2026\",\"semester_from\":\"1st Semester\",\"semester_to\":\"2nd Semester\",\"approved_by\":19}', '::1', '2026-03-08 09:24:07'),
+(12, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '3', 'Approved teacher student-progress recommendation #3', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to 2nd Semester.\"}', '::1', '2026-03-08 09:24:07'),
+(13, 19, 'STUDENT_PROMOTED', 'students', '6', 'Approved teacher recommendation and promoted student #6 to Grade 12', '{\"teacher_recommended_status\":\"Promote to Grade 12\",\"school_year_from\":\"2025-2026\",\"school_year_to\":\"2026-2027\",\"approved_by\":19}', '::1', '2026-03-08 09:26:30'),
+(14, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '11', 'Approved teacher student-progress recommendation #11', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to Grade 12.\"}', '::1', '2026-03-08 09:26:30'),
+(15, 19, 'STUDENT_PROMOTED', 'students', '8', 'Approved teacher recommendation and promoted student #8 to Grade 12', '{\"teacher_recommended_status\":\"Promote to Grade 12\",\"school_year_from\":\"2025-2026\",\"school_year_to\":\"2026-2027\",\"approved_by\":19}', '::1', '2026-03-08 09:26:30'),
+(16, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '10', 'Approved teacher student-progress recommendation #10', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to Grade 12.\"}', '::1', '2026-03-08 09:26:30'),
+(17, 19, 'STUDENT_PROMOTED', 'students', '9', 'Approved teacher recommendation and promoted student #9 to Grade 12', '{\"teacher_recommended_status\":\"Promote to Grade 12\",\"school_year_from\":\"2025-2026\",\"school_year_to\":\"2026-2027\",\"approved_by\":19}', '::1', '2026-03-08 09:26:31'),
+(18, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '12', 'Approved teacher student-progress recommendation #12', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to Grade 12.\"}', '::1', '2026-03-08 09:26:31'),
+(19, 19, 'STUDENT_SEMESTER_PROMOTED', 'student_strand', '6', 'Approved semester promotion for student #6 to 2nd Semester', '{\"school_year\":\"2026-2027\",\"semester_from\":\"1st Semester\",\"semester_to\":\"2nd Semester\",\"approved_by\":19}', '::1', '2026-03-08 09:30:12'),
+(20, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '14', 'Approved teacher student-progress recommendation #14', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to 2nd Semester.\"}', '::1', '2026-03-08 09:30:12'),
+(21, 19, 'STUDENT_SEMESTER_PROMOTED', 'student_strand', '8', 'Approved semester promotion for student #8 to 2nd Semester', '{\"school_year\":\"2026-2027\",\"semester_from\":\"1st Semester\",\"semester_to\":\"2nd Semester\",\"approved_by\":19}', '::1', '2026-03-08 09:30:13'),
+(22, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '13', 'Approved teacher student-progress recommendation #13', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to 2nd Semester.\"}', '::1', '2026-03-08 09:30:13'),
+(23, 19, 'STUDENT_SEMESTER_PROMOTED', 'student_strand', '9', 'Approved semester promotion for student #9 to 2nd Semester', '{\"school_year\":\"2026-2027\",\"semester_from\":\"1st Semester\",\"semester_to\":\"2nd Semester\",\"approved_by\":19}', '::1', '2026-03-08 09:30:13'),
+(24, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '15', 'Approved teacher student-progress recommendation #15', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Promoted to 2nd Semester.\"}', '::1', '2026-03-08 09:30:13'),
+(25, 19, 'STUDENT_GRADUATED', 'students', '8', 'Approved teacher recommendation and marked student #8 as Graduated', '{\"teacher_recommended_status\":\"Graduate\",\"approved_by\":19}', '::1', '2026-03-08 09:31:45'),
+(26, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '16', 'Approved teacher student-progress recommendation #16', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Marked as Graduated.\"}', '::1', '2026-03-08 09:31:45'),
+(27, 19, 'STUDENT_GRADUATED', 'students', '6', 'Approved teacher recommendation and marked student #6 as Graduated', '{\"teacher_recommended_status\":\"Graduate\",\"approved_by\":19}', '::1', '2026-03-08 09:31:45'),
+(28, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '17', 'Approved teacher student-progress recommendation #17', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Marked as Graduated.\"}', '::1', '2026-03-08 09:31:46'),
+(29, 19, 'STUDENT_GRADUATED', 'students', '9', 'Approved teacher recommendation and marked student #9 as Graduated', '{\"teacher_recommended_status\":\"Graduate\",\"approved_by\":19}', '::1', '2026-03-08 09:31:46'),
+(30, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '18', 'Approved teacher student-progress recommendation #18', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Marked as Graduated.\"}', '::1', '2026-03-08 09:31:46'),
+(31, 19, 'ENLISTMENT_APPROVED', 'students', '10', 'Approved enlistment for student #10', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":6,\"email\":\"clarito.nickcharles@gmail.com\",\"first_name\":\"Charlie Nathaniel\",\"last_name\":\"Viador\"}}', '::1', '2026-03-08 11:17:14');
 
 -- --------------------------------------------------------
 
@@ -180,21 +235,23 @@ INSERT INTO `section` (`section_id`, `section_name`, `grade_level`, `strand_id`,
 CREATE TABLE `strands` (
   `strand_id` int(11) NOT NULL,
   `strand_abbreviation` varchar(30) NOT NULL,
-  `strand_name` varchar(255) NOT NULL
+  `strand_name` varchar(255) NOT NULL,
+  `track_name` varchar(120) NOT NULL DEFAULT 'Academic Track',
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `strands`
 --
 
-INSERT INTO `strands` (`strand_id`, `strand_abbreviation`, `strand_name`) VALUES
-(1, 'STEM', 'Science, Technology, Engineering and Mathematics'),
-(2, 'ABM', 'Accountancy, Business and Management'),
-(3, 'HUMSS', 'Humanities and Social Sciences'),
-(4, 'GAS', 'General Academic Strand'),
-(5, 'TVL-ICT', 'Technical-Vocational-Livelihood - Information and Communications Technology'),
-(6, 'TVL-EIM', 'Technical-Vocational-Livelihood - Electrical Installation and Maintenance'),
-(7, 'TVL-HE', 'Technical-Vocational-Livelihood - Home Economics');
+INSERT INTO `strands` (`strand_id`, `strand_abbreviation`, `strand_name`, `track_name`, `is_active`) VALUES
+(1, 'STEM', 'Science, Technology, Engineering and Mathematics', 'Academic Track', 1),
+(2, 'BE', 'Business and Entrepreneurship', 'Academic Track', 1),
+(3, 'ASSH', 'Arts, Social Sciences, and Humanities', 'Academic Track', 1),
+(4, 'GAS', 'General Academic Strand', 'Academic Track', 0),
+(5, 'ICT', 'Information and Communication Technology', 'Technical Professional (TechPro) Track', 1),
+(6, 'IA', 'Industrial Arts', 'Technical Professional (TechPro) Track', 1),
+(7, 'FCS', 'Family and Consumer Science', 'Technical Professional (TechPro) Track', 1);
 
 -- --------------------------------------------------------
 
@@ -217,9 +274,10 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `user_id`, `application_id`, `enrollment_status`, `date_enrolled`, `enlistment_status`, `school_year`) VALUES
-(6, 97, 2, 'Active', '2026-03-05', 'Enlisted', '2025-2026'),
-(8, 99, 3, 'Active', '2026-03-06', 'Enlisted', '2025-2026'),
-(9, 100, 5, 'Active', '2026-03-06', 'Enlisted', '2025-2026');
+(6, 97, 2, 'Graduated', '2026-03-05', 'Finished', '2026-2027'),
+(8, 99, 3, 'Graduated', '2026-03-06', 'Finished', '2026-2027'),
+(9, 100, 5, 'Graduated', '2026-03-06', 'Finished', '2026-2027'),
+(10, 101, 6, 'Active', '2026-03-08', 'Enlisted', '2025-2026');
 
 -- --------------------------------------------------------
 
@@ -254,7 +312,8 @@ CREATE TABLE `student_addresses` (
 INSERT INTO `student_addresses` (`address_id`, `application_id`, `house_number`, `street`, `barangay`, `city_municipality`, `province`, `country`, `zip_code`, `same_as_current`, `permanent_house_number`, `permanent_street`, `permanent_barangay`, `permanent_city`, `permanent_province`, `permanent_country`, `permanent_zip_code`) VALUES
 (2, 2, 'Blk 4 Lot 3', 'Buena Oro', 'Barangay 15', 'Cagayan de Oro City', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Barangay 15', 'Cagayan de Oro City', 'Misamis Oriental', 'Philippines', '9000'),
 (3, 3, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000'),
-(5, 5, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000');
+(5, 5, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000'),
+(6, 6, 'Lot 5', 'Jkodgs', 'Malasay', 'Katipunan', 'Zamboanga Del Norte', 'Philippines', '4000', 'Yes', 'Lot 5', 'Jkodgs', 'Malasay', 'Katipunan', 'Zamboanga Del Norte', 'Philippines', '4000');
 
 -- --------------------------------------------------------
 
@@ -291,7 +350,8 @@ CREATE TABLE `student_applications` (
 INSERT INTO `student_applications` (`application_id`, `lrn`, `last_name`, `first_name`, `middle_name`, `extension_name`, `date_of_birth`, `sex`, `place_of_birth`, `religion`, `mother_tongue`, `enrollment_type`, `application_status`, `email`, `contact_number`, `remarks`, `date_submitted`, `facebook_profile`, `profile_image`) VALUES
 (2, '405220150089', 'Clarito', 'Nick Charles', 'Durangparang', '', '2005-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'Balik-Aral', 'Approved', 'nickcharlesclarito@gmail.com', '09944718764', 'dasgasga', '2026-03-05 20:59:38', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
 (3, '123892477492', 'Clarito', 'Andry', 'Durangparang', '', '2010-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nidu.clarito.coc@phinmaed.com', '09315510501', 'kdaslgajpgas', '2026-03-06 05:01:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
-(5, '182785932075', 'Japlag', 'Jason Jay', 'Dumang', '', '2006-10-17', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nickhoyo2005@gmail.com', '09782357252', 'dasfvxdshsherrg', '2026-03-06 19:04:49', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL);
+(5, '182785932075', 'Japlag', 'Jason Jay', 'Dumang', '', '2006-10-17', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nickhoyo2005@gmail.com', '09782357252', 'dasfvxdshsherrg', '2026-03-06 19:04:49', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
+(6, '197529532252', 'Viador', 'Charlie Nathaniel', 'Barero', '', '2003-11-12', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'clarito.nickcharles@gmail.com', '09637258522', 'Badgao ka???', '2026-03-08 06:40:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL);
 
 -- --------------------------------------------------------
 
@@ -313,9 +373,10 @@ CREATE TABLE `student_documents` (
 --
 
 INSERT INTO `student_documents` (`document_id`, `application_id`, `psa_birth_certificate`, `psa_birth_certificate_no`, `form_138`, `student_id_copy`) VALUES
-(2, 2, NULL, NULL, NULL, NULL),
+(2, 2, '1772948258_PSA_BIRTH_CERTIFICATE_2.pdf', NULL, '1772948258_FORM_138_2.pdf', '1772948258_STUDENT_ID_COPY_2.pdf'),
 (3, 3, NULL, NULL, NULL, NULL),
-(5, 5, NULL, NULL, NULL, NULL);
+(5, 5, NULL, NULL, NULL, NULL),
+(6, 6, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -345,9 +406,10 @@ CREATE TABLE `student_family` (
 --
 
 INSERT INTO `student_family` (`family_id`, `application_id`, `father_last_name`, `father_first_name`, `father_middle_name`, `father_contact`, `mother_last_name`, `mother_first_name`, `mother_middle_name`, `mother_contact`, `guardian_last_name`, `guardian_first_name`, `guardian_middle_name`, `guardian_contact`) VALUES
-(2, 2, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
+(2, 2, 'Clarito', 'Randy', 'Durangparang', '09944719534', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
 (3, 3, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
-(5, 5, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', '');
+(5, 5, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
+(6, 6, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -374,7 +436,8 @@ CREATE TABLE `student_learning_modality` (
 INSERT INTO `student_learning_modality` (`modality_id`, `application_id`, `blended`, `modular_print`, `modular_digital`, `online`, `homeschooling`, `educational_tv`, `radio_based_tv`) VALUES
 (2, 2, 0, 0, 0, 0, 0, 0, 0),
 (3, 3, 0, 0, 0, 0, 0, 0, 0),
-(5, 5, 0, 0, 0, 0, 0, 0, 0);
+(5, 5, 0, 0, 0, 0, 0, 0, 0),
+(6, 6, 0, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -396,7 +459,8 @@ CREATE TABLE `student_learning_program` (
 INSERT INTO `student_learning_program` (`program_id`, `application_id`, `attended_learning_program`, `learning_program_specify`) VALUES
 (2, 2, 'No', ''),
 (3, 3, 'No', ''),
-(5, 5, 'Yes', 'Home Schooling');
+(5, 5, 'Yes', 'Home Schooling'),
+(6, 6, 'Yes', 'Home Schooling');
 
 -- --------------------------------------------------------
 
@@ -420,7 +484,50 @@ CREATE TABLE `student_previous_school` (
 INSERT INTO `student_previous_school` (`prev_school_id`, `application_id`, `last_grade_completed`, `last_school_year_completed`, `last_school_attended`, `school_id`) VALUES
 (2, 2, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', ''),
 (3, 3, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111'),
-(5, 5, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111');
+(5, 5, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111'),
+(6, 6, 'Grade 10', '2025-2026', 'Cagayan De Oro National High School', '304111');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `student_promotion_status`
+--
+
+CREATE TABLE `student_promotion_status` (
+  `promotion_status_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `teacher_id` int(11) NOT NULL,
+  `school_year` varchar(9) NOT NULL,
+  `semester` enum('1st Semester','2nd Semester') NOT NULL,
+  `computed_status` enum('Pending','Complete','Incomplete') NOT NULL DEFAULT 'Pending',
+  `recommended_status` varchar(50) NOT NULL DEFAULT 'Pending',
+  `teacher_remarks` text DEFAULT NULL,
+  `approval_status` enum('Pending','Approved','Rejected') NOT NULL DEFAULT 'Pending',
+  `is_approved` tinyint(1) NOT NULL DEFAULT 0,
+  `admin_user_id` int(11) DEFAULT NULL,
+  `admin_remarks` text DEFAULT NULL,
+  `approved_at` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `student_promotion_status`
+--
+
+INSERT INTO `student_promotion_status` (`promotion_status_id`, `student_id`, `teacher_id`, `school_year`, `semester`, `computed_status`, `recommended_status`, `teacher_remarks`, `approval_status`, `is_approved`, `admin_user_id`, `admin_remarks`, `approved_at`, `created_at`, `updated_at`) VALUES
+(1, 8, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-08 09:24:07'),
+(2, 6, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:06', '2026-03-08 09:19:27', '2026-03-08 09:24:06'),
+(3, 9, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-08 09:24:07'),
+(10, 8, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
+(11, 6, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
+(12, 9, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
+(13, 8, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:12', '2026-03-08 09:29:37', '2026-03-08 09:30:12'),
+(14, 6, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:12', '2026-03-08 09:29:37', '2026-03-08 09:30:12'),
+(15, 9, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:13', '2026-03-08 09:29:37', '2026-03-08 09:30:13'),
+(16, 8, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:45', '2026-03-08 09:31:03', '2026-03-08 09:31:45'),
+(17, 6, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:45', '2026-03-08 09:31:03', '2026-03-08 09:31:45'),
+(18, 9, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:46', '2026-03-08 09:31:03', '2026-03-08 09:31:46');
 
 -- --------------------------------------------------------
 
@@ -444,7 +551,8 @@ CREATE TABLE `student_social_info` (
 INSERT INTO `student_social_info` (`social_id`, `application_id`, `indigenous_community`, `ip_specify`, `four_ps_beneficiary`, `four_ps_household_id`) VALUES
 (2, 2, 'No', '', 'No', ''),
 (3, 3, 'No', '', 'No', ''),
-(5, 5, 'No', '', 'No', '');
+(5, 5, 'No', '', 'No', ''),
+(6, 6, 'Yes', 'Badgao', 'Yes', '98638212');
 
 -- --------------------------------------------------------
 
@@ -475,7 +583,8 @@ CREATE TABLE `student_special_needs` (
 INSERT INTO `student_special_needs` (`sne_id`, `application_id`, `with_disability`, `has_pwd_id`, `pwd_id_number`, `special_education_needed`, `non_graded_sne`, `disability_category`, `disability_description`, `sped_services_needed`, `medical_diagnosis`, `assessment_date`, `assessed_by`) VALUES
 (2, 2, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
 (3, 3, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
-(5, 5, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL);
+(5, 5, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 6, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -498,9 +607,10 @@ CREATE TABLE `student_strand` (
 --
 
 INSERT INTO `student_strand` (`student_strand_id`, `student_id`, `strand_id`, `grade_level`, `semester`, `school_year`, `section_id`) VALUES
-(1, 6, 5, 11, '2nd Semester', '2025-2026', 33),
-(2, 8, 5, 11, '2nd Semester', '2025-2026', 33),
-(3, 9, 5, 11, '2nd Semester', '2025-2026', 33);
+(1, 6, 5, 12, '2nd Semester', '2026-2027', 37),
+(2, 8, 5, 12, '2nd Semester', '2026-2027', 37),
+(3, 9, 5, 12, '2nd Semester', '2026-2027', 37),
+(4, 10, 5, 11, '2nd Semester', '2025-2026', 33);
 
 -- --------------------------------------------------------
 
@@ -589,6 +699,38 @@ CREATE TABLE `teacher_advisory` (
   `assigned_date` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `teacher_advisory`
+--
+
+INSERT INTO `teacher_advisory` (`advisory_id`, `teacher_id`, `section_id`, `grade_level`, `strand_id`, `school_year`, `assigned_date`) VALUES
+(1, 27, 33, 11, 5, '2025-2026', '2026-03-08 07:17:01'),
+(2, 11, 37, 12, 5, '2025-2026', '2026-03-08 09:27:31');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `teacher_student_notes`
+--
+
+CREATE TABLE `teacher_student_notes` (
+  `note_id` int(11) NOT NULL,
+  `teacher_id` int(11) NOT NULL,
+  `student_id` int(11) NOT NULL,
+  `behavior_note` text DEFAULT NULL,
+  `follow_up_note` text DEFAULT NULL,
+  `intervention_note` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `teacher_student_notes`
+--
+
+INSERT INTO `teacher_student_notes` (`note_id`, `teacher_id`, `student_id`, `behavior_note`, `follow_up_note`, `intervention_note`, `created_at`, `updated_at`) VALUES
+(1, 27, 8, 'jdksajlfasfas', 'fsafaf', 'fasfaf', '2026-03-08 07:19:38', '2026-03-08 07:19:38');
+
 -- --------------------------------------------------------
 
 --
@@ -620,7 +762,7 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `role_id`, `status`, `fi
 (48, 'teacher008', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (49, 'teacher009', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (50, 'teacher010', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
-(51, 'teacher011', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
+(51, 'teacher011', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 0),
 (52, 'teacher012', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (53, 'teacher013', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (54, 'teacher014', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
@@ -663,7 +805,8 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `role_id`, `status`, `fi
 (91, '146273816439', '$2y$10$JfdtFxxr8ov1gFjTpKWUWOYpIiTCo2KIC8qTrobIbYEPxrL1t6nCG', 1, 'Active', 0),
 (97, '405220150089', '$2y$10$k/VQwXg7RWJVmCl48AzxTuityJNyxLNYXkuRevdPeklf6V.JmX/Fe', 1, 'Active', 0),
 (99, '123892477492', '$2y$10$omOeBaVL1PKGuycXxrmZwugqpb6L1ePvCjHEuRR4hCFkzk7W/U11q', 1, 'Active', 0),
-(100, '182785932075', '$2y$10$a1tlQWF.EXwNDnAWkigLteT9cRsmGhwsK59G033xnbOiWvZioLTBm', 1, 'Active', 0);
+(100, '182785932075', '$2y$10$a1tlQWF.EXwNDnAWkigLteT9cRsmGhwsK59G033xnbOiWvZioLTBm', 1, 'Active', 0),
+(101, '197529532252', '$2y$10$UW9kLJuEhmkae6ffekgx5.fOnx.XB6vWfDvHKnJLBB60mfT6VVFi2', 1, 'Active', 0);
 
 --
 -- Indexes for dumped tables
@@ -674,6 +817,16 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `role_id`, `status`, `fi
 --
 ALTER TABLE `activation_settings`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `admin_audit_trail`
+--
+ALTER TABLE `admin_audit_trail`
+  ADD PRIMARY KEY (`audit_id`),
+  ADD KEY `idx_user_id` (`user_id`),
+  ADD KEY `idx_action_type` (`action_type`),
+  ADD KEY `idx_entity` (`entity_type`,`entity_id`),
+  ADD KEY `idx_created_at` (`created_at`);
 
 --
 -- Indexes for table `archived_student_strand`
@@ -767,6 +920,17 @@ ALTER TABLE `student_previous_school`
   ADD KEY `application_id` (`application_id`);
 
 --
+-- Indexes for table `student_promotion_status`
+--
+ALTER TABLE `student_promotion_status`
+  ADD PRIMARY KEY (`promotion_status_id`),
+  ADD UNIQUE KEY `uq_student_promotion_term` (`student_id`,`school_year`,`semester`),
+  ADD KEY `idx_promotion_status_teacher` (`teacher_id`),
+  ADD KEY `idx_promotion_status_admin` (`admin_user_id`),
+  ADD KEY `idx_promotion_status_term` (`school_year`,`semester`),
+  ADD KEY `idx_promotion_status_approval` (`approval_status`);
+
+--
 -- Indexes for table `student_social_info`
 --
 ALTER TABLE `student_social_info`
@@ -806,6 +970,15 @@ ALTER TABLE `teacher_advisory`
   ADD KEY `strand_id` (`strand_id`);
 
 --
+-- Indexes for table `teacher_student_notes`
+--
+ALTER TABLE `teacher_student_notes`
+  ADD PRIMARY KEY (`note_id`),
+  ADD UNIQUE KEY `uq_teacher_student_note` (`teacher_id`,`student_id`),
+  ADD KEY `idx_teacher_student_notes_teacher` (`teacher_id`),
+  ADD KEY `idx_teacher_student_notes_student` (`student_id`);
+
+--
 -- Indexes for table `users`
 --
 ALTER TABLE `users`
@@ -822,6 +995,12 @@ ALTER TABLE `users`
 --
 ALTER TABLE `activation_settings`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT for table `admin_audit_trail`
+--
+ALTER TABLE `admin_audit_trail`
+  MODIFY `audit_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `archived_student_strand`
@@ -857,67 +1036,73 @@ ALTER TABLE `strands`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `student_addresses`
 --
 ALTER TABLE `student_addresses`
-  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_applications`
 --
 ALTER TABLE `student_applications`
-  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_documents`
 --
 ALTER TABLE `student_documents`
-  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_family`
 --
 ALTER TABLE `student_family`
-  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_learning_modality`
 --
 ALTER TABLE `student_learning_modality`
-  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_learning_program`
 --
 ALTER TABLE `student_learning_program`
-  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_previous_school`
 --
 ALTER TABLE `student_previous_school`
-  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `student_promotion_status`
+--
+ALTER TABLE `student_promotion_status`
+  MODIFY `promotion_status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT for table `student_social_info`
 --
 ALTER TABLE `student_social_info`
-  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_special_needs`
 --
 ALTER TABLE `student_special_needs`
-  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `student_strand`
 --
 ALTER TABLE `student_strand`
-  MODIFY `student_strand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `student_strand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `teachers`
@@ -929,17 +1114,29 @@ ALTER TABLE `teachers`
 -- AUTO_INCREMENT for table `teacher_advisory`
 --
 ALTER TABLE `teacher_advisory`
-  MODIFY `advisory_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `advisory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `teacher_student_notes`
+--
+ALTER TABLE `teacher_student_notes`
+  MODIFY `note_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=101;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `admin_audit_trail`
+--
+ALTER TABLE `admin_audit_trail`
+  ADD CONSTRAINT `admin_audit_trail_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Constraints for table `archived_student_strand`
@@ -1036,6 +1233,12 @@ ALTER TABLE `teacher_advisory`
   ADD CONSTRAINT `teacher_advisory_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`),
   ADD CONSTRAINT `teacher_advisory_ibfk_2` FOREIGN KEY (`section_id`) REFERENCES `section` (`section_id`),
   ADD CONSTRAINT `teacher_advisory_ibfk_3` FOREIGN KEY (`strand_id`) REFERENCES `strands` (`strand_id`);
+
+--
+-- Constraints for table `teacher_student_notes`
+--
+ALTER TABLE `teacher_student_notes`
+  ADD CONSTRAINT `teacher_student_notes_ibfk_1` FOREIGN KEY (`teacher_id`) REFERENCES `teachers` (`teacher_id`);
 
 --
 -- Constraints for table `users`

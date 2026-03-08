@@ -1,0 +1,95 @@
+.compliance-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 18px 24px;
+}
+
+.summary-card {
+    background: #ffffff;
+    border: 1px solid #d9e2ec;
+    border-radius: 10px;
+    padding: 14px;
+    box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+}
+
+.summary-label {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 6px;
+}
+
+.summary-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.note-box {
+    margin: 0 24px 14px;
+    padding: 10px 12px;
+    border-left: 4px solid #0ea5e9;
+    background: #f0f9ff;
+    color: #0c4a6e;
+    border-radius: 6px;
+}
+
+.status-pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.status-submitted {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-missing {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-config {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.compliance-ok {
+    background: #ecfdf5;
+    color: #065f46;
+}
+
+.compliance-alert {
+    background: #fff7ed;
+    color: #9a3412;
+}
+
+.missing-alert-text {
+    font-size: 12px;
+    color: #b91c1c;
+    font-weight: 600;
+}
+
+.info-muted {
+    color: #64748b;
+    font-size: 12px;
+}
+
+.btn-small {
+    font-size: 12px;
+    padding: 6px 10px;
+}
+
+@media (max-width: 768px) {
+    .compliance-summary {
+        margin: 14px;
+    }
+
+    .note-box {
+        margin: 0 14px 12px;
+    }
+}

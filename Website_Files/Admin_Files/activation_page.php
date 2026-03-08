@@ -80,7 +80,7 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
     <link rel="stylesheet" href="../../Design/main_design.css">
     <link rel="stylesheet" href="../../Design/profile_dropdown.css">
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
-    <link rel="stylesheet" href="../../Design/admin/activation_page.css">
+    <link rel="stylesheet" href="../../Design/admin/activation_design.css">
 </head>
 <body>
     <!-- Header -->
