@@ -7,10 +7,12 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include "../../DB_Connection/Connection.php";
+include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
+include "../../Back_End_Files/PHP_Files/get_student_program.php";
 
 /* Verify student session and get profile image */
 $stmt = $connection->prepare("
-    SELECT u.*, sa.profile_image
+    SELECT u.*, sa.profile_image, sa.first_name, sa.last_name, sa.middle_name, sa.extension_name, sa.lrn
     FROM users u
     INNER JOIN students s ON s.user_id = u.user_id
     INNER JOIN student_applications sa ON s.application_id = sa.application_id
@@ -28,9 +30,38 @@ if (!$user) {
     exit;
 }
 
+$stmtEnrollment = $connection->prepare("
+    SELECT enrollment_status
+    FROM students
+    WHERE user_id = ?
+    LIMIT 1
+");
+$stmtEnrollment->bind_param("i", $_SESSION['user_id']);
+$stmtEnrollment->execute();
+$enrollmentResult = $stmtEnrollment->get_result();
+$studentStatus = $enrollmentResult->fetch_assoc();
+$stmtEnrollment->close();
+
+if ($studentStatus && $studentStatus['enrollment_status'] === 'Graduated') {
+    header("Location: home.php");
+    exit;
+}
+
 $profileImagePath = !empty($user['profile_image'])
     ? "../../uploads/Profile/student/" . htmlspecialchars($user['profile_image'])
     : "../../Assets/profile_button.png";
+
+$displayName = formatPortalPersonName(
+    $user['first_name'] ?? null,
+    $user['middle_name'] ?? null,
+    $user['last_name'] ?? null,
+    $user['extension_name'] ?? null,
+    $user['username'] ?? 'Student User'
+);
+
+$studentMenuLinks = '<a href="home.php">Home</a>';
+$studentMenuLinks .= '<a href="profile_page.php">My Profile</a>';
+$studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>';
 
 $now = new DateTime('now', new DateTimeZone('Asia/Manila'));
 $currentMonth = (int)$now->format('n');
@@ -66,17 +97,30 @@ if ($currentMonth >= 8) {
         <span>CDONSHS-SHS</span>
     </div>
 
-    <div class="right">
-        <button class="legacy-menu-trigger" type="button">
-            <img src="<?php echo $profileImagePath; ?>" alt="Profile">
-        </button>
+    <?php echo renderPortalHeaderBanner('Student Portal', 'Enlistment', $currentSemester . ' | ' . $currentSchoolYear); ?>
 
-        <div class="legacy-nav-links">
-            <a href="profile_page.php">View Profile</a>
-            <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
-        </div>
+    <div class="right">
+        <button class="home-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="student-enlistment-menu">
+            <span class="menu-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="menu-label">Menu</span>
+        </button>
     </div>
 </div>
+
+<?php echo renderStudentMenuOverlay(
+    'student-enlistment-menu',
+    $profileImagePath,
+    $displayName,
+    (string) ($user['lrn'] ?? ''),
+    $gradeLevel !== null ? (string) $gradeLevel : null,
+    $strandName,
+    $sectionName,
+    $studentMenuLinks
+); ?>
 
 <div class="enlistment-container">
     <div class="enlistment-hero">
@@ -138,8 +182,6 @@ if ($currentMonth >= 8) {
 
 <div class="footer">
     &copy; 2026 Cagayan De Oro National High School - Senior High School
-    <br>
-    School Management System
 </div>
 
 <script src="../../Back_End_Files/JSCRIPT_Files/enlistment_get_boxes.js?v=<?php echo time(); ?>"></script>

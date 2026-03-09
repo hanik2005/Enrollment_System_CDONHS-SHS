@@ -1,33 +1,12 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
 include "../../DB_Connection/Connection.php";
+include "../../Back_End_Files/PHP_Files/admin_access.php";
 
-/* ========================= */
-/* VERIFY ADMIN SESSION      */
-/* ========================= */
-$user_id = $_SESSION['user_id'];
-
-$stmt = mysqli_prepare($connection, "
-    SELECT * FROM users 
-    WHERE user_id = ?
-    AND role_id = 2
-");
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-$admin = mysqli_fetch_assoc($result);
-
-if (!$admin) {
-    session_destroy();
-    header("Location: ../login.php");
-    exit;
-}
+$admin = requireAdminAccess($connection, "../login.php");
+$adminRoleLabel = getRoleLabel((int) $admin['role_id']);
+$navLinks = getAdminNavigationLinks((int) $admin['role_id']);
 
 /* ========================= */
 /* HANDLE ACTIVATION TOGGLE  */
@@ -89,16 +68,17 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
             <span>CDONHS-SHS</span>
         </div>
-        <div class="center">
-            Admin
-        </div>
+        <?php echo renderAdminHeaderCenter($adminRoleLabel, 'Activation Settings'); ?>
         <div class="right">
             <button class="legacy-menu-trigger" type="button">
                 <img src="../../Assets/admin_profile.png">
             </button>
             <div class="legacy-nav-links">
-                <a href="home.php">Home</a>
-                <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
+                <?php foreach ($navLinks as $link): ?>
+                    <a href="<?php echo htmlspecialchars($link['href']); ?>"<?php echo isset($link['class']) ? ' class="' . htmlspecialchars($link['class']) . '"' : ''; ?>>
+                        <?php echo htmlspecialchars($link['label']); ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -167,9 +147,7 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
 
     <!-- Footer -->
     <div class="footer">
-        © 2026 Cagayan De Oro National High School - Senior High School  
-        <br>
-        School Management System
+        &copy; 2026 Cagayan De Oro National High School - Senior High School
     </div>
     
     <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>

@@ -3,27 +3,11 @@ session_start();
 
 include "../../DB_Connection/Connection.php";
 include_once "audit_trail_helper.php";
+include_once "admin_access.php";
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../../Website_Files/login.php");
-    exit;
-}
-
-$adminUserId = (int) $_SESSION['user_id'];
-$adminStmt = $connection->prepare("
-    SELECT user_id
-    FROM users
-    WHERE user_id = ? AND role_id = 2
-");
-$adminStmt->bind_param("i", $adminUserId);
-$adminStmt->execute();
-$admin = $adminStmt->get_result()->fetch_assoc();
-$adminStmt->close();
-
-if (!$admin) {
-    header("Location: ../../Website_Files/login.php");
-    exit;
-}
+$admin = requireAdminAccess($connection);
+$adminRoleLabel = getRoleLabel((int) $admin['role_id']);
+$adminUserId = (int) $admin['user_id'];
 
 function getCurrentSchoolYearForValidation(): string
 {

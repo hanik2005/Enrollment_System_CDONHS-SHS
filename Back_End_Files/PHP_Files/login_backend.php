@@ -1,8 +1,8 @@
 <?php
 session_start();
 
-
 include $_SERVER['DOCUMENT_ROOT'] . '/Enrollment_System_CDONHS-SHS/DB_Connection/Connection.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/Enrollment_System_CDONHS-SHS/Back_End_Files/PHP_Files/admin_access.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -49,11 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     header("Location: /Enrollment_System_CDONHS-SHS/Website_Files/Student_Files/home.php");
                     break;
 
-                case 2: // Admin
+                case ROLE_SUPER_ADMIN:
+                case ROLE_REGISTRAR:
                     header("Location: /Enrollment_System_CDONHS-SHS/Website_Files/Admin_Files/home.php");
                     break;
 
-                case 3: // Teacher
+                case ROLE_TEACHER:
                     header("Location: /Enrollment_System_CDONHS-SHS/Website_Files/Teacher_Files/home.php");
                     break;
 

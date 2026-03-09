@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include "../../DB_Connection/Connection.php";
+include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
 
 $stmt = $connection->prepare("
     SELECT u.*, t.first_name, t.last_name, t.middle_name, t.extension_name
@@ -53,9 +54,7 @@ $profileImagePath = "../../Assets/profile_button.png";
     </div>
 
     <?php include "../../Back_End_Files/PHP_Files/get_teacher_advisory.php"; ?>
-    <div class="center">
-        Advisory: <?php echo htmlspecialchars($advisoryText); ?>
-    </div>
+    <?php echo renderPortalHeaderBanner('Teacher Portal', 'Class List', 'Advisory: ' . $advisoryText); ?>
 
 
     <div class="right">
@@ -64,7 +63,10 @@ $profileImagePath = "../../Assets/profile_button.png";
      </button>
 
     <div class="legacy-nav-links">
-        <a href="profile_page.php">View Profile</a>
+        <a href="home.php">Home</a>
+        <a href="student_progress_page.php">Student Progress</a>
+        <a href="enrollment_summary_page.php">Enrollment Summary</a>
+        <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
         <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
 
     </div>
@@ -178,11 +180,9 @@ $profileImagePath = "../../Assets/profile_button.png";
 
 
      <!-- footer -->
-    <div class="footer">
-    © 2026 Cagayan De Oro National High School - Senior High School  
-    <br>
-    School Management System
-    </div>
+<div class="footer">
+    &copy; 2026 Cagayan De Oro National High School - Senior High School
+</div>
 <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
 </body>
 </html>

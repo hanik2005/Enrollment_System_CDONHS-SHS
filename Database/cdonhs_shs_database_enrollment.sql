@@ -146,9 +146,10 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `role_name`) VALUES
-(2, 'Admin'),
 (1, 'Student'),
-(3, 'Teacher');
+(2, 'Super Admin'),
+(3, 'Teacher'),
+(4, 'Registrar');
 
 -- --------------------------------------------------------
 
@@ -1018,7 +1019,7 @@ ALTER TABLE `password_resets`
 -- AUTO_INCREMENT for table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `section`

@@ -1,5 +1,6 @@
 <?php
 session_start();
+include "../Back_End_Files/PHP_Files/admin_access.php";
 
 // Check if user is logged in and has first_login = 1
 if (!isset($_SESSION['user_id']) || !isset($_SESSION['first_login'])) {
@@ -13,10 +14,11 @@ if ($_SESSION['first_login'] != 1) {
         case 1:
             header("Location: Student_Files/home.php");
             break;
-        case 2:
+        case ROLE_SUPER_ADMIN:
+        case ROLE_REGISTRAR:
             header("Location: Admin_Files/home.php");
             break;
-        case 3:
+        case ROLE_TEACHER:
             header("Location: Teacher_Files/home.php");
             break;
         default:

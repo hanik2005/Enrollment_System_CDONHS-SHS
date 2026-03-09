@@ -2,6 +2,7 @@
 session_start();
 
 include "../../DB_Connection/Connection.php";
+include "admin_access.php";
 
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
@@ -74,10 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 1: // Student
                 header("Location: ../../Website_Files/Student_Files/home.php?success=password_changed");
                 break;
-            case 2: // Admin
+            case ROLE_SUPER_ADMIN:
+            case ROLE_REGISTRAR:
                 header("Location: ../../Website_Files/Admin_Files/home.php?success=password_changed");
                 break;
-            case 3: // Teacher
+            case ROLE_TEACHER:
                 header("Location: ../../Website_Files/Teacher_Files/home.php?success=password_changed");
                 break;
             default:

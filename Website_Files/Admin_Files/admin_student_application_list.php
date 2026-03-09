@@ -1,34 +1,12 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
 include "../../DB_Connection/Connection.php";
+include "../../Back_End_Files/PHP_Files/admin_access.php";
 
-/* ========================= */
-/* VERIFY ADMIN SESSION      */
-/* ========================= */
-$user_id = $_SESSION['user_id'];
-
-// Prepare statement
-$stmt = mysqli_prepare($connection, "
-    SELECT * FROM users 
-    WHERE user_id = ? 
-    AND role_id = 2
-");
-mysqli_stmt_bind_param($stmt, "i", $user_id);
-mysqli_stmt_execute($stmt);
-$result = mysqli_stmt_get_result($stmt);
-$admin = mysqli_fetch_assoc($result);
-
-if (!$admin) {
-    session_destroy();
-    header("Location: ../login.php");
-    exit;
-}
+$admin = requireAdminAccess($connection, "../login.php");
+$adminRoleLabel = getRoleLabel((int) $admin['role_id']);
+$navLinks = getAdminNavigationLinks((int) $admin['role_id']);
 
 include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
 
@@ -54,9 +32,7 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
             <span>CDONHS-SHS</span>
         </div>
-        <div class="center">
-            Admin
-        </div>
+        <?php echo renderAdminHeaderCenter($adminRoleLabel, 'Student Applications'); ?>
         <div class="right">
             <button class="home-menu-toggle" type="button" data-profile-src="../../Assets/admin_profile.png" data-profile-alt="Admin profile">
                 <span class="menu-icon" aria-hidden="true">
@@ -67,8 +43,11 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                 <span class="menu-label">Menu</span>
             </button>
             <div class="legacy-nav-links">
-                <a href="home.php">Home</a>
-                <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
+                <?php foreach ($navLinks as $link): ?>
+                    <a href="<?php echo htmlspecialchars($link['href']); ?>"<?php echo isset($link['class']) ? ' class="' . htmlspecialchars($link['class']) . '"' : ''; ?>>
+                        <?php echo htmlspecialchars($link['label']); ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -249,9 +228,7 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
 
     <!-- Footer -->
     <div class="footer">
-        © 2026 Cagayan De Oro National High School - Senior High School  
-        <br>
-        School Management System
+        &copy; 2026 Cagayan De Oro National High School - Senior High School
     </div>
 
     <!-- Loading Modal -->

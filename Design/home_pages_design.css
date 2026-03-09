@@ -88,7 +88,7 @@
 .home-menu-profile {
   padding: 10px 18px 14px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   border-bottom: 1px solid #e2e8f0;
 }
@@ -107,10 +107,33 @@
   font-size: 1rem;
 }
 
+.home-menu-profile-copy {
+  min-width: 0;
+  flex: 1;
+}
+
 .home-menu-profile p {
   margin: 0;
   color: #475569;
   font-size: 0.88rem;
+}
+
+.home-menu-student-meta {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.home-menu-student-meta span {
+  color: #334155;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.home-menu-student-meta strong {
+  color: #0f172a;
 }
 
 .home-menu-links {

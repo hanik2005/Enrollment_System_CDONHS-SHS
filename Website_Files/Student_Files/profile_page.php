@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include "../../DB_Connection/Connection.php";
+include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
 
 // Verify student session and get profile data
 // Now joining multiple tables for normalized database structure
@@ -64,6 +65,8 @@ $stmt = $connection->prepare("
     INNER JOIN strands st ON ss.strand_id = st.strand_id
     INNER JOIN section sec ON ss.section_id = sec.section_id
     WHERE ss.student_id = ?
+    ORDER BY ss.grade_level DESC
+    LIMIT 1
 ");
 $stmt->bind_param("i", $profile['student_id']);
 $stmt->execute();
@@ -121,20 +124,27 @@ if (isset($_GET['error'])) {
         case 'invalid_input':
             $message = "Invalid input detected.";
             break;
+        case 'image_upload_failed':
+            $message = "Profile image upload failed. Please try again with a smaller image file.";
+            break;
+        case 'image_invalid_type':
+            $message = "Profile image must be JPG, JPEG, PNG, or GIF.";
+            break;
+        case 'unauthorized':
+            $message = "You are not allowed to update this profile.";
+            break;
         default:
             $message = "An error occurred.";
     }
 }
 
-// Format full name
-$fullName = $profile['first_name'];
-if (!empty($profile['middle_name'])) {
-    $fullName .= " " . substr($profile['middle_name'], 0, 1) . ".";
-}
-$fullName .= " " . $profile['last_name'];
-if (!empty($profile['extension_name'])) {
-    $fullName .= " " . $profile['extension_name'];
-}
+$fullName = formatPortalPersonName(
+    $profile['first_name'] ?? null,
+    $profile['middle_name'] ?? null,
+    $profile['last_name'] ?? null,
+    $profile['extension_name'] ?? null,
+    $profile['username'] ?? 'Student User'
+);
 
 // Format address
 $address = ($profile['house_number'] ?? '') . " " . ($profile['street'] ?? '') . ", " . ($profile['barangay'] ?? '') . ", " . 
@@ -144,6 +154,28 @@ $address = ($profile['house_number'] ?? '') . " " . ($profile['street'] ?? '') .
 $profileImagePath = !empty($profile['profile_image']) 
     ? "../../uploads/Profile/student/" . htmlspecialchars($profile['profile_image']) 
     : "../../Assets/profile_button.png";
+
+$studentProgramDetail = 'Current Class: ';
+if ($strandInfo) {
+    $studentProgramDetail .= 'Grade ' . $strandInfo['grade_level'] . ' - ' . $strandInfo['strand_name'] . ' - ' . $strandInfo['section_name'];
+} else {
+    $studentProgramDetail .= 'Not assigned yet';
+}
+
+$studentMenuLinks = '<a href="home.php">Home</a>';
+if (($profile['enrollment_status'] ?? '') !== 'Graduated'
+    && ($profile['enlistment_status'] ?? '') !== 'Enlisted'
+    && ($profile['enlistment_status'] ?? '') !== 'Pending'
+    && ($profile['enlistment_status'] ?? '') !== 'Promoted') {
+    $studentMenuLinks .= '<a href="student_enlistment.php">Enlistment</a>';
+} elseif (($profile['enlistment_status'] ?? '') === 'Pending') {
+    $studentMenuLinks .= '<span class="menu-link-disabled">Pending Enlistment</span>';
+} elseif (($profile['enrollment_status'] ?? '') === 'Graduated') {
+    $studentMenuLinks .= '<span class="menu-link-disabled">Already Graduated</span>';
+} else {
+    $studentMenuLinks .= '<span class="menu-link-disabled">Already Enlisted</span>';
+}
+$studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>';
 ?>
 
 <!DOCTYPE html>
@@ -166,35 +198,29 @@ $profileImagePath = !empty($profile['profile_image'])
         <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
         <span>CDONSHS-SHS</span>
     </div>
-
-    <?php include "../../Back_End_Files/PHP_Files/get_student_program.php"; ?>
-    <div class="center">
-         Program:
-        <?php if ($isEnlisted): ?>
-        <?php echo htmlspecialchars($gradeLevel); ?>, 
-        <?php echo htmlspecialchars($strandName); ?>, 
-        <?php echo htmlspecialchars($sectionName); ?>
-
-        <?php elseif($isPending):?>
-            Pending Enlistment
-        <?php elseif($isRejected):?>
-            Rejected Enlistment
-        <?php elseif($Promoted):?>
-            Promoted
-        <?php else: ?>
-            Not enrolled yet
-        <?php endif; ?>
-    </div>
+    <?php echo renderPortalHeaderBanner('Student Portal', 'Student Profile', $studentProgramDetail); ?>
     <div class="right">
-        <button class="legacy-menu-trigger" type="button">
-            <img src="<?php echo $profileImagePath; ?>">
+        <button class="home-menu-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="student-profile-menu">
+            <span class="menu-icon" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+            <span class="menu-label">Menu</span>
         </button>
-        <div class="legacy-nav-links">
-            <a href="home.php">Home</a>
-            <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
-        </div>
     </div>
 </div>
+
+<?php echo renderStudentMenuOverlay(
+    'student-profile-menu',
+    $profileImagePath,
+    $fullName,
+    (string) ($profile['lrn'] ?? ''),
+    isset($strandInfo['grade_level']) ? (string) $strandInfo['grade_level'] : null,
+    $strandInfo['strand_name'] ?? null,
+    $strandInfo['section_name'] ?? null,
+    $studentMenuLinks
+); ?>
 
 <!-- Profile Content -->
 <div class="profile-container">
@@ -205,6 +231,28 @@ $profileImagePath = !empty($profile['profile_image'])
                 <?php echo $message; ?>
             </div>
         <?php endif; ?>
+
+        <div class="student-profile-hero">
+            <div class="student-profile-hero-copy">
+                <span class="student-profile-hero-tag">Student Profile Center</span>
+                <h1>Profile Overview</h1>
+                <p>Keep your contact details, family records, and uploaded documents updated so your school information stays complete and accurate.</p>
+            </div>
+            <div class="student-profile-hero-meta">
+                <div class="student-profile-hero-card">
+                    <span>Username</span>
+                    <strong><?php echo htmlspecialchars($profile['username']); ?></strong>
+                </div>
+                <div class="student-profile-hero-card">
+                    <span>Status</span>
+                    <strong><?php echo htmlspecialchars($profile['enrollment_status']); ?></strong>
+                </div>
+                <div class="student-profile-hero-card">
+                    <span>LRN</span>
+                    <strong><?php echo htmlspecialchars($profile['lrn'] ?? 'Not available'); ?></strong>
+                </div>
+            </div>
+        </div>
 
         <!-- Profile Form -->
         <form action="../../Back_End_Files/PHP_Files/student_profile_backend.php" method="POST" id="profileForm" enctype="multipart/form-data">
@@ -226,11 +274,7 @@ $profileImagePath = !empty($profile['profile_image'])
                 </div>
                 <div class="profile-header-info">
                     <h2><?php echo htmlspecialchars($fullName); ?></h2>
-                    <p><strong>LRN:</strong> <?php echo htmlspecialchars($profile['lrn'] ?? ''); ?></p>
-                    <p><strong>Username:</strong> <?php echo htmlspecialchars($profile['username']); ?></p>
-                    <span class="profile-status status-<?php echo strtolower($profile['enrollment_status']); ?>">
-                        <?php echo htmlspecialchars($profile['enrollment_status']); ?>
-                    </span>
+                    <p>Student record and profile photo</p>
                 </div>
             </div>
 
@@ -395,27 +439,6 @@ $profileImagePath = !empty($profile['profile_image'])
                         <input type="text" value="<?php echo htmlspecialchars($profile['last_school_year_completed'] ?? ''); ?>" disabled>
                     </div>
                     
-                    <?php if ($strandInfo): ?>
-                    <div class="profile-field">
-                        <label>Grade Level</label>
-                        <input type="text" value="<?php echo htmlspecialchars($strandInfo['grade_level']); ?>" disabled>
-                    </div>
-                    
-                    <div class="profile-field">
-                        <label>Strand</label>
-                        <input type="text" value="<?php echo htmlspecialchars($strandInfo['strand_name']); ?>" disabled>
-                    </div>
-                    
-                    <div class="profile-field focus-field">
-                        <label>Section</label>
-                        <input type="text" value="<?php echo htmlspecialchars($strandInfo['section_name']); ?>" disabled>
-                    </div>
-                    
-                    <div class="profile-field focus-field">
-                        <label>Adviser</label>
-                        <input type="text" value="<?php echo htmlspecialchars($adviserName); ?>" disabled>
-                    </div>
-                    <?php endif; ?>
                 </div>
 
                 <!-- Guardian Information -->
@@ -537,8 +560,7 @@ $profileImagePath = !empty($profile['profile_image'])
 
 <!-- Footer -->
 <div class="footer">
-    &copy; 2026 Cagayan De Oro National High School - Senior High School<br>
-    School Management System
+    &copy; 2026 Cagayan De Oro National High School - Senior High School
 </div>
 
 <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>

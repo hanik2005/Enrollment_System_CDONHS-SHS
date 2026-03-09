@@ -593,6 +593,72 @@
     margin-bottom: 24px;
 }
 
+.student-profile-page .student-profile-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.85fr);
+    gap: 18px;
+    padding: 22px;
+    margin-bottom: 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #172554 0%, #1d4ed8 52%, #1e3a8a 100%);
+    box-shadow: 0 20px 38px rgba(29, 78, 216, 0.18);
+    color: #ffffff;
+}
+
+.student-profile-page .student-profile-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    color: #fde68a;
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.student-profile-page .student-profile-hero-copy h1 {
+    margin: 14px 0 10px;
+    color: #ffffff;
+    font-size: clamp(1.5rem, 2.6vw, 2.2rem);
+    line-height: 1.15;
+}
+
+.student-profile-page .student-profile-hero-copy p {
+    margin: 0;
+    color: #dbeafe;
+    line-height: 1.7;
+}
+
+.student-profile-page .student-profile-hero-meta {
+    display: grid;
+    gap: 12px;
+}
+
+.student-profile-page .student-profile-hero-card {
+    padding: 16px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.student-profile-page .student-profile-hero-card span {
+    display: block;
+    margin-bottom: 6px;
+    color: #dbeafe;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.student-profile-page .student-profile-hero-card strong {
+    color: #ffffff;
+    font-size: 1.02rem;
+    line-height: 1.4;
+}
+
 .student-profile-page .profile-header {
     align-items: flex-start;
     gap: clamp(16px, 3vw, 28px);
@@ -843,6 +909,10 @@
 }
 
 @media (max-width: 992px) {
+    .student-profile-page .student-profile-hero {
+        grid-template-columns: 1fr;
+    }
+
     .student-profile-page .profile-content {
         grid-template-columns: 1fr;
     }

@@ -10,6 +10,7 @@ $student_id = null;
 $isEnlisted = false;
 $isPending = false;
 $isRejected = false;
+$isGraduated = false;
 $Promoted = false;
 $gradeLevel = null;
 $strandName = null;
@@ -17,7 +18,7 @@ $sectionName = null;
 
 // Get student_id
 $stmtStudent = $connection->prepare("
-    SELECT student_id, enlistment_status 
+    SELECT student_id, enlistment_status, enrollment_status
     FROM students 
     WHERE user_id = ?
 ");
@@ -29,7 +30,10 @@ $stmtStudent->close();
 
 if ($studentRow) {
     $student_id = $studentRow['student_id'];
-    if ($studentRow['enlistment_status'] === 'Enlisted') {
+
+    if ($studentRow['enrollment_status'] === 'Graduated') {
+        $isGraduated = true;
+    } elseif ($studentRow['enlistment_status'] === 'Enlisted') {
         $isEnlisted = true;
 
         // Get program info from student_strand

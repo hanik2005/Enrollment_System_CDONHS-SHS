@@ -1,29 +1,11 @@
 <?php
 session_start();
 
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
 include "../../DB_Connection/Connection.php";
+include_once "admin_access.php";
 
-$userId = (int) $_SESSION['user_id'];
-$stmt = $connection->prepare("
-    SELECT user_id
-    FROM users
-    WHERE user_id = ? AND role_id = 2
-");
-$stmt->bind_param("i", $userId);
-$stmt->execute();
-$admin = $stmt->get_result()->fetch_assoc();
-$stmt->close();
-
-if (!$admin) {
-    session_destroy();
-    header("Location: ../login.php");
-    exit;
-}
+$admin = requireAdminAccess($connection, "../login.php");
+$adminRoleLabel = getRoleLabel((int) $admin['role_id']);
 
 $filterAction = trim($_GET['action_type'] ?? '');
 $filterEntity = trim($_GET['entity_type'] ?? '');

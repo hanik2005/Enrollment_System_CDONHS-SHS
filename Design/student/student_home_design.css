@@ -1,0 +1,387 @@
+/* =================================================
+   HERO SECTION (FULL WIDTH)
+================================================= */
+
+.hero-section{
+  background: linear-gradient(135deg,#eff6ff 0%,#ffffff 60%,#f8fbff 100%);
+}
+
+.home-hero{
+  width:100%;
+  min-height:calc(100vh - 120px);
+
+  display:grid;
+  grid-template-columns:1.2fr 1fr;
+  gap:70px;
+
+  align-items:center;
+  padding:60px 8%;
+
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  background:transparent;
+}
+
+
+/* HERO TEXT AREA */
+
+.home-hero div{
+  max-width:650px;
+}
+
+.home-hero-tag{
+  display:inline-block;
+  margin-bottom:10px;
+  padding:6px 12px;
+
+  border-radius:999px;
+
+  font-size:0.9rem;
+  font-weight:700;
+
+  color:#1e3a8a;
+
+  background:#dbeafe;
+  border:1px solid #93c5fd;
+}
+
+/* HERO TITLE */
+
+.home-hero h2{
+  margin:0 0 12px;
+
+  color:#172554;
+
+  font-size:clamp(1.8rem,3vw,2.4rem);
+  line-height:1.2;
+}
+
+/* HERO PARAGRAPH */
+
+.home-hero p{
+  margin:0;
+
+  color:#1e293b;
+
+  font-size:1.05rem;
+  line-height:1.6;
+}
+
+/* HERO BUTTONS */
+
+.home-hero-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+
+  margin-top:18px;
+}
+
+/* HERO IMAGE */
+
+.home-hero-image{
+  width:100%;
+  max-width:560px;
+
+  border-radius:18px;
+
+  object-fit:cover;
+
+  justify-self:end;
+  border:none;
+}
+
+/* HERO MOBILE */
+
+@media (max-width:768px){
+
+  .home-hero{
+    grid-template-columns:1fr;
+    text-align:center;
+    gap:30px;
+  }
+
+  .home-hero-image{
+    justify-self:center;
+    max-width:380px;
+  }
+
+}
+
+/* ===============================
+   FEATURED SCHOOL PHOTOS SECTION
+   FIXED ALIGNMENT
+================================ */
+
+.gallery-section{
+  width:100%;
+  padding:70px 8%;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+
+  background:#ffffff;
+}
+
+/* TITLE */
+
+.home-gallery h3{
+  font-size:1.9rem;
+  font-weight:700;
+  color:#1e3a8a;
+
+  margin-bottom:40px;
+  text-align:center;
+}
+
+/* IMAGE GRID */
+
+.home-gallery-grid{
+  width:100%;
+  max-width:1100px;
+
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+
+  gap:30px;
+  margin-bottom:35px;
+}
+
+/* IMAGES */
+
+.home-gallery-grid img{
+  width:100%;
+  height:260px;
+
+  object-fit:cover;
+
+  border-radius:18px;
+
+  box-shadow:0 10px 25px rgba(0,0,0,0.08);
+
+  transition:transform .25s ease;
+}
+
+.home-gallery-grid img:hover{
+  transform:translateY(-5px);
+}
+
+/* QUICK REMINDER CARD */
+
+.reminder-card{
+  width:100%;
+  max-width:1100px;
+
+  padding:28px;
+
+  border-radius:16px;
+
+  background:#ffffff;
+
+  border:1px solid #e5e7eb;
+
+  box-shadow:0 10px 25px rgba(0,0,0,0.06);
+
+  text-align:center;
+}
+
+.reminder-card h3{
+  color:#1e3a8a;
+  margin-bottom:10px;
+}
+
+.reminder-card p{
+  color:#475569;
+  font-size:0.95rem;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:900px){
+
+.home-gallery-grid{
+grid-template-columns:1fr 1fr;
+}
+
+}
+
+@media(max-width:600px){
+
+.home-gallery-grid{
+grid-template-columns:1fr;
+}
+
+}
+/* ======================================
+   SCHOOL INFO SECTION (ANNOUNCEMENTS ETC)
+   ENHANCED MODERN CARD DESIGN
+====================================== */
+
+.info-section{
+  width:100%;
+  min-height:70vh;
+
+  padding:80px 8%;
+
+  background:linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f8fbff 100%
+  );
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* GRID LAYOUT */
+
+.home-info-grid{
+
+  width:100%;
+  max-width:1200px;
+
+  display:grid;
+
+  grid-template-columns:repeat(4,1fr);
+
+  gap:30px;
+}
+
+/* CARD STYLE */
+
+.home-info-card{
+
+  padding:25px;
+
+  border-radius:16px;
+
+  background:#ffffff;
+
+  border:1px solid #e5e7eb;
+
+  box-shadow:0 8px 25px rgba(0,0,0,0.06);
+
+  transition:transform .25s ease,
+             box-shadow .25s ease;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* HOVER EFFECT */
+
+.home-info-card:hover{
+
+  transform:translateY(-6px);
+
+  box-shadow:0 16px 35px rgba(0,0,0,0.12);
+}
+
+/* TITLE */
+
+.home-info-card h3{
+
+  font-size:1.2rem;
+
+  font-weight:700;
+
+  color:#1e3a8a;
+
+  margin-bottom:6px;
+}
+
+/* TEXT */
+
+.home-info-card p{
+
+  font-size:0.95rem;
+
+  line-height:1.6;
+
+  color:#374151;
+}
+
+/* FACEBOOK BUTTON */
+
+.home-facebook-link{
+
+  margin-top:12px;
+
+  display:inline-block;
+
+  padding:8px 14px;
+
+  border-radius:8px;
+
+  background:#eff6ff;
+
+  border:1px solid #93c5fd;
+
+  color:#1e3a8a;
+
+  font-weight:600;
+
+  text-decoration:none;
+
+  transition:background .2s ease;
+}
+
+.home-enlistment-link{
+
+  margin-top:12px;
+
+  display:inline-block;
+
+  padding:8px 14px;
+
+  border-radius:8px;
+
+  background:#d44f4f;
+
+  border:1px solid #ec2828;
+
+  color:#ffffff;
+
+  font-weight:600;
+
+  text-decoration:none;
+
+  transition:background .2s ease;
+}
+.home-enlistment-link:hover{
+    color: black;
+    background:#dbeafe;
+}
+
+
+.home-facebook-link:hover{
+  background:#dbeafe;
+}
+
+/* TABLET */
+
+@media(max-width:1000px){
+
+.home-info-grid{
+grid-template-columns:1fr 1fr;
+}
+
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+.home-info-grid{
+grid-template-columns:1fr;
+}
+
+.info-section{
+padding:60px 6%;
+}
+
+}

@@ -1,5 +1,6 @@
 <?php
 include "../../Back_End_Files/PHP_Files/teacher_advisory_backend.php";
+$navLinks = getAdminNavigationLinks((int) $admin['role_id']);
 ?>
 
 <!DOCTYPE html>
@@ -22,16 +23,17 @@ include "../../Back_End_Files/PHP_Files/teacher_advisory_backend.php";
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
             <span>CDONSHS-SHS</span>
         </div>
-        <div class="center">
-            Admin
-        </div>
+        <?php echo renderAdminHeaderCenter($adminRoleLabel, 'Teacher Advisory'); ?>
         <div class="right">
             <button class="legacy-menu-trigger" type="button">
                 <img src="../../Assets/admin_profile.png">
             </button>
             <div class="legacy-nav-links">
-                <a href="home.php">Home</a>
-                <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
+                <?php foreach ($navLinks as $link): ?>
+                    <a href="<?php echo htmlspecialchars($link['href']); ?>"<?php echo isset($link['class']) ? ' class="' . htmlspecialchars($link['class']) . '"' : ''; ?>>
+                        <?php echo htmlspecialchars($link['label']); ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -162,9 +164,7 @@ include "../../Back_End_Files/PHP_Files/teacher_advisory_backend.php";
 
     <!-- footer -->
     <div class="footer">
-        © 2026 Cagayan De Oro National High School - Senior High School  
-        <br>
-        School Management System
+        &copy; 2026 Cagayan De Oro National High School - Senior High School
     </div>
 
     <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>

@@ -7,6 +7,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 include "../../DB_Connection/Connection.php";
+include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
 
 include_once "../../Back_End_Files/PHP_Files/check_activation.php";
 if (!isFeatureEnabled('Student Progress Page')) {
@@ -56,9 +57,7 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
             <span>CDONHS-SHS</span>
         </div>
-        <div class="center">
-            Student Progress | Advisory: <?php echo htmlspecialchars($advisoryText); ?>
-        </div>
+        <?php echo renderPortalHeaderBanner('Teacher Portal', 'Student Progress', 'Advisory: ' . $advisoryText); ?>
         <div class="right">
             <button class="home-menu-toggle" type="button" data-profile-src="<?php echo $profileImagePath; ?>" data-profile-alt="Teacher profile">
                 <span class="menu-icon" aria-hidden="true">
@@ -70,7 +69,10 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
             </button>
             <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
-                <a href="profile_page.php">View Profile</a>
+                <a href="class_list.php">Class List</a>
+                <a href="enrollment_summary_page.php">Enrollment Summary</a>
+                <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
+                
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
         </div>
@@ -337,8 +339,6 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
 
     <div class="footer">
         &copy; 2026 Cagayan De Oro National High School - Senior High School
-        <br>
-        School Management System
     </div>
 
     <div id="loadingModal" class="loading-modal">

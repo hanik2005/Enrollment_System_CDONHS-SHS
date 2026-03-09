@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const path = window.location.pathname.toLowerCase();
         if (path.includes("/student_files/")) return "Student";
         if (path.includes("/teacher_files/")) return "Teacher";
-        if (path.includes("/admin_files/")) return "Administrator";
+        if (path.includes("/admin_files/")) return "Admin Portal";
         return "User";
     }
 

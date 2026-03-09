@@ -1,5 +1,6 @@
 <?php
 include "../../Back_End_Files/PHP_Files/teacher_advisory_notes_backend.php";
+include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
 
 function escapeNoteDataAttr(string $value): string
 {
@@ -27,9 +28,7 @@ function escapeNoteDataAttr(string $value): string
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
             <span>CDONHS-SHS</span>
         </div>
-        <div class="center">
-            Teacher Advisory Notes | Advisory: <?php echo htmlspecialchars($advisoryText); ?>
-        </div>
+        <?php echo renderPortalHeaderBanner('Teacher Portal', 'Advisory Notes', 'Advisory: ' . $advisoryText); ?>
         <div class="right">
             <button class="legacy-menu-trigger" type="button">
                 <img src="<?php echo $profileImagePath; ?>" alt="Teacher Profile">
@@ -167,8 +166,6 @@ function escapeNoteDataAttr(string $value): string
 
     <div class="footer">
         &copy; 2026 Cagayan De Oro National High School - Senior High School
-        <br>
-        School Management System
     </div>
 
     <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>

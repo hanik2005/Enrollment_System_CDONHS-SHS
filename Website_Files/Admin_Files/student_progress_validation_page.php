@@ -1,5 +1,6 @@
 <?php
 include "../../Back_End_Files/PHP_Files/student_progress_validation_backend.php";
+$navLinks = getAdminNavigationLinks((int) $admin['role_id']);
 
 $showSuccess = isset($_GET['success']) && $_GET['success'] === '1';
 $approved = isset($_GET['approved']) ? (int) $_GET['approved'] : 0;
@@ -26,9 +27,7 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
             <span>CDONHS-SHS</span>
         </div>
-        <div class="center">
-            Admin - Student Progress Validation
-        </div>
+        <?php echo renderAdminHeaderCenter($adminRoleLabel, 'Student Progress Validation'); ?>
         <div class="right">
             <button class="home-menu-toggle" type="button" data-profile-src="../../Assets/admin_profile.png" data-profile-alt="Admin profile">
                 <span class="menu-icon" aria-hidden="true">
@@ -39,8 +38,11 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
                 <span class="menu-label">Menu</span>
             </button>
             <div class="legacy-nav-links">
-                <a href="home.php">Home</a>
-                <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
+                <?php foreach ($navLinks as $link): ?>
+                    <a href="<?php echo htmlspecialchars($link['href']); ?>"<?php echo isset($link['class']) ? ' class="' . htmlspecialchars($link['class']) . '"' : ''; ?>>
+                        <?php echo htmlspecialchars($link['label']); ?>
+                    </a>
+                <?php endforeach; ?>
             </div>
         </div>
     </div>
@@ -93,7 +95,7 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
         </form>
     </div>
 
-    <form method="POST" action="../../Back_End_Files/PHP_Files/student_progress_validation_backend.php" onsubmit="showLoadingModal()">
+    <form method="POST" action="../../Back_End_Files/PHP_Files/student_progress_validation_backend.php" onsubmit="return showLoadingModal()">
         <div class="table-container">
             <table>
                 <thead>
@@ -161,8 +163,13 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
             </table>
         </div>
 
-        <div class="validation-buttons" style="padding: 0 20px 20px; text-align: right;">
-            <button type="submit" name="confirm_validation" class="confirm-btn">Confirm Validation</button>
+        <div class="validation-action-bar">
+            <div class="validation-action-copy">
+                <span class="validation-action-kicker">Batch Validation</span>
+                <strong id="selectedValidationCount">0 records selected</strong>
+                <p>Choose the records you want to approve or reject, then confirm the selected validation decisions.</p>
+            </div>
+            <button type="submit" name="confirm_validation" class="confirm-btn" id="confirmValidationBtn" disabled>Confirm Validation</button>
         </div>
     </form>
 
@@ -184,13 +191,33 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
 
     <div class="footer">
         &copy; 2026 Cagayan De Oro National High School - Senior High School
-        <br>
-        School Management System
     </div>
 
     <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
     <script>
         var selectAll = document.getElementById('selectAllCheckbox');
+        var rowCheckboxes = Array.from(document.querySelectorAll('.row-checkbox:not(:disabled)'));
+        var confirmValidationBtn = document.getElementById('confirmValidationBtn');
+        var selectedValidationCount = document.getElementById('selectedValidationCount');
+
+        function updateValidationSelectionState() {
+            var selectedCount = rowCheckboxes.filter(function (checkbox) {
+                return checkbox.checked;
+            }).length;
+
+            if (selectedValidationCount) {
+                selectedValidationCount.textContent = selectedCount + (selectedCount === 1 ? ' record selected' : ' records selected');
+            }
+
+            if (confirmValidationBtn) {
+                confirmValidationBtn.disabled = selectedCount === 0;
+            }
+
+            if (selectAll) {
+                selectAll.checked = rowCheckboxes.length > 0 && selectedCount === rowCheckboxes.length;
+            }
+        }
+
         if (selectAll) {
             selectAll.addEventListener('change', function () {
                 document.querySelectorAll('.row-checkbox').forEach(function (cb) {
@@ -198,14 +225,23 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
                         cb.checked = selectAll.checked;
                     }
                 });
+                updateValidationSelectionState();
             });
         }
 
+        rowCheckboxes.forEach(function (checkbox) {
+            checkbox.addEventListener('change', updateValidationSelectionState);
+        });
+
         function showLoadingModal() {
+            if (confirmValidationBtn && confirmValidationBtn.disabled) {
+                return false;
+            }
             var modal = document.getElementById('loadingModal');
             if (modal) {
                 modal.classList.add('active');
             }
+            return true;
         }
 
         function closeSuccessModal() {
@@ -220,6 +256,8 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
             url.searchParams.delete('actions');
             window.history.replaceState({}, document.title, url);
         }
+
+        updateValidationSelectionState();
     </script>
 </body>
 </html>

@@ -51,7 +51,7 @@ try {
 
     // Resolve student record from logged-in user.
     $stmtStudent = $connection->prepare(
-        "SELECT student_id FROM students WHERE user_id = ? LIMIT 1"
+        "SELECT student_id, enrollment_status FROM students WHERE user_id = ? LIMIT 1"
     );
     $stmtStudent->bind_param("i", $userID);
     $stmtStudent->execute();
@@ -64,6 +64,10 @@ try {
     }
 
     $student_id = (int)$studentRow['student_id'];
+
+    if (($studentRow['enrollment_status'] ?? null) === 'Graduated') {
+        throw new Exception('Graduated students cannot be enlisted again.');
+    }
 
     // Validate section belongs to selected strand and grade.
     $stmtValidateSection = $connection->prepare(

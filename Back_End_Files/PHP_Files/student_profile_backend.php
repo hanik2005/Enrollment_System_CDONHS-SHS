@@ -3,6 +3,22 @@ session_start();
 
 include "../../DB_Connection/Connection.php";
 
+function failProfileUpdate(string $errorCode): void
+{
+    header("Location: ../../Website_Files/Student_Files/profile_page.php?error=" . urlencode($errorCode));
+    exit();
+}
+
+function prepareOrFail(mysqli $connection, string $sql): mysqli_stmt
+{
+    $stmt = $connection->prepare($sql);
+    if (!$stmt) {
+        throw new RuntimeException($connection->error);
+    }
+
+    return $stmt;
+}
+
 // Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header("Location: ../../Website_Files/login.php");
@@ -27,8 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $verifyResult = $verifyStmt->get_result();
     
     if ($verifyResult->num_rows !== 1) {
-        header("Location: ../../Website_Files/Student_Files/profile_page.php?error=unauthorized");
-        exit();
+        failProfileUpdate('unauthorized');
     }
     
     $student = $verifyResult->fetch_assoc();
@@ -83,16 +98,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     if (!empty($errors)) {
-        header("Location: ../../Website_Files/Student_Files/profile_page.php?error=invalid_input");
-        exit();
+        failProfileUpdate('invalid_input');
     }
     
-    // Handle file uploads
-    $uploadDir = "../../uploads/Documents/student/";
+    // Handle file uploads using absolute filesystem paths so move_uploaded_file works reliably
+    $projectRoot = dirname(__DIR__, 2);
+    $documentUploadDir = $projectRoot . '/uploads/Documents/student/';
+    $profileUploadDir = $projectRoot . '/uploads/Profile/student/';
     
-    // Create directory if it doesn't exist
-    if (!file_exists($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+    if (!is_dir($documentUploadDir)) {
+        mkdir($documentUploadDir, 0777, true);
+    }
+
+    if (!is_dir($profileUploadDir)) {
+        mkdir($profileUploadDir, 0777, true);
     }
     
     $allowedTypes = ['pdf', 'jpg', 'jpeg', 'png'];
@@ -100,17 +119,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     // Handle profile image upload
     $profileImageValue = null;
-    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['name'] !== '') {
         $file = $_FILES['profile_image'];
+        if ((int) $file['error'] !== UPLOAD_ERR_OK) {
+            failProfileUpdate('image_upload_failed');
+        }
+
         $fileExt = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         
         if (in_array($fileExt, $imageTypes)) {
             $newFileName = time() . "_PROFILE_" . $application_id . "." . $fileExt;
-            $destination = "../../uploads/Profile/student/" . $newFileName;
+            $destination = $profileUploadDir . $newFileName;
             
             if (move_uploaded_file($file['tmp_name'], $destination)) {
                 $profileImageValue = $newFileName;
+            } else {
+                failProfileUpdate('image_upload_failed');
             }
+        } else {
+            failProfileUpdate('image_invalid_type');
         }
     }
     
@@ -129,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             
             $newFileName = time() . "_" . strtoupper(str_replace(' ', '_', $field)) . "_" . $application_id . "." . $fileExt;
-            $destination = $uploadDir . $newFileName;
+            $destination = $documentUploadDir . $newFileName;
             
             if (move_uploaded_file($file['tmp_name'], $destination)) {
                 $documentUpdates[$field] = $newFileName;
@@ -157,16 +184,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $appParams[] = $application_id;
         $appTypes .= "i";
         
-        $appStmt = $connection->prepare($appUpdate);
+        $appStmt = prepareOrFail($connection, $appUpdate);
         $appStmt->bind_param($appTypes, ...$appParams);
-        $appStmt->execute();
+        if (!$appStmt->execute()) {
+            throw new RuntimeException($appStmt->error);
+        }
         $appStmt->close();
         
         // 2. Update student_addresses
         $addrUpdate = "UPDATE student_addresses SET house_number = ?, street = ?, barangay = ?, city_municipality = ?, province = ?, country = ? WHERE application_id = ?";
-        $addrStmt = $connection->prepare($addrUpdate);
+        $addrStmt = prepareOrFail($connection, $addrUpdate);
         $addrStmt->bind_param("ssssssi", $house_number, $street, $barangay, $city_municipality, $province, $country, $application_id);
-        $addrStmt->execute();
+        if (!$addrStmt->execute()) {
+            throw new RuntimeException($addrStmt->error);
+        }
         $addrStmt->close();
         
         // 3. Update student_family
@@ -175,14 +206,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             mother_first_name = ?, mother_middle_name = ?, mother_last_name = ?, mother_contact = ?,
             guardian_first_name = ?, guardian_middle_name = ?, guardian_last_name = ?, guardian_contact = ?
             WHERE application_id = ?";
-        $familyStmt = $connection->prepare($familyUpdate);
+        $familyStmt = prepareOrFail($connection, $familyUpdate);
         $familyStmt->bind_param("ssssssssssssi", 
             $father_first_name, $father_middle_name, $father_last_name, $father_contact,
             $mother_first_name, $mother_middle_name, $mother_last_name, $mother_contact,
             $guardian_first_name, $guardian_middle_name, $guardian_last_name, $guardian_contact,
             $application_id
         );
-        $familyStmt->execute();
+        if (!$familyStmt->execute()) {
+            throw new RuntimeException($familyStmt->error);
+        }
         $familyStmt->close();
         
         // 4. Update student_documents if any new files uploaded
@@ -201,9 +234,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $docTypes .= "i";
             
             $docUpdate = "UPDATE student_documents SET " . implode(", ", $docSetParts) . " WHERE application_id = ?";
-            $docStmt = $connection->prepare($docUpdate);
+            $docStmt = prepareOrFail($connection, $docUpdate);
             $docStmt->bind_param($docTypes, ...$docParams);
-            $docStmt->execute();
+            if (!$docStmt->execute()) {
+                throw new RuntimeException($docStmt->error);
+            }
             $docStmt->close();
         }
         
@@ -213,10 +248,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: ../../Website_Files/Student_Files/profile_page.php?success=updated");
         exit();
         
-    } catch (Exception $e) {
+    } catch (Throwable $e) {
         $connection->rollback();
-        header("Location: ../../Website_Files/Student_Files/profile_page.php?error=update_failed");
-        exit();
+        error_log("Student profile update failed: " . $e->getMessage());
+        failProfileUpdate('update_failed');
     }
     
 } else {

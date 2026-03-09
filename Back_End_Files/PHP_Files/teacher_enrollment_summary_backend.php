@@ -86,6 +86,8 @@ if (!empty($advisorySectionId)) {
         LEFT JOIN student_documents sd
             ON sd.application_id = sa.application_id
         WHERE ss.section_id = ?
+          AND COALESCE(s.enrollment_status, '') <> 'Graduated'
+          AND COALESCE(s.enlistment_status, '') <> 'Finished'
         ORDER BY sa.last_name ASC, sa.first_name ASC
     ");
 
@@ -112,7 +114,7 @@ if (!empty($advisorySectionId)) {
         if (strcasecmp($enlistmentStatus, 'Pending') === 0) {
             $summaryStats['pending']++;
         }
-        if (strcasecmp($enlistmentStatus, 'Promoted') === 0 || strcasecmp($enrollmentStatus, 'Graduated') === 0) {
+        if (strcasecmp($enlistmentStatus, 'Promoted') === 0) {
             $summaryStats['promoted']++;
         }
 

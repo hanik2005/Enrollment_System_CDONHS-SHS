@@ -14,6 +14,7 @@ header('Content-Type: application/json');
 include "../../DB_Connection/Connection.php";
 include "mailer_details.php";
 include_once "audit_trail_helper.php";
+include_once "admin_access.php";
 
 if (!isset($_SESSION['user_id'])) {
     ob_end_clean();
@@ -21,20 +22,12 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
-$adminUserId = (int) $_SESSION['user_id'];
-$adminStmt = $connection->prepare("
-    SELECT user_id
-    FROM users
-    WHERE user_id = ? AND role_id = 2
-");
-$adminStmt->bind_param("i", $adminUserId);
-$adminStmt->execute();
-$admin = $adminStmt->get_result()->fetch_assoc();
-$adminStmt->close();
+$admin = requireAdminAccess($connection, '../../Website_Files/login.php');
+$adminUserId = (int) $admin['user_id'];
 
 if (!$admin) {
     ob_end_clean();
-    echo json_encode(['success' => false, 'message' => 'Admin access required']);
+    echo json_encode(['success' => false, 'message' => 'Super admin or registrar access required']);
     exit;
 }
 
