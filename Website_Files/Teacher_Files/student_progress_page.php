@@ -245,7 +245,10 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
                                 $selectDisabled = $isApproved ? 'disabled' : '';
                                 ?>
                                 <tr
+                                    class="remarks-row"
                                     data-student-name="<?php echo htmlspecialchars(strtolower($fullName)); ?>"
+                                    data-student-label="<?php echo htmlspecialchars($fullName); ?>"
+                                    data-remarks-readonly="<?php echo $isApproved ? '1' : '0'; ?>"
                                     data-computed-status="<?php echo htmlspecialchars($computedStatus); ?>"
                                     data-approval-status="<?php echo htmlspecialchars($approvalStatus); ?>"
                                 >
@@ -302,12 +305,30 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <input type="text"
+                                        <?php
+                                        $teacherRemarks = trim((string) ($student['teacher_remarks'] ?? ''));
+                                        $teacherRemarksPreview = $teacherRemarks;
+                                        if (strlen($teacherRemarksPreview) > 60) {
+                                            $teacherRemarksPreview = substr($teacherRemarksPreview, 0, 60) . '...';
+                                        }
+                                        ?>
+                                        <input type="hidden"
                                                name="students[<?php echo (int) $student['student_id']; ?>][teacher_remarks]"
-                                               class="remarks-input"
-                                               value="<?php echo htmlspecialchars((string) ($student['teacher_remarks'] ?? '')); ?>"
-                                               placeholder="Add remarks..."
-                                               <?php echo $isApproved ? 'readonly' : ''; ?>>
+                                               class="remarks-hidden-input"
+                                               value="<?php echo htmlspecialchars($teacherRemarks, ENT_QUOTES); ?>">
+                                        <button type="button"
+                                                class="btn btn-remarks-edit"
+                                                data-remarks-title="Teacher Remarks">
+                                            <?php echo $isApproved ? 'View Remarks' : 'Add/Edit Remarks'; ?>
+                                        </button>
+                                        <div class="remarks-state">
+                                            <span class="remarks-indicator <?php echo $teacherRemarks !== '' ? 'remarks-has-value' : ''; ?>">
+                                                <?php echo $teacherRemarks !== '' ? 'Saved remarks' : 'No saved remarks'; ?>
+                                            </span>
+                                            <span class="remarks-preview">
+                                                <?php echo $teacherRemarks !== '' ? htmlspecialchars($teacherRemarksPreview) : 'Click Add/Edit Remarks to input and save.'; ?>
+                                            </span>
+                                        </div>
                                     </td>
                                     <td>
                                         <?php if ($approvalStatus === 'Approved'): ?>
@@ -357,7 +378,20 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
         </div>
     </div>
 
+    <div id="remarksModal" class="remarks-modal">
+        <div class="remarks-modal-content">
+            <h3 id="remarksModalTitle">Edit Remarks</h3>
+            <p id="remarksModalStudentName" class="remarks-modal-student">Student:</p>
+            <textarea id="remarksModalInput" rows="5" placeholder="Type your remarks here..."></textarea>
+            <div class="remarks-modal-actions">
+                <button type="button" class="btn btn-save" id="saveRemarksBtn">Save</button>
+                <button type="button" class="btn btn-reset" id="cancelRemarksBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/remarks_modal_helper.js"></script>
     <script src="../../Back_End_Files/JSCRIPT_Files/student_progress_function.js"></script>
 </body>
 </html>

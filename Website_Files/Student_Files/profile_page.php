@@ -155,8 +155,16 @@ $profileImagePath = !empty($profile['profile_image'])
     ? "../../uploads/Profile/student/" . htmlspecialchars($profile['profile_image']) 
     : "../../Assets/profile_button.png";
 
+include "../../Back_End_Files/PHP_Files/get_student_program.php";
+
 $studentProgramDetail = 'Current Class: ';
-if ($strandInfo) {
+if (($profile['enrollment_status'] ?? '') === 'Graduated') {
+    $studentProgramDetail = 'Status: Already graduated and cannot be enlisted again';
+}elseif ($isPending) {
+     $studentProgramDetail  = "Pending Enlistment";
+} elseif ($isRejected) {
+    $studentProgramDetail = "Rejected Enlistment"; 
+} elseif ($strandInfo) {
     $studentProgramDetail .= 'Grade ' . $strandInfo['grade_level'] . ' - ' . $strandInfo['strand_name'] . ' - ' . $strandInfo['section_name'];
 } else {
     $studentProgramDetail .= 'Not assigned yet';
@@ -232,29 +240,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
             </div>
         <?php endif; ?>
 
-        <div class="student-profile-hero">
-            <div class="student-profile-hero-copy">
-                <span class="student-profile-hero-tag">Student Profile Center</span>
-                <h1>Profile Overview</h1>
-                <p>Keep your contact details, family records, and uploaded documents updated so your school information stays complete and accurate.</p>
-            </div>
-            <div class="student-profile-hero-meta">
-                <div class="student-profile-hero-card">
-                    <span>Username</span>
-                    <strong><?php echo htmlspecialchars($profile['username']); ?></strong>
-                </div>
-                <div class="student-profile-hero-card">
-                    <span>Status</span>
-                    <strong><?php echo htmlspecialchars($profile['enrollment_status']); ?></strong>
-                </div>
-                <div class="student-profile-hero-card">
-                    <span>LRN</span>
-                    <strong><?php echo htmlspecialchars($profile['lrn'] ?? 'Not available'); ?></strong>
-                </div>
-            </div>
-        </div>
-
-        <!-- Profile Form -->
+          <!-- Profile Form -->
         <form action="../../Back_End_Files/PHP_Files/student_profile_backend.php" method="POST" id="profileForm" enctype="multipart/form-data">
             <input type="hidden" name="student_id" value="<?php echo $profile['student_id']; ?>">
             
@@ -277,6 +263,26 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
                     <p>Student record and profile photo</p>
                 </div>
             </div>
+
+        <div class="student-profile-hero">
+            <div class="student-profile-hero-copy">
+                <span class="student-profile-hero-tag">Student Profile Center</span>
+                <h1>Profile Overview</h1>
+                <p>Keep your contact details, family records, and uploaded documents updated so your school information stays complete and accurate.</p>
+            </div>
+            <div class="student-profile-hero-meta">
+                <div class="student-profile-hero-card">
+                    <span>Status</span>
+                    <strong><?php echo htmlspecialchars($profile['enrollment_status']); ?></strong>
+                </div>
+                <div class="student-profile-hero-card">
+                    <span>LRN</span>
+                    <strong><?php echo htmlspecialchars($profile['lrn'] ?? 'Not available'); ?></strong>
+                </div>
+            </div>
+        </div>
+
+      
 
             <div class="academic-focus-card">
                 <div class="academic-focus-header">

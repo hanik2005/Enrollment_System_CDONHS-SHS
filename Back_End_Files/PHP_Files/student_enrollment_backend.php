@@ -7,6 +7,19 @@ include $_SERVER['DOCUMENT_ROOT'] . '/Enrollment_System_CDONHS-SHS/DB_Connection
 include $_SERVER['DOCUMENT_ROOT'] . '/Enrollment_System_CDONHS-SHS/Back_End_Files/PHP_Files/mailer_details.php';
 include "student_enrollment_validation.php";
 
+function getCurrentEnrollmentSchoolYear(): string
+{
+    $now = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    $month = (int) $now->format('n');
+    $year = (int) $now->format('Y');
+
+    if ($month >= 8) {
+        return $year . '-' . ($year + 1);
+    }
+
+    return ($year - 1) . '-' . $year;
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     // Enrollment Details
@@ -304,7 +317,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         // Send email confirmation
         $gradeLevel = $_POST['gradeLevel'] ?? '';
-        $schoolYear = date("Y")."-".(date("Y")+1);
+        $schoolYear = getCurrentEnrollmentSchoolYear();
 
         try{
             $mail->setFrom('cdonhsshsacc@gmail.com','CDONHS-SHS Enrollment Office');
@@ -316,7 +329,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <h3>Good day $firstName $lastName</h3>
             <p>Your enrollment application has been <b>submitted successfully</b>.</p>
             <p>Status: <b>PENDING</b></p>
-            <p>Grade Level: $gradeLevel</p>
             <p>School Year: $schoolYear</p>
             <br>
             <p>Thank you</p>

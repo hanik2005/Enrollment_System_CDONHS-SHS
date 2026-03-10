@@ -38,8 +38,19 @@ include '../Back_End_Files/PHP_Files/login_backend.php';
                         <input type="password" id="password" name="password" required  autocomplete="new-password">
                         <img id="toggleIcon" src="../Assets/NotVisible.png" alt="Toggle Password" onclick="togglePassword()">
                     </div>
-                    <label id="captchaLabel" for="captcha">Solve Authentication:</label>
-                    <input type="text" id="captcha" name="captcha" required>
+                    <div class="auth-check">
+                        <div class="auth-check-header">
+                            <label id="captchaLabel" for="captcha">Solve Authentication</label>
+                            <button type="button" id="captchaRefresh" class="auth-refresh" aria-label="Refresh authentication challenge">&#8635;</button>
+                        </div>
+                        <div class="auth-challenge" aria-live="polite">
+                            <span class="auth-box" id="captchaNum1">0</span>
+                            <span class="auth-operator">+</span>
+                            <span class="auth-box" id="captchaNum2">0</span>
+                            <span class="auth-operator">=</span>
+                            <input type="text" id="captcha" name="captcha" class="auth-answer" inputmode="numeric" required>
+                        </div>
+                    </div>
                     <input type="hidden" id="correct_sum" name="correct_sum">
                     <input type="submit" value="Login">
                 </form>

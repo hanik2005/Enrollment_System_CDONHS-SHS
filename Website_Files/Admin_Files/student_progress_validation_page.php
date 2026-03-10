@@ -117,7 +117,18 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
                     <?php if ($records && $records->num_rows > 0): ?>
                         <?php $i = 1; ?>
                         <?php while ($row = $records->fetch_assoc()): ?>
-                            <tr>
+                            <?php
+                            $fullName = trim((string) $row['last_name'] . ', ' . (string) $row['first_name']);
+                            $adminRemarksValue = trim((string) $row['admin_remarks']);
+                            $adminRemarksPreview = $adminRemarksValue;
+                            if (strlen($adminRemarksPreview) > 60) {
+                                $adminRemarksPreview = substr($adminRemarksPreview, 0, 60) . '...';
+                            }
+                            $isReadonlyRemarks = $row['approval_status'] === 'Approved';
+                            ?>
+                            <tr class="remarks-row"
+                                data-student-label="<?php echo htmlspecialchars($fullName); ?>"
+                                data-remarks-readonly="<?php echo $isReadonlyRemarks ? '1' : '0'; ?>">
                                 <td>
                                     <input type="checkbox"
                                            class="row-checkbox"
@@ -127,7 +138,7 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
                                 </td>
                                 <td><?php echo $i++; ?></td>
                                 <td>
-                                    <?php echo htmlspecialchars($row['last_name'] . ', ' . $row['first_name']); ?><br>
+                                    <?php echo htmlspecialchars($fullName); ?><br>
                                     <small>LRN: <?php echo htmlspecialchars((string) $row['lrn']); ?></small>
                                 </td>
                                 <td>
@@ -150,7 +161,23 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
                                     </select>
                                 </td>
                                 <td>
-                                    <textarea name="admin_remarks[<?php echo (int) $row['promotion_status_id']; ?>]" rows="2" class="remarks-small"><?php echo htmlspecialchars((string) $row['admin_remarks']); ?></textarea>
+                                    <input type="hidden"
+                                           name="admin_remarks[<?php echo (int) $row['promotion_status_id']; ?>]"
+                                           class="remarks-hidden-input"
+                                           value="<?php echo htmlspecialchars($adminRemarksValue, ENT_QUOTES); ?>">
+                                    <button type="button"
+                                            class="btn btn-remarks-edit"
+                                            data-remarks-title="Admin Remarks">
+                                        <?php echo $isReadonlyRemarks ? 'View Remarks' : 'Add/Edit Remarks'; ?>
+                                    </button>
+                                    <div class="remarks-state">
+                                        <span class="remarks-indicator <?php echo $adminRemarksValue !== '' ? 'remarks-has-value' : ''; ?>">
+                                            <?php echo $adminRemarksValue !== '' ? 'Saved remarks' : 'No saved remarks'; ?>
+                                        </span>
+                                        <span class="remarks-preview">
+                                            <?php echo $adminRemarksValue !== '' ? htmlspecialchars($adminRemarksPreview) : 'Click Add/Edit Remarks to input and save.'; ?>
+                                        </span>
+                                    </div>
                                 </td>
                             </tr>
                         <?php endwhile; ?>
@@ -189,11 +216,24 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
         </div>
     </div>
 
+    <div id="remarksModal" class="remarks-modal">
+        <div class="remarks-modal-content">
+            <h3 id="remarksModalTitle">Edit Remarks</h3>
+            <p id="remarksModalStudentName" class="remarks-modal-student">Student:</p>
+            <textarea id="remarksModalInput" rows="5" placeholder="Type your remarks here..."></textarea>
+            <div class="remarks-modal-actions">
+                <button type="button" class="btn btn-save" id="saveRemarksBtn">Save</button>
+                <button type="button" class="btn btn-reset" id="cancelRemarksBtn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <div class="footer">
         &copy; 2026 Cagayan De Oro National High School - Senior High School
     </div>
 
     <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/remarks_modal_helper.js"></script>
     <script>
         var selectAll = document.getElementById('selectAllCheckbox');
         var rowCheckboxes = Array.from(document.querySelectorAll('.row-checkbox:not(:disabled)'));
