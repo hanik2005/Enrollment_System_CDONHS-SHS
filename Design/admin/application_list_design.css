@@ -174,6 +174,28 @@ tr:hover {
     border: 1px solid #fca5a5;
 }
 
+.status-cycle-btn {
+    min-width: 120px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #d1d5db;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.status-cycle-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+.status-cycle-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 /* Document Links */
 .doc-submitted {
     color: #059669;

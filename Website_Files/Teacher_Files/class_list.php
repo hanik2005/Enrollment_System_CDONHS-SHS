@@ -73,6 +73,10 @@ $profileImagePath = "../../Assets/profile_button.png";
     </div>
     </div>
 
+    <div class="nav-links">
+        <a href="home.php">&larr; Back to Home</a>
+    </div>
+
     <div class="main-container">
 
     <!-- Page Title -->

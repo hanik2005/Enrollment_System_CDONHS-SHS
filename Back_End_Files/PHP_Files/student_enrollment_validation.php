@@ -100,9 +100,11 @@ function validateStudentEnrollment($connection, $data) {
     }
 
     // ===============================
-    // VALIDATE LRN (Numbers Only) - OPTIONAL
+    // VALIDATE LRN (Required, numbers only)
     // ===============================
-    if (isset($data['lrn']) && !empty($data['lrn'])) {
+    if (empty($data['lrn'] ?? '')) {
+        $errors[] = "LRN is required.";
+    } else {
         $lrn = $data['lrn'];
         
         // Check if LRN contains only numbers

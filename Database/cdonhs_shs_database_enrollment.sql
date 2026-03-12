@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 08, 2026 at 12:53 PM
+-- Generation Time: Mar 12, 2026 at 06:41 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -96,7 +96,11 @@ INSERT INTO `admin_audit_trail` (`audit_id`, `user_id`, `action_type`, `entity_t
 (28, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '17', 'Approved teacher student-progress recommendation #17', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Marked as Graduated.\"}', '::1', '2026-03-08 09:31:46'),
 (29, 19, 'STUDENT_GRADUATED', 'students', '9', 'Approved teacher recommendation and marked student #9 as Graduated', '{\"teacher_recommended_status\":\"Graduate\",\"approved_by\":19}', '::1', '2026-03-08 09:31:46'),
 (30, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '18', 'Approved teacher student-progress recommendation #18', '{\"decision\":\"Approved\",\"remark\":\"\",\"action_result\":\"Marked as Graduated.\"}', '::1', '2026-03-08 09:31:46'),
-(31, 19, 'ENLISTMENT_APPROVED', 'students', '10', 'Approved enlistment for student #10', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":6,\"email\":\"clarito.nickcharles@gmail.com\",\"first_name\":\"Charlie Nathaniel\",\"last_name\":\"Viador\"}}', '::1', '2026-03-08 11:17:14');
+(31, 19, 'ENLISTMENT_APPROVED', 'students', '10', 'Approved enlistment for student #10', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":6,\"email\":\"clarito.nickcharles@gmail.com\",\"first_name\":\"Charlie Nathaniel\",\"last_name\":\"Viador\"}}', '::1', '2026-03-08 11:17:14'),
+(32, 19, 'ENLISTMENT_APPROVED', 'students', '10', 'Approved enlistment for student #10', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":6,\"email\":\"clarito.nickcharles@gmail.com\",\"first_name\":\"Charlie Nathaniel\",\"last_name\":\"Viador\"}}', '::1', '2026-03-12 05:28:24'),
+(33, 19, 'APPLICATION_REJECTED', 'student_applications', '7', 'Rejected and removed application #7', '{\"status\":\"Rejected\",\"remarks\":\"sdfsffsdjoj\",\"student_name\":\"John Clarito\"}', '::1', '2026-03-12 05:36:49'),
+(34, 19, 'STUDENT_PROMOTED', 'students', '10', 'Approved teacher recommendation and promoted student #10 to Grade 12', '{\"teacher_recommended_status\":\"Promote to Grade 12\",\"school_year_from\":\"2025-2026\",\"school_year_to\":\"2026-2027\",\"approved_by\":19}', '::1', '2026-03-12 05:39:52'),
+(35, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '19', 'Approved teacher student-progress recommendation #19', '{\"decision\":\"Approved\",\"remark\":\"go\",\"action_result\":\"Promoted to Grade 12.\"}', '::1', '2026-03-12 05:39:52');
 
 -- --------------------------------------------------------
 
@@ -146,10 +150,10 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `role_name`) VALUES
+(4, 'Registrar'),
 (1, 'Student'),
 (2, 'Super Admin'),
-(3, 'Teacher'),
-(4, 'Registrar');
+(3, 'Teacher');
 
 -- --------------------------------------------------------
 
@@ -161,71 +165,70 @@ CREATE TABLE `section` (
   `section_id` int(11) NOT NULL,
   `section_name` varchar(30) NOT NULL,
   `grade_level` int(11) NOT NULL,
-  `strand_id` int(11) NOT NULL,
-  `adviser_id` int(11) DEFAULT NULL
+  `strand_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `section`
 --
 
-INSERT INTO `section` (`section_id`, `section_name`, `grade_level`, `strand_id`, `adviser_id`) VALUES
-(1, 'A', 11, 1, NULL),
-(2, 'B', 11, 1, NULL),
-(3, 'C', 11, 1, NULL),
-(4, 'D', 11, 1, NULL),
-(5, 'A', 12, 1, NULL),
-(6, 'B', 12, 1, NULL),
-(7, 'C', 12, 1, NULL),
-(8, 'D', 12, 1, NULL),
-(9, 'A', 11, 2, NULL),
-(10, 'B', 11, 2, NULL),
-(11, 'C', 11, 2, NULL),
-(12, 'D', 11, 2, NULL),
-(13, 'A', 12, 2, NULL),
-(14, 'B', 12, 2, NULL),
-(15, 'C', 12, 2, NULL),
-(16, 'D', 12, 2, NULL),
-(17, 'A', 11, 3, NULL),
-(18, 'B', 11, 3, NULL),
-(19, 'C', 11, 3, NULL),
-(20, 'D', 11, 3, NULL),
-(21, 'A', 12, 3, NULL),
-(22, 'B', 12, 3, NULL),
-(23, 'C', 12, 3, NULL),
-(24, 'D', 12, 3, NULL),
-(25, 'A', 11, 4, NULL),
-(26, 'B', 11, 4, NULL),
-(27, 'C', 11, 4, NULL),
-(28, 'D', 11, 4, NULL),
-(29, 'A', 12, 4, NULL),
-(30, 'B', 12, 4, NULL),
-(31, 'C', 12, 4, NULL),
-(32, 'D', 12, 4, NULL),
-(33, 'A', 11, 5, NULL),
-(34, 'B', 11, 5, NULL),
-(35, 'C', 11, 5, NULL),
-(36, 'D', 11, 5, NULL),
-(37, 'A', 12, 5, NULL),
-(38, 'B', 12, 5, NULL),
-(39, 'C', 12, 5, NULL),
-(40, 'D', 12, 5, NULL),
-(41, 'A', 11, 6, NULL),
-(42, 'B', 11, 6, NULL),
-(43, 'C', 11, 6, NULL),
-(44, 'D', 11, 6, NULL),
-(45, 'A', 12, 6, NULL),
-(46, 'B', 12, 6, NULL),
-(47, 'C', 12, 6, NULL),
-(48, 'D', 12, 6, NULL),
-(49, 'A', 11, 7, NULL),
-(50, 'B', 11, 7, NULL),
-(51, 'C', 11, 7, NULL),
-(52, 'D', 11, 7, NULL),
-(53, 'A', 12, 7, NULL),
-(54, 'B', 12, 7, NULL),
-(55, 'C', 12, 7, NULL),
-(56, 'D', 12, 7, NULL);
+INSERT INTO `section` (`section_id`, `section_name`, `grade_level`, `strand_id`) VALUES
+(1, 'A', 11, 1),
+(2, 'B', 11, 1),
+(3, 'C', 11, 1),
+(4, 'D', 11, 1),
+(5, 'A', 12, 1),
+(6, 'B', 12, 1),
+(7, 'C', 12, 1),
+(8, 'D', 12, 1),
+(9, 'A', 11, 2),
+(10, 'B', 11, 2),
+(11, 'C', 11, 2),
+(12, 'D', 11, 2),
+(13, 'A', 12, 2),
+(14, 'B', 12, 2),
+(15, 'C', 12, 2),
+(16, 'D', 12, 2),
+(17, 'A', 11, 3),
+(18, 'B', 11, 3),
+(19, 'C', 11, 3),
+(20, 'D', 11, 3),
+(21, 'A', 12, 3),
+(22, 'B', 12, 3),
+(23, 'C', 12, 3),
+(24, 'D', 12, 3),
+(25, 'A', 11, 4),
+(26, 'B', 11, 4),
+(27, 'C', 11, 4),
+(28, 'D', 11, 4),
+(29, 'A', 12, 4),
+(30, 'B', 12, 4),
+(31, 'C', 12, 4),
+(32, 'D', 12, 4),
+(33, 'A', 11, 5),
+(34, 'B', 11, 5),
+(35, 'C', 11, 5),
+(36, 'D', 11, 5),
+(37, 'A', 12, 5),
+(38, 'B', 12, 5),
+(39, 'C', 12, 5),
+(40, 'D', 12, 5),
+(41, 'A', 11, 6),
+(42, 'B', 11, 6),
+(43, 'C', 11, 6),
+(44, 'D', 11, 6),
+(45, 'A', 12, 6),
+(46, 'B', 12, 6),
+(47, 'C', 12, 6),
+(48, 'D', 12, 6),
+(49, 'A', 11, 7),
+(50, 'B', 11, 7),
+(51, 'C', 11, 7),
+(52, 'D', 11, 7),
+(53, 'A', 12, 7),
+(54, 'B', 12, 7),
+(55, 'C', 12, 7),
+(56, 'D', 12, 7);
 
 -- --------------------------------------------------------
 
@@ -278,7 +281,7 @@ INSERT INTO `students` (`student_id`, `user_id`, `application_id`, `enrollment_s
 (6, 97, 2, 'Graduated', '2026-03-05', 'Finished', '2026-2027'),
 (8, 99, 3, 'Graduated', '2026-03-06', 'Finished', '2026-2027'),
 (9, 100, 5, 'Graduated', '2026-03-06', 'Finished', '2026-2027'),
-(10, 101, 6, 'Active', '2026-03-08', 'Enlisted', '2025-2026');
+(10, 101, 6, 'Active', '2026-03-08', 'Promoted', '2026-2027');
 
 -- --------------------------------------------------------
 
@@ -349,7 +352,7 @@ CREATE TABLE `student_applications` (
 --
 
 INSERT INTO `student_applications` (`application_id`, `lrn`, `last_name`, `first_name`, `middle_name`, `extension_name`, `date_of_birth`, `sex`, `place_of_birth`, `religion`, `mother_tongue`, `enrollment_type`, `application_status`, `email`, `contact_number`, `remarks`, `date_submitted`, `facebook_profile`, `profile_image`) VALUES
-(2, '405220150089', 'Clarito', 'Nick Charles', 'Durangparang', '', '2005-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'Balik-Aral', 'Approved', 'nickcharlesclarito@gmail.com', '09944718764', 'dasgasga', '2026-03-05 20:59:38', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
+(2, '405220150089', 'Clarito', 'Nick Charles', 'Durangparang', '', '2005-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'Balik-Aral', 'Approved', 'nickcharlesclarito@gmail.com', '09944718764', 'dasgasga', '2026-03-05 20:59:38', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', '1773287601_PROFILE_2.jpg'),
 (3, '123892477492', 'Clarito', 'Andry', 'Durangparang', '', '2010-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nidu.clarito.coc@phinmaed.com', '09315510501', 'kdaslgajpgas', '2026-03-06 05:01:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
 (5, '182785932075', 'Japlag', 'Jason Jay', 'Dumang', '', '2006-10-17', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nickhoyo2005@gmail.com', '09782357252', 'dasfvxdshsherrg', '2026-03-06 19:04:49', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
 (6, '197529532252', 'Viador', 'Charlie Nathaniel', 'Barero', '', '2003-11-12', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'clarito.nickcharles@gmail.com', '09637258522', 'Badgao ka???', '2026-03-08 06:40:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL);
@@ -517,7 +520,7 @@ CREATE TABLE `student_promotion_status` (
 --
 
 INSERT INTO `student_promotion_status` (`promotion_status_id`, `student_id`, `teacher_id`, `school_year`, `semester`, `computed_status`, `recommended_status`, `teacher_remarks`, `approval_status`, `is_approved`, `admin_user_id`, `admin_remarks`, `approved_at`, `created_at`, `updated_at`) VALUES
-(1, 8, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-08 09:24:07'),
+(1, 8, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-12 05:27:33'),
 (2, 6, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:06', '2026-03-08 09:19:27', '2026-03-08 09:24:06'),
 (3, 9, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-08 09:24:07'),
 (10, 8, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
@@ -528,7 +531,8 @@ INSERT INTO `student_promotion_status` (`promotion_status_id`, `student_id`, `te
 (15, 9, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:13', '2026-03-08 09:29:37', '2026-03-08 09:30:13'),
 (16, 8, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:45', '2026-03-08 09:31:03', '2026-03-08 09:31:45'),
 (17, 6, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:45', '2026-03-08 09:31:03', '2026-03-08 09:31:45'),
-(18, 9, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:46', '2026-03-08 09:31:03', '2026-03-08 09:31:46');
+(18, 9, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:46', '2026-03-08 09:31:03', '2026-03-08 09:31:46'),
+(19, 10, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'hjkhsfhsd', 'Approved', 1, 19, 'go', '2026-03-12 06:39:52', '2026-03-12 05:39:05', '2026-03-12 05:39:52');
 
 -- --------------------------------------------------------
 
@@ -611,7 +615,7 @@ INSERT INTO `student_strand` (`student_strand_id`, `student_id`, `strand_id`, `g
 (1, 6, 5, 12, '2nd Semester', '2026-2027', 37),
 (2, 8, 5, 12, '2nd Semester', '2026-2027', 37),
 (3, 9, 5, 12, '2nd Semester', '2026-2027', 37),
-(4, 10, 5, 11, '2nd Semester', '2025-2026', 33);
+(4, 10, 5, 12, '1st Semester', '2026-2027', 37);
 
 -- --------------------------------------------------------
 
@@ -1001,7 +1005,7 @@ ALTER TABLE `activation_settings`
 -- AUTO_INCREMENT for table `admin_audit_trail`
 --
 ALTER TABLE `admin_audit_trail`
-  MODIFY `audit_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `audit_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT for table `archived_student_strand`
@@ -1043,61 +1047,61 @@ ALTER TABLE `students`
 -- AUTO_INCREMENT for table `student_addresses`
 --
 ALTER TABLE `student_addresses`
-  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_applications`
 --
 ALTER TABLE `student_applications`
-  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_documents`
 --
 ALTER TABLE `student_documents`
-  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_family`
 --
 ALTER TABLE `student_family`
-  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_learning_modality`
 --
 ALTER TABLE `student_learning_modality`
-  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_learning_program`
 --
 ALTER TABLE `student_learning_program`
-  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_previous_school`
 --
 ALTER TABLE `student_previous_school`
-  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_promotion_status`
 --
 ALTER TABLE `student_promotion_status`
-  MODIFY `promotion_status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `promotion_status_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT for table `student_social_info`
 --
 ALTER TABLE `student_social_info`
-  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_special_needs`
 --
 ALTER TABLE `student_special_needs`
-  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT for table `student_strand`

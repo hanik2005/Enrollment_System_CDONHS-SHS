@@ -154,11 +154,15 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
                                 <td><?php echo htmlspecialchars((string) $row['recommended_status']); ?></td>
                                 <td><?php echo nl2br(htmlspecialchars((string) $row['teacher_remarks'])); ?></td>
                                 <td>
-                                    <select name="decision[<?php echo (int) $row['promotion_status_id']; ?>]">
-                                        <option value="Pending" <?php echo $row['approval_status'] === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                        <option value="Approved" <?php echo $row['approval_status'] === 'Approved' ? 'selected' : ''; ?>>Approved</option>
-                                        <option value="Rejected" <?php echo $row['approval_status'] === 'Rejected' ? 'selected' : ''; ?>>Rejected</option>
-                                    </select>
+                                    <input type="hidden"
+                                           name="decision[<?php echo (int) $row['promotion_status_id']; ?>]"
+                                           class="decision-hidden-input"
+                                           value="<?php echo htmlspecialchars((string) $row['approval_status'], ENT_QUOTES); ?>">
+                                    <button type="button"
+                                            class="status-cycle-btn decision-status-toggle"
+                                            data-status-values="Pending|Approved|Rejected">
+                                        <?php echo htmlspecialchars((string) $row['approval_status']); ?>
+                                    </button>
                                 </td>
                                 <td>
                                     <input type="hidden"
@@ -271,6 +275,46 @@ $successMessage = "Validation complete. Approved: {$approved}, Rejected: {$rejec
 
         rowCheckboxes.forEach(function (checkbox) {
             checkbox.addEventListener('change', updateValidationSelectionState);
+        });
+
+        function applyStatusButtonClass(button, value) {
+            button.classList.remove('status-pending', 'status-approved', 'status-rejected');
+            if (value === 'Approved') {
+                button.classList.add('status-approved');
+                return;
+            }
+            if (value === 'Rejected') {
+                button.classList.add('status-rejected');
+                return;
+            }
+            button.classList.add('status-pending');
+        }
+
+        document.querySelectorAll('.decision-status-toggle').forEach(function (button) {
+            var hiddenInput = button.parentElement ? button.parentElement.querySelector('.decision-hidden-input') : null;
+            if (!hiddenInput) {
+                return;
+            }
+
+            var statuses = (button.dataset.statusValues || 'Pending|Approved|Rejected')
+                .split('|')
+                .map(function (item) { return item.trim(); })
+                .filter(Boolean);
+
+            if (statuses.indexOf(hiddenInput.value) === -1) {
+                hiddenInput.value = statuses[0] || 'Pending';
+            }
+
+            button.textContent = hiddenInput.value;
+            applyStatusButtonClass(button, hiddenInput.value);
+
+            button.addEventListener('click', function () {
+                var currentIndex = statuses.indexOf(hiddenInput.value);
+                var nextIndex = currentIndex >= 0 ? (currentIndex + 1) % statuses.length : 0;
+                hiddenInput.value = statuses[nextIndex];
+                button.textContent = hiddenInput.value;
+                applyStatusButtonClass(button, hiddenInput.value);
+            });
         });
 
         function showLoadingModal() {

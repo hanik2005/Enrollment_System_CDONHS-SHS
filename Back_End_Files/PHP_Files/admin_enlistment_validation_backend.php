@@ -10,7 +10,7 @@ $admin = requireAdminAccess($connection);
 $adminRoleLabel = getRoleLabel((int) $admin['role_id']);
 $adminUserId = (int) $admin['user_id'];
 
-if (isset($_POST['confirm']) && isset($_POST['status'])) {
+if (isset($_POST['confirm']) && isset($_POST['status']) && !empty($_POST['selected_students'])) {
     $selectedStudents = array_map('intval', $_POST['selected_students'] ?? []);
     $selectedLookup = !empty($selectedStudents) ? array_flip($selectedStudents) : [];
 

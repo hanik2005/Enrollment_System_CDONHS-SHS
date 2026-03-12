@@ -2,6 +2,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const menuItems = [];
     const defaultIcon = "../../Assets/LOGO.png";
 
+    function enableMenuFirstHeaderFlow(toggle) {
+        const header = toggle ? toggle.closest(".header") : null;
+        if (header) {
+            header.classList.add("menu-flow-enabled");
+        }
+    }
+
     function getRoleLabel() {
         const path = window.location.pathname.toLowerCase();
         if (path.includes("/student_files/")) return "Student";
@@ -293,6 +300,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const toggles = Array.from(document.querySelectorAll(".home-menu-toggle[aria-controls]"));
     toggles.forEach((toggle) => {
+        enableMenuFirstHeaderFlow(toggle);
+
         const menuId = toggle.getAttribute("aria-controls");
         if (!menuId) {
             return;

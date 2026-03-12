@@ -118,8 +118,8 @@ for ($i = 0; $i < 10; $i++) {
     <div class="form-grid">
 
         <div class="form-group">
-            <label>Learner Reference Number (LRN) - Optional</label>
-            <input type="text" name="lrn" maxlength="12" pattern="[0-9]{12}" placeholder="Example: 123456789012" title="Enter 12-digit LRN (numbers only)" data-validate="lrn">
+            <label>Learner Reference Number (LRN) <span class="required">*</span></label>
+            <input type="text" name="lrn" required maxlength="12" pattern="[0-9]{12}" placeholder="Example: 123456789012" title="Enter 12-digit LRN (numbers only)" data-validate="required|lrn">
             <span class="error-message"></span>
             <span class="hint">12-digit number</span>
         </div>
@@ -698,7 +698,7 @@ for ($i = 0; $i < 10; $i++) {
         </div>
 
         <div class="form-group">
-            <label>Grade 10 Completion of Form 138 / Report Card (Optional)</label>
+            <label>Form 137/138 or Latest Report Card (e.g., Grade 10 or Grade 11 completion) (Optional)</label>
             <input type="file" name="form138" accept=".pdf,.jpg,.png" class="file-input">
             <span class="error-message"></span>
         </div>

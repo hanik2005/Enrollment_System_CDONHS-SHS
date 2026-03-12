@@ -1,32 +1,182 @@
 (function () {
+    var studentCheckboxes = Array.from(document.querySelectorAll('.student-checkbox:not(:disabled)'));
+    var saveValidationBtn = document.getElementById('saveValidationBtn');
+    var selectedSaveCount = document.getElementById('selectedSaveCount');
+
+    function applyPromotionSelectClass(control) {
+        if (!control) {
+            return;
+        }
+
+        control.classList.remove('promote', 'graduate', 'retain', 'pending');
+
+        var rawValue = '';
+        if (typeof control.value === 'string') {
+            rawValue = control.value;
+        } else {
+            rawValue = control.textContent || '';
+        }
+
+        var value = rawValue.toLowerCase();
+        if (value.indexOf('promote') >= 0) {
+            control.classList.add('promote');
+        } else if (value.indexOf('graduate') >= 0) {
+            control.classList.add('graduate');
+        } else if (value.indexOf('incomplete') >= 0) {
+            control.classList.add('retain');
+        } else {
+            control.classList.add('pending');
+        }
+    }
+
+    function getStatusOptions(button, fallback) {
+        var values = (button.getAttribute('data-status-values') || fallback || '')
+            .split('|')
+            .map(function (item) { return item.trim(); })
+            .filter(Boolean);
+        return values.length ? values : [fallback || 'Pending'];
+    }
+
+    function setButtonValue(button, hiddenInput, value) {
+        if (!button || !hiddenInput) {
+            return;
+        }
+        hiddenInput.value = value;
+        if (button.disabled && button.getAttribute('data-auto-label')) {
+            button.textContent = button.getAttribute('data-auto-label');
+        } else {
+            button.textContent = value;
+        }
+        applyPromotionSelectClass(button);
+    }
+
+    function cycleStatusButton(button, hiddenInput) {
+        if (!button || !hiddenInput || button.disabled) {
+            return;
+        }
+
+        var options = getStatusOptions(button, 'Pending');
+        var currentIndex = options.indexOf(hiddenInput.value);
+        var nextIndex = currentIndex >= 0 ? (currentIndex + 1) % options.length : 0;
+        setButtonValue(button, hiddenInput, options[nextIndex]);
+    }
+
     var selectAll = document.getElementById('selectAll');
     if (selectAll) {
         selectAll.addEventListener('change', function () {
-            var checkboxes = document.querySelectorAll('.student-checkbox');
-            checkboxes.forEach(function (checkbox) {
+            document.querySelectorAll('.student-checkbox').forEach(function (checkbox) {
                 if (!checkbox.disabled) {
                     checkbox.checked = selectAll.checked;
                 }
             });
+            updateSaveSelectionState();
         });
     }
 
-    document.querySelectorAll('.promotion-select').forEach(function (select) {
-        select.addEventListener('change', function () {
-            select.classList.remove('promote', 'graduate', 'retain', 'pending');
+    function updateSaveSelectionState() {
+        var selectedCount = studentCheckboxes.filter(function (checkbox) {
+            return checkbox.checked;
+        }).length;
 
-            var value = (select.value || '').toLowerCase();
-            if (value.indexOf('promote') >= 0) {
-                select.classList.add('promote');
-            } else if (value.indexOf('graduate') >= 0) {
-                select.classList.add('graduate');
-            } else if (value.indexOf('incomplete') >= 0) {
-                select.classList.add('retain');
-            } else {
-                select.classList.add('pending');
+        if (selectedSaveCount) {
+            selectedSaveCount.textContent = selectedCount + (selectedCount === 1 ? ' student selected' : ' students selected');
+        }
+
+        if (saveValidationBtn) {
+            saveValidationBtn.disabled = selectedCount === 0;
+        }
+
+        if (selectAll) {
+            selectAll.checked = studentCheckboxes.length > 0 && selectedCount === studentCheckboxes.length;
+        }
+    }
+
+    function buildRecommendationOptions(recommendationButton, recommendationInput, computedStatus) {
+        if (!recommendationButton || !recommendationInput) {
+            return;
+        }
+
+        var semester = recommendationButton.getAttribute('data-semester') || '';
+        if (semester !== '2nd Semester') {
+            recommendationButton.setAttribute('data-status-values', 'Pending');
+            setButtonValue(recommendationButton, recommendationInput, recommendationInput.value || 'Pending');
+            return;
+        }
+
+        var gradeLevel = parseInt(recommendationButton.getAttribute('data-grade-level') || '0', 10);
+        var previousValue = recommendationInput.value || 'Pending';
+        var options = [{ value: 'Pending', label: 'Pending' }];
+
+        if (computedStatus === 'Complete') {
+            if (gradeLevel === 11) {
+                options.push({ value: 'Promote to Grade 12', label: 'Promote to Grade 12' });
+            } else if (gradeLevel === 12) {
+                options.push({ value: 'Graduate', label: 'Graduate' });
             }
+        } else {
+            options.push({ value: 'Incomplete', label: 'Incomplete' });
+        }
+
+        var isPreviousValueAvailable = options.some(function (optionData) {
+            return optionData.value === previousValue;
         });
-        select.dispatchEvent(new Event('change'));
+
+        recommendationButton.setAttribute(
+            'data-status-values',
+            options.map(function (optionData) { return optionData.value; }).join('|')
+        );
+
+        setButtonValue(recommendationButton, recommendationInput, isPreviousValueAvailable ? previousValue : 'Pending');
+    }
+
+    document.querySelectorAll('.computed-status-btn').forEach(function (button) {
+        var row = button.closest('tr');
+        var hiddenInput = row ? row.querySelector('.computed-status-input') : null;
+        if (!hiddenInput) {
+            return;
+        }
+
+        setButtonValue(button, hiddenInput, hiddenInput.value || 'Pending');
+
+        button.addEventListener('click', function () {
+            cycleStatusButton(button, hiddenInput);
+
+            var recommendationButton = row.querySelector('.recommendation-status-btn');
+            var recommendationInput = row.querySelector('.recommendation-status-input');
+            var computedStatus = hiddenInput.value || 'Pending';
+            row.setAttribute('data-computed-status', computedStatus);
+            buildRecommendationOptions(recommendationButton, recommendationInput, computedStatus);
+        });
+    });
+
+    document.querySelectorAll('.recommendation-status-btn').forEach(function (button) {
+        var row = button.closest('tr');
+        var hiddenInput = row ? row.querySelector('.recommendation-status-input') : null;
+        if (!hiddenInput) {
+            return;
+        }
+
+        setButtonValue(button, hiddenInput, hiddenInput.value || 'Pending');
+        button.addEventListener('click', function () {
+            cycleStatusButton(button, hiddenInput);
+        });
+    });
+
+    document.querySelectorAll('#progressTable tbody tr').forEach(function (row) {
+        var computedInput = row.querySelector('.computed-status-input');
+        var recommendationButton = row.querySelector('.recommendation-status-btn');
+        var recommendationInput = row.querySelector('.recommendation-status-input');
+        if (!computedInput || !recommendationButton || !recommendationInput) {
+            return;
+        }
+
+        function syncRecommendationOptions() {
+            var computedStatus = computedInput.value || 'Pending';
+            row.setAttribute('data-computed-status', computedStatus);
+            buildRecommendationOptions(recommendationButton, recommendationInput, computedStatus);
+        }
+
+        syncRecommendationOptions();
     });
 
     function showSuccessModal(message) {
@@ -60,15 +210,11 @@
     var promotionForm = document.getElementById('promotionForm');
     if (promotionForm) {
         promotionForm.addEventListener('submit', function (event) {
-            var submitter = event.submitter;
-            var isBulk = submitter && submitter.name === 'bulk_update_promotion';
-            if (isBulk) {
-                var checked = document.querySelectorAll('.student-checkbox:checked');
-                if (checked.length === 0) {
-                    alert('Please select at least one student.');
-                    event.preventDefault();
-                    return;
-                }
+            var checked = document.querySelectorAll('.student-checkbox:checked');
+            if (checked.length === 0) {
+                alert('Please select at least one student.');
+                event.preventDefault();
+                return;
             }
 
             var loadingModal = document.getElementById('loadingModal');
@@ -137,4 +283,10 @@
             }
         });
     }
+
+    studentCheckboxes.forEach(function (checkbox) {
+        checkbox.addEventListener('change', updateSaveSelectionState);
+    });
+
+    updateSaveSelectionState();
 })();

@@ -115,7 +115,7 @@ $facebookPageUrl = "https://www.facebook.com/CDONHSSrHigh";
            <div class="reports-toolbar">
         <form method="GET" id="schoolYearFilterForm">
             <label for="school_year">School Year:</label>
-            <select name="school_year" id="school_year" onchange="applySchoolYearFilter()">
+            <select name="school_year" id="school_year" onchange="this.form.submit()">
                 <option value="All" <?php echo $selectedSchoolYear === 'All' ? 'selected' : ''; ?>>All</option>
                 <?php foreach ($availableSchoolYears as $schoolYear): ?>
                     <option value="<?php echo htmlspecialchars($schoolYear); ?>" <?php echo $selectedSchoolYear === $schoolYear ? 'selected' : ''; ?>>

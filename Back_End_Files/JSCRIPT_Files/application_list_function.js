@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectAllCheckbox = document.getElementById("selectAllCheckbox");
     const rowCheckboxes = document.querySelectorAll(".row-checkbox");
     const confirmBatchBtn = document.getElementById("confirmBatchBtn");
+    const selectedBatchCount = document.getElementById("selectedBatchCount");
     const loadingModal = document.getElementById("loadingModal");
 
     const remarksModal = document.getElementById("remarksModal");
@@ -65,8 +66,80 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function applyStatusButtonClass(button, value) {
+        if (!button) return;
+        button.classList.remove("status-pending", "status-approved", "status-rejected");
+        if (value === "Approved") {
+            button.classList.add("status-approved");
+            return;
+        }
+        if (value === "Rejected") {
+            button.classList.add("status-rejected");
+            return;
+        }
+        button.classList.add("status-pending");
+    }
+
+    function initializeBatchStatusToggle(button) {
+        if (!button) return;
+        const row = button.closest(".application-row");
+        if (!row) return;
+
+        const hiddenInput = row.querySelector(".batch-status");
+        if (!hiddenInput) return;
+
+        const statusesRaw = button.dataset.statusValues || "Pending|Approved|Rejected";
+        const statuses = statusesRaw.split("|").map((item) => item.trim()).filter(Boolean);
+        if (statuses.length === 0) return;
+
+        if (!statuses.includes(hiddenInput.value)) {
+            hiddenInput.value = statuses[0];
+        }
+
+        button.textContent = hiddenInput.value;
+        applyStatusButtonClass(button, hiddenInput.value);
+
+        button.addEventListener("click", function () {
+            const currentIndex = statuses.indexOf(hiddenInput.value);
+            const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % statuses.length : 0;
+            const nextValue = statuses[nextIndex];
+            hiddenInput.value = nextValue;
+            button.textContent = nextValue;
+            applyStatusButtonClass(button, nextValue);
+        });
+    }
+
+    function getEnabledCheckboxes() {
+        return Array.from(rowCheckboxes).filter((checkbox) => !checkbox.disabled);
+    }
+
+    function updateBatchSelectionState() {
+        const enabledCheckboxes = getEnabledCheckboxes();
+        const selectedCount = enabledCheckboxes.filter((checkbox) => checkbox.checked).length;
+        const allChecked = enabledCheckboxes.length > 0 && selectedCount === enabledCheckboxes.length;
+        const someChecked = selectedCount > 0 && !allChecked;
+
+        if (selectedBatchCount) {
+            selectedBatchCount.textContent =
+                selectedCount + (selectedCount === 1 ? " application selected" : " applications selected");
+        }
+
+        if (confirmBatchBtn) {
+            confirmBatchBtn.disabled = selectedCount === 0;
+        }
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.checked = allChecked;
+            selectAllCheckbox.indeterminate = someChecked;
+        }
+    }
+
     document.querySelectorAll(".application-row").forEach((row) => {
         initializeRemarksFromStorage(row);
+    });
+
+    document.querySelectorAll(".batch-status-toggle").forEach((button) => {
+        initializeBatchStatusToggle(button);
     });
 
     // ==============================
@@ -144,12 +217,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     toggleRowBatchFields(row, isChecked);
                 }
             });
+            updateBatchSelectionState();
         });
     }
 
     rowCheckboxes.forEach((checkbox) => {
         checkbox.addEventListener("change", function () {
-            const enabledCheckboxes = Array.from(rowCheckboxes).filter((cb) => !cb.disabled);
+            const enabledCheckboxes = getEnabledCheckboxes();
             const allChecked = enabledCheckboxes.length > 0 && enabledCheckboxes.every((cb) => cb.checked);
             const someChecked = enabledCheckboxes.some((cb) => cb.checked);
 
@@ -160,6 +234,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             const row = checkbox.closest(".application-row");
             toggleRowBatchFields(row, checkbox.checked);
+            updateBatchSelectionState();
         });
     });
 
@@ -293,4 +368,6 @@ document.addEventListener("DOMContentLoaded", function () {
             closeSuccessModal();
         }
     });
+
+    updateBatchSelectionState();
 });

@@ -1,12 +1,149 @@
-let idleTimeLimit = 60 * 1000; // 1 minute before showing modal
-let logoutTimeLimit = 60 * 1000; // 1 minute countdown before logout
-let idleTimer, logoutTimer;
-let countdownInterval;
-let modal; // reference to dynamically created modal
-let countdown;
+const idleTimeLimit = 60 * 1000; // 1 minute before showing modal
+const logoutTimeLimit = 60 * 1000; // 1 minute countdown before logout
+const storageKey = "portal_timer_logout_state_v1";
+const actionKey = "portal_timer_logout_action_v1";
+const channelName = "portal_timer_logout_channel_v1";
+
+let modal = null;
+let countdown = null;
+let monitorInterval = null;
+let lastActivityPublish = 0;
+let lastActionTimestamp = 0;
+let bc = null;
+
+function nowMs() {
+    return Date.now();
+}
+
+function readState() {
+    try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || typeof parsed !== "object") return null;
+        return {
+            idleDeadline: Number(parsed.idleDeadline) || 0,
+            logoutDeadline: Number(parsed.logoutDeadline) || 0,
+            forceLogoutAt: Number(parsed.forceLogoutAt) || 0
+        };
+    } catch (_) {
+        return null;
+    }
+}
+
+function writeState(state) {
+    localStorage.setItem(storageKey, JSON.stringify(state));
+}
+
+function emitAction(type) {
+    const payload = {
+        type: String(type || ""),
+        at: nowMs()
+    };
+    localStorage.setItem(actionKey, JSON.stringify(payload));
+    if (bc) {
+        try {
+            bc.postMessage(payload);
+        } catch (_) {
+            // Ignore channel failures
+        }
+    }
+}
+
+function handleRemoteAction(action) {
+    if (!action || typeof action !== "object") {
+        return;
+    }
+
+    const actionType = String(action.type || "");
+    const at = Number(action.at) || 0;
+    if (!at || at <= lastActionTimestamp) {
+        return;
+    }
+    lastActionTimestamp = at;
+
+    if (actionType === "stay") {
+        closeModal();
+        syncFromState();
+        return;
+    }
+
+    if (actionType === "logout") {
+        autoLogout();
+    }
+}
+
+function initializeState() {
+    const state = readState();
+    if (state && state.idleDeadline > 0) {
+        return state;
+    }
+    const initial = {
+        idleDeadline: nowMs() + idleTimeLimit,
+        logoutDeadline: 0,
+        forceLogoutAt: 0
+    };
+    writeState(initial);
+    return initial;
+}
+
+function closeModal() {
+    if (modal) {
+        modal.remove();
+        modal = null;
+        countdown = null;
+    }
+}
+
+function autoLogout() {
+    window.location.href = "../../Back_End_Files/PHP_Files/logout.php";
+}
+
+function publishActivity(force = false) {
+    const now = nowMs();
+    if (!force && now - lastActivityPublish < 600) {
+        return;
+    }
+    const currentState = readState();
+    if (!force && currentState && (currentState.forceLogoutAt > 0 || currentState.logoutDeadline > 0)) {
+        // When warning modal is active, only explicit button actions should change state.
+        return;
+    }
+    lastActivityPublish = now;
+    closeModal();
+    writeState({
+        idleDeadline: now + idleTimeLimit,
+        logoutDeadline: 0,
+        forceLogoutAt: 0
+    });
+}
+
+function publishWarningIfNeeded(state) {
+    if (state.logoutDeadline > 0) {
+        return state;
+    }
+    const updated = {
+        idleDeadline: state.idleDeadline,
+        logoutDeadline: nowMs() + logoutTimeLimit,
+        forceLogoutAt: 0
+    };
+    writeState(updated);
+    return updated;
+}
+
+function publishLogoutAndExit() {
+    const ts = nowMs();
+    writeState({
+        idleDeadline: 0,
+        logoutDeadline: ts,
+        forceLogoutAt: ts
+    });
+    autoLogout();
+}
 
 function createModal() {
-    // create modal container
+    if (modal) return;
+
     modal = document.createElement("div");
     modal.style.position = "fixed";
     modal.style.top = "0";
@@ -20,7 +157,6 @@ function createModal() {
     modal.style.zIndex = "1000";
     modal.style.animation = "fadeIn 0.3s ease";
 
-    // modal content
     const content = document.createElement("div");
     content.style.backgroundColor = "#ffffff";
     content.style.padding = "30px 25px";
@@ -44,7 +180,7 @@ function createModal() {
 
     countdown = message.querySelector("#countdown");
     countdown.style.fontWeight = "bold";
-    countdown.style.color = "#d9534f"; // red for warning
+    countdown.style.color = "#d9534f";
 
     const btnContainer = document.createElement("div");
     btnContainer.style.marginTop = "20px";
@@ -57,26 +193,26 @@ function createModal() {
     stayBtn.style.padding = "10px 18px";
     stayBtn.style.border = "none";
     stayBtn.style.borderRadius = "6px";
-    stayBtn.style.backgroundColor = "#5cb85c"; // green
+    stayBtn.style.backgroundColor = "#5cb85c";
     stayBtn.style.color = "#fff";
     stayBtn.style.cursor = "pointer";
     stayBtn.style.fontSize = "14px";
     stayBtn.style.transition = "background-color 0.3s ease";
-    stayBtn.addEventListener("mouseenter", () => stayBtn.style.backgroundColor = "#4cae4c");
-    stayBtn.addEventListener("mouseleave", () => stayBtn.style.backgroundColor = "#5cb85c");
+    stayBtn.addEventListener("mouseenter", () => { stayBtn.style.backgroundColor = "#4cae4c"; });
+    stayBtn.addEventListener("mouseleave", () => { stayBtn.style.backgroundColor = "#5cb85c"; });
 
     const logoutBtn = document.createElement("button");
     logoutBtn.textContent = "Logout";
     logoutBtn.style.padding = "10px 18px";
     logoutBtn.style.border = "none";
     logoutBtn.style.borderRadius = "6px";
-    logoutBtn.style.backgroundColor = "#d9534f"; // red
+    logoutBtn.style.backgroundColor = "#d9534f";
     logoutBtn.style.color = "#fff";
     logoutBtn.style.cursor = "pointer";
     logoutBtn.style.fontSize = "14px";
     logoutBtn.style.transition = "background-color 0.3s ease";
-    logoutBtn.addEventListener("mouseenter", () => logoutBtn.style.backgroundColor = "#c9302c");
-    logoutBtn.addEventListener("mouseleave", () => logoutBtn.style.backgroundColor = "#d9534f");
+    logoutBtn.addEventListener("mouseenter", () => { logoutBtn.style.backgroundColor = "#c9302c"; });
+    logoutBtn.addEventListener("mouseleave", () => { logoutBtn.style.backgroundColor = "#d9534f"; });
 
     btnContainer.appendChild(stayBtn);
     btnContainer.appendChild(logoutBtn);
@@ -86,60 +222,94 @@ function createModal() {
     modal.appendChild(content);
     document.body.appendChild(modal);
 
-    // Button actions
     stayBtn.addEventListener("click", () => {
-        modal.remove();
-        modal = null;
-        resetIdleTimer();
+        publishActivity(true);
+        emitAction("stay");
+    });
+    logoutBtn.addEventListener("click", () => {
+        emitAction("logout");
+        publishLogoutAndExit();
     });
 
-    logoutBtn.addEventListener("click", () => autoLogout());
+    if (!document.getElementById("timerLogoutFadeStyle")) {
+        const style = document.createElement("style");
+        style.id = "timerLogoutFadeStyle";
+        style.innerHTML = `
+            @keyframes fadeIn {
+                from {opacity: 0;}
+                to {opacity: 1;}
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
 
-    // Add fade-in animation keyframes
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @keyframes fadeIn {
-            from {opacity: 0;}
-            to {opacity: 1;}
+function updateCountdownText(state) {
+    if (!countdown || !state.logoutDeadline) return;
+    const secondsLeft = Math.max(0, Math.ceil((state.logoutDeadline - nowMs()) / 1000));
+    countdown.textContent = String(secondsLeft);
+}
+
+function syncFromState() {
+    let state = readState();
+    if (!state) {
+        state = initializeState();
+    }
+
+    const now = nowMs();
+
+    if (state.forceLogoutAt > 0) {
+        autoLogout();
+        return;
+    }
+
+    if (state.logoutDeadline > 0 && now >= state.logoutDeadline) {
+        autoLogout();
+        return;
+    }
+
+    if (state.logoutDeadline > 0) {
+        createModal();
+        updateCountdownText(state);
+        return;
+    }
+
+    if (state.idleDeadline > 0 && now >= state.idleDeadline) {
+        state = publishWarningIfNeeded(state);
+        createModal();
+        updateCountdownText(state);
+        return;
+    }
+
+    closeModal();
+}
+
+["mousemove", "keydown", "scroll", "touchstart", "click"].forEach((evt) => {
+    document.addEventListener(evt, () => publishActivity(false), { passive: true });
+});
+
+window.addEventListener("storage", (event) => {
+    if (event.key === storageKey) {
+        syncFromState();
+        return;
+    }
+
+    if (event.key === actionKey && event.newValue) {
+        try {
+            handleRemoteAction(JSON.parse(event.newValue));
+        } catch (_) {
+            // Ignore malformed storage payloads
         }
-    `;
-    document.head.appendChild(style);
+    }
+});
+
+if (typeof BroadcastChannel !== "undefined") {
+    bc = new BroadcastChannel(channelName);
+    bc.onmessage = (event) => {
+        handleRemoteAction(event.data);
+    };
 }
 
-
-function resetIdleTimer() {
-    // Only reset timer if modal is NOT visible
-    if (modal) return;
-
-    clearTimeout(idleTimer);
-    clearTimeout(logoutTimer);
-    clearInterval(countdownInterval);
-
-    idleTimer = setTimeout(showWarning, idleTimeLimit);
-}
-
-function showWarning() {
-    createModal(); // dynamically create modal
-    let timeLeft = 60;
-    countdown.textContent = timeLeft;
-
-    countdownInterval = setInterval(() => {
-        timeLeft--;
-        countdown.textContent = timeLeft;
-        if (timeLeft <= 0) clearInterval(countdownInterval);
-    }, 1000);
-
-    logoutTimer = setTimeout(autoLogout, logoutTimeLimit);
-}
-
-function autoLogout() {
-    window.location.href = "../../Back_End_Files/PHP_Files/logout.php";
-}
-
-// Detect user activity
-["mousemove", "keydown", "scroll", "touchstart"].forEach(evt =>
-    document.addEventListener(evt, resetIdleTimer)
-);
-
-// Start idle timer
-resetIdleTimer();
+initializeState();
+syncFromState();
+monitorInterval = window.setInterval(syncFromState, 250);

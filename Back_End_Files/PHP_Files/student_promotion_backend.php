@@ -154,17 +154,22 @@ if (!$tablesReady) {
     $message_type = 'error';
 }
 
-if ((isset($_POST['save_all_students']) || isset($_POST['bulk_update_promotion'])) && empty($advisorySectionId)) {
+if ((isset($_POST['save_selected_students']) || isset($_POST['bulk_update_promotion'])) && empty($advisorySectionId)) {
     $message = "No advisory section assigned. Cannot save recommendations.";
     $message_type = 'error';
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_all_students']) && $tablesReady && !empty($advisorySectionId)) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_selected_students']) && $tablesReady && !empty($advisorySectionId)) {
     $students = $_POST['students'] ?? [];
+    $selectedStudents = array_map('intval', $_POST['selected_students'] ?? []);
+    $selectedStudents = array_values(array_filter($selectedStudents, function ($studentId) {
+        return $studentId > 0;
+    }));
     $savedCount = 0;
 
-    if (!empty($students) && is_array($students)) {
-        foreach ($students as $studentId => $data) {
+    if (!empty($students) && is_array($students) && !empty($selectedStudents)) {
+        foreach ($selectedStudents as $studentId) {
+            $data = $students[$studentId] ?? null;
             $studentId = (int) $studentId;
             if ($studentId <= 0 || !is_array($data)) {
                 continue;
@@ -224,6 +229,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_all_students']) 
     if ($savedCount > 0) {
         $message = "Saved {$savedCount} student recommendation(s) for {$activeSemester} ({$activeSchoolYear}). Waiting for admin validation.";
         $message_type = 'success';
+    } elseif (empty($selectedStudents)) {
+        $message = "No students were selected. Select at least one student to save.";
+        $message_type = 'error';
     } else {
         $message = "No recommendations were saved. Check semester rules.";
         $message_type = 'error';

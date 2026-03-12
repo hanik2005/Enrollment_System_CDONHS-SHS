@@ -77,13 +77,14 @@ if ($schoolYearResult) {
     }
 }
 
-if (empty($availableSchoolYears)) {
-    $availableSchoolYears[] = getCurrentSchoolYear();
+$currentSchoolYear = getCurrentSchoolYear();
+if (!in_array($currentSchoolYear, $availableSchoolYears, true)) {
+    array_unshift($availableSchoolYears, $currentSchoolYear);
 }
 
-$selectedSchoolYear = isset($_GET['school_year']) ? trim($_GET['school_year']) : getCurrentSchoolYear();
+$selectedSchoolYear = isset($_GET['school_year']) ? trim($_GET['school_year']) : $currentSchoolYear;
 if ($selectedSchoolYear !== 'All' && !in_array($selectedSchoolYear, $availableSchoolYears, true)) {
-    $selectedSchoolYear = getCurrentSchoolYear();
+    $selectedSchoolYear = $currentSchoolYear;
 }
 
 $yearFilterSql = "";

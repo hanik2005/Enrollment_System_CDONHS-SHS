@@ -185,28 +185,6 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
                 <form method="POST" id="promotionForm">
                     <input type="hidden" name="selected_school_year" value="<?php echo htmlspecialchars($progressSelectedSchoolYear); ?>">
                     <input type="hidden" name="selected_semester" value="<?php echo htmlspecialchars($progressSelectedSemester); ?>">
-                    <div class="bulk-action-container">
-                        <label for="bulkStatus">Bulk Action:</label>
-                        <select name="bulk_status" id="bulkStatus">
-                            <?php if ($progressSelectedSemester === '1st Semester'): ?>
-                                <option value="Complete">Complete</option>
-                                <option value="Incomplete">Incomplete</option>
-                                <option value="Pending">Pending</option>
-                            <?php else: ?>
-                                <option value="Pending">Pending</option>
-                                <?php if ((int) $advisoryGradeLevel === 11): ?>
-                                    <option value="Promote to Grade 12">Promote to Grade 12</option>
-                                <?php endif; ?>
-                                <?php if ((int) $advisoryGradeLevel === 12): ?>
-                                    <option value="Graduate">Graduate</option>
-                                <?php endif; ?>
-                                <option value="Incomplete">Incomplete</option>
-                            <?php endif; ?>
-                        </select>
-                        <input type="text" name="bulk_remarks" id="bulkRemarks" placeholder="Add remarks for selected students...">
-                        <button type="submit" name="bulk_update_promotion" class="confirm-btn">Confirm Selected</button>
-                    </div>
-
                     <table class="progress-table" id="progressTable">
                         <thead>
                             <tr>
@@ -264,44 +242,47 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
                                     <td>Grade <?php echo (int) $gradeLevel; ?></td>
                                     <td><?php echo htmlspecialchars((string) $student['semester']); ?></td>
                                     <td>
-                                        <select name="students[<?php echo (int) $student['student_id']; ?>][computed_status]"
-                                                class="promotion-select"
+                                        <input type="hidden"
+                                               name="students[<?php echo (int) $student['student_id']; ?>][computed_status]"
+                                               class="computed-status-input"
+                                               value="<?php echo htmlspecialchars($computedStatus, ENT_QUOTES); ?>">
+                                        <button type="button"
+                                                class="status-cycle-btn promotion-select computed-status-btn"
+                                                data-status-values="Pending|Complete|Incomplete"
                                                 <?php echo $selectDisabled; ?>>
-                                            <option value="Pending" <?php echo $computedStatus === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                            <option value="Complete" <?php echo $computedStatus === 'Complete' ? 'selected' : ''; ?>>Complete</option>
-                                            <option value="Incomplete" <?php echo $computedStatus === 'Incomplete' ? 'selected' : ''; ?>>Incomplete</option>
-                                        </select>
+                                            <?php echo htmlspecialchars($computedStatus); ?>
+                                        </button>
                                     </td>
                                     <td>
                                         <input type="hidden" name="students[<?php echo (int) $student['student_id']; ?>][student_id]" value="<?php echo (int) $student['student_id']; ?>">
                                         <input type="hidden" name="students[<?php echo (int) $student['student_id']; ?>][grade_level]" value="<?php echo (int) $gradeLevel; ?>">
 
                                         <?php if ($progressSelectedSemester === '1st Semester'): ?>
-                                            <input type="hidden" name="students[<?php echo (int) $student['student_id']; ?>][recommended_status]" value="Pending">
-                                            <select class="promotion-select <?php echo htmlspecialchars($recommendationClass); ?>" disabled>
-                                                <option value="Auto" selected>Auto: Promote to 2nd Semester / Incomplete</option>
-                                            </select>
+                                            <input type="hidden"
+                                                   name="students[<?php echo (int) $student['student_id']; ?>][recommended_status]"
+                                                   class="recommendation-status-input"
+                                                   value="Pending">
+                                            <button type="button"
+                                                    class="status-cycle-btn promotion-select recommendation-status-btn pending"
+                                                    data-status-values="Pending"
+                                                    data-auto-label="Auto: Promote to 2nd Semester / Incomplete"
+                                                    data-grade-level="<?php echo (int) $gradeLevel; ?>"
+                                                    data-semester="<?php echo htmlspecialchars($progressSelectedSemester); ?>"
+                                                    disabled>
+                                                Auto: Promote to 2nd Semester / Incomplete
+                                            </button>
                                         <?php else: ?>
-                                            <select name="students[<?php echo (int) $student['student_id']; ?>][recommended_status]"
-                                                    class="promotion-select <?php echo htmlspecialchars($recommendationClass); ?>"
+                                            <input type="hidden"
+                                                   name="students[<?php echo (int) $student['student_id']; ?>][recommended_status]"
+                                                   class="recommendation-status-input"
+                                                   value="<?php echo htmlspecialchars($recommendedStatus, ENT_QUOTES); ?>">
+                                            <button type="button"
+                                                    class="status-cycle-btn promotion-select recommendation-status-btn <?php echo htmlspecialchars($recommendationClass); ?>"
+                                                    data-grade-level="<?php echo (int) $gradeLevel; ?>"
+                                                    data-semester="<?php echo htmlspecialchars($progressSelectedSemester); ?>"
                                                     <?php echo $selectDisabled; ?>>
-                                                <option value="Pending" <?php echo $recommendedStatus === 'Pending' ? 'selected' : ''; ?>>Pending</option>
-                                                <?php if ($computedStatus === 'Complete' && $gradeLevel === 11): ?>
-                                                    <option value="Promote to Grade 12" <?php echo $recommendedStatus === 'Promote to Grade 12' ? 'selected' : ''; ?>>
-                                                        Promote to Grade 12
-                                                    </option>
-                                                <?php endif; ?>
-                                                <?php if ($computedStatus === 'Complete' && $gradeLevel === 12): ?>
-                                                    <option value="Graduate" <?php echo $recommendedStatus === 'Graduate' ? 'selected' : ''; ?>>
-                                                        Graduate
-                                                    </option>
-                                                <?php endif; ?>
-                                                <?php if ($computedStatus !== 'Complete'): ?>
-                                                    <option value="Incomplete" <?php echo $recommendedStatus === 'Incomplete' ? 'selected' : ''; ?>>
-                                                        Incomplete
-                                                    </option>
-                                                <?php endif; ?>
-                                            </select>
+                                                <?php echo htmlspecialchars($recommendedStatus); ?>
+                                            </button>
                                         <?php endif; ?>
                                     </td>
                                     <td>
@@ -348,10 +329,13 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
                         <p>No students match the current filters.</p>
                     </div>
 
-                    <div style="margin-top: 20px; text-align: right;">
-                        <button type="submit" name="save_all_students" class="save-btn" style="padding: 12px 24px; font-size: 14px;">
-                            Save for Admin Validation
-                        </button>
+                    <div class="validation-action-bar">
+                        <div class="validation-action-copy">
+                            <span class="validation-action-kicker">Teacher Submission</span>
+                            <strong id="selectedSaveCount">0 students selected</strong>
+                            <p>Select the students you want to submit, then save the selected recommendations for admin validation.</p>
+                        </div>
+                        <button type="submit" name="save_selected_students" class="confirm-btn" id="saveValidationBtn" disabled>Save for Admin Validation</button>
                     </div>
                 </form>
             </div>
@@ -390,8 +374,8 @@ include "../../Back_End_Files/PHP_Files/student_promotion_backend.php";
         </div>
     </div>
 
-    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js"></script>
-    <script src="../../Back_End_Files/JSCRIPT_Files/remarks_modal_helper.js"></script>
-    <script src="../../Back_End_Files/JSCRIPT_Files/student_progress_function.js"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js?v=<?php echo urlencode((string) @filemtime(__DIR__ . '/../../Back_End_Files/JSCRIPT_Files/home_hamburger_menu.js')); ?>"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/remarks_modal_helper.js?v=<?php echo urlencode((string) @filemtime(__DIR__ . '/../../Back_End_Files/JSCRIPT_Files/remarks_modal_helper.js')); ?>"></script>
+    <script src="../../Back_End_Files/JSCRIPT_Files/student_progress_function.js?v=<?php echo urlencode((string) @filemtime(__DIR__ . '/../../Back_End_Files/JSCRIPT_Files/student_progress_function.js')); ?>"></script>
 </body>
 </html>
