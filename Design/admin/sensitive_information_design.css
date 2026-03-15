@@ -96,31 +96,40 @@
 }
 
 .status-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 14px;
+    border-radius: 999px;
     font-size: 12px;
-    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    border: 2px solid transparent;
+    text-transform: uppercase;
 }
 
 .status-pending {
     background: #fef3c7;
-    color: #92400e;
+    color: #78350f;
+    border-color: #f59e0b;
 }
 
 .status-approved {
-    background: #d1fae5;
-    color: #065f46;
+    background: #dcfce7;
+    color: #14532d;
+    border-color: #16a34a;
 }
 
 .status-rejected {
     background: #fee2e2;
-    color: #991b1b;
+    color: #7f1d1d;
+    border-color: #dc2626;
 }
 
 .status-conditionally {
-    background: #e0e7ff;
-    color: #3730a3;
+    background: #dbeafe;
+    color: #1e3a8a;
+    border-color: #3b82f6;
 }
 
 .expand-btn {
@@ -177,6 +186,14 @@
     
     .detail-card {
         padding: 15px;
+    }
+
+    .status-badge,
+    .btn-edit-lrn,
+    .btn-add-lrn,
+    .btn-save,
+    .btn-cancel {
+        width: 100%;
     }
 }
 

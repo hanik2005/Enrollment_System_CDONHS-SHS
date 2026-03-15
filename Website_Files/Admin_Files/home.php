@@ -20,7 +20,7 @@ $facebookPageUrl = "https://www.facebook.com/CDONHSSrHigh";
     <link rel="stylesheet" href="../../Design/home_pages_design.css">
     <link rel="stylesheet" href="../../Design/admin/admin_reports_dashboard_design.css">
 </head>
-<body class="admin-home-page">
+<body <?php echo renderThemeBodyAttributes('admin-home-page'); ?>>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 
 <div class="header">
@@ -98,17 +98,29 @@ $facebookPageUrl = "https://www.facebook.com/CDONHSSrHigh";
             </section>
 
             <section class="admin-home-quicklinks">
-                <a href="document_compliance_page.php" class="admin-home-quicklink">
-                    <strong>Document Compliance</strong>
-                    <span>Check missing requirements and student records.</span>
+                <a href="document_compliance_page.php" class="admin-home-quicklink admin-home-quicklink-docs">
+                    <span class="admin-home-quicklink-icon" aria-hidden="true">DC</span>
+                    <div class="admin-home-quicklink-copy">
+                        <strong>Document Compliance</strong>
+                        <span>Check missing requirements and student records.</span>
+                    </div>
+                    <span class="admin-home-quicklink-cta">Open compliance page</span>
                 </a>
-                <a href="student_progress_validation_page.php" class="admin-home-quicklink">
-                    <strong>Progress Validation</strong>
-                    <span>Confirm teacher recommendations and semester outcomes.</span>
+                <a href="document_correction_page.php" class="admin-home-quicklink admin-home-quicklink-correction">
+                    <span class="admin-home-quicklink-icon" aria-hidden="true">CR</span>
+                    <div class="admin-home-quicklink-copy">
+                        <strong>Document Correction</strong>
+                        <span>Review flagged submissions and manage document correction requests.</span>
+                    </div>
+                    <span class="admin-home-quicklink-cta">Open correction page</span>
                 </a>
-                <a href="reports_dashboard_page.php" class="admin-home-quicklink">
-                    <strong>Detailed Reports</strong>
-                    <span>Open filtered breakdowns for enrollment and approvals.</span>
+                <a href="reports_dashboard_page.php" class="admin-home-quicklink admin-home-quicklink-reports">
+                    <span class="admin-home-quicklink-icon" aria-hidden="true">DR</span>
+                    <div class="admin-home-quicklink-copy">
+                        <strong>Detailed Reports</strong>
+                        <span>Open filtered breakdowns for enrollment and approvals.</span>
+                    </div>
+                    <span class="admin-home-quicklink-cta">Open reports dashboard</span>
                 </a>
             </section>
 

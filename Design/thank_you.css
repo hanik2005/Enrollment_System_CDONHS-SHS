@@ -4,8 +4,10 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
     margin: 0;
+    padding: 14px;
 }
 
 .thankyou-container {
@@ -79,4 +81,19 @@ h3 {
 
 .secondary-btn:hover {
     background-color: #999;
+}
+
+@media (max-width: 560px) {
+    .thankyou-container {
+        padding: 24px 18px;
+    }
+
+    h1 {
+        font-size: 1.35rem;
+    }
+
+    .btn {
+        width: 100%;
+        text-align: center;
+    }
 }

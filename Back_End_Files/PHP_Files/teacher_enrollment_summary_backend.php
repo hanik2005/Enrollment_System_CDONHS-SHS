@@ -28,6 +28,9 @@ if (!$teacher) {
     exit;
 }
 
+require_once __DIR__ . '/theme_preferences.php';
+syncSessionThemePreference($connection, (int) $_SESSION['user_id']);
+
 $teacherId = (int) $teacher['teacher_id'];
 $profileImagePath = "../../Assets/profile_button.png";
 

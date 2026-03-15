@@ -27,6 +27,8 @@ if (!$user) {
     exit;
 }
 
+syncSessionThemePreference($connection, (int) $_SESSION['user_id']);
+
 // Set profile image path (using default since teachers table doesn't have profile_image)
 $profileImagePath = "../../Assets/profile_button.png";
 
@@ -45,7 +47,7 @@ $profileImagePath = "../../Assets/profile_button.png";
     <title>Teacher Class List</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <!-- header -->
     <div class="header">
     <div class="left">
@@ -64,9 +66,9 @@ $profileImagePath = "../../Assets/profile_button.png";
 
     <div class="legacy-nav-links">
         <a href="home.php">Home</a>
-        <a href="student_progress_page.php">Student Progress</a>
         <a href="enrollment_summary_page.php">Enrollment Summary</a>
         <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
+        <a href="settings.php">Settings</a>
         <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
 
     </div>

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/theme_preferences.php';
+
 function renderPortalHeaderBanner(string $portalLabel, string $roleLabel, string $detailText): string
 {
     $safePortalLabel = htmlspecialchars($portalLabel, ENT_QUOTES, 'UTF-8');

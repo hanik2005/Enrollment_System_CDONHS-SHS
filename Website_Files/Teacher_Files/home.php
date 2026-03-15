@@ -27,6 +27,8 @@ if (!$user) {
     exit;
 }
 
+syncSessionThemePreference($connection, (int) $_SESSION['user_id']);
+
 $profileImagePath = "../../Assets/profile_button.png";
 
 $nameParts = [];
@@ -49,7 +51,6 @@ $teacherSummary = [
     'enlisted' => 0,
     'pending' => 0,
     'missing_docs' => 0,
-    'pending_validation' => 0,
 ];
 
 if (!empty($advisorySectionId)) {
@@ -100,17 +101,6 @@ if (!empty($advisorySectionId)) {
     }
 }
 
-$validationStmt = $connection->prepare("
-    SELECT COUNT(DISTINCT student_id) AS total
-    FROM student_promotion_status
-    WHERE teacher_id = ? AND approval_status = 'Pending'
-");
-if ($validationStmt) {
-    $validationStmt->bind_param("i", $user['teacher_id']);
-    $validationStmt->execute();
-    $teacherSummary['pending_validation'] = (int) (($validationStmt->get_result()->fetch_assoc()['total'] ?? 0));
-    $validationStmt->close();
-}
 ?>
 
 <!DOCTYPE html>
@@ -126,7 +116,7 @@ if ($validationStmt) {
     <title>Teacher Home</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 
 <div class="header">
@@ -163,9 +153,9 @@ if ($validationStmt) {
         </div>
         <nav class="home-menu-links" aria-label="Teacher page links">
             <a href="class_list.php">Class List</a>
-            <a href="student_progress_page.php">Student Progress</a>
             <a href="enrollment_summary_page.php">Enrollment Summary</a>
             <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
+            <a href="settings.php">Settings</a>
             <a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
         </nav>
     </aside>
@@ -181,20 +171,16 @@ if ($validationStmt) {
                 <div class="teacher-home-priority-copy">
                     <span class="teacher-home-badge">Teacher Workspace</span>
                     <h2>Go straight to the teacher pages you use every day</h2>
-                    <p>Open your class list, record student progress, review enrollment summary, and keep advisory notes updated without digging through the menu first.</p>
+                    <p>Open your class list, review enrollment summary, and keep advisory notes updated without digging through the menu first.</p>
                     <div class="teacher-home-priority-actions">
                         <a href="class_list.php" class="teacher-home-primary-link">Open Class List</a>
-                        <a href="student_progress_page.php" class="home-secondary-link">Open Student Progress</a>
+                        <a href="enrollment_summary_page.php" class="home-secondary-link">Open Enrollment Summary</a>
                     </div>
                 </div>
                 <div class="teacher-home-priority-stats">
                     <div class="teacher-home-priority-card">
                         <span>Total Advisory Students</span>
                         <strong><?php echo (int) $teacherSummary['total_students']; ?></strong>
-                    </div>
-                    <div class="teacher-home-priority-card">
-                        <span>Pending Validation</span>
-                        <strong><?php echo (int) $teacherSummary['pending_validation']; ?></strong>
                     </div>
                 </div>
             </section>
@@ -203,10 +189,6 @@ if ($validationStmt) {
                 <a href="class_list.php" class="teacher-home-nav-card">
                     <strong>Class List</strong>
                     <span>View the students currently under your advisory section.</span>
-                </a>
-                <a href="student_progress_page.php" class="teacher-home-nav-card">
-                    <strong>Student Progress</strong>
-                    <span>Encode recommendations and monitor approval workflow.</span>
                 </a>
                 <a href="enrollment_summary_page.php" class="teacher-home-nav-card">
                     <strong>Enrollment Summary</strong>
@@ -285,7 +267,7 @@ if ($validationStmt) {
             <div class="home-info-grid">
                 <section class="home-info-card">
                     <h3>Teaching Reminder</h3>
-                    <p>Review advisory notes, progress records, and enrollment summaries regularly to keep class data updated.</p>
+                    <p>Review advisory notes and enrollment summaries regularly to keep class data updated.</p>
                 </section>
             </div>
         </div>

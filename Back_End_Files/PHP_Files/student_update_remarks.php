@@ -52,8 +52,14 @@ foreach ($updates as $item) {
     }
     
     $applicationId = (int)$item['application_id'];
-    $status = $item['status'];
-    $remarks = isset($item['remarks']) ? $item['remarks'] : "";
+    $status = trim((string) $item['status']);
+    $remarks = trim((string) ($item['remarks'] ?? ""));
+
+    if ($status === 'Rejected' && $remarks === '') {
+        $errorCount++;
+        error_log("Validation Error: remarks required for rejected application_id: " . $applicationId);
+        continue;
+    }
     
     // Get student info first (before any update)
     $stmtGetStudent = $connection->prepare("SELECT first_name, last_name, email, lrn FROM student_applications WHERE application_id = ?");
@@ -343,10 +349,20 @@ foreach ($updates as $item) {
 
 ob_end_clean();
 
-// Include email info in response for debugging
+if ($updatedCount === 0 && $errorCount > 0) {
+    $success = false;
+    $message = 'No updates applied. Remarks are required for rejected applications.';
+} elseif ($errorCount > 0) {
+    $success = true;
+    $message = "Applications updated with some validation errors. Total updated: {$updatedCount}";
+} else {
+    $success = true;
+    $message = "Applications updated successfully. Total: {$updatedCount}";
+}
+
 echo json_encode([
-    'success' => true,
-    'message' => "Applications updated successfully. Total: {$updatedCount}",
+    'success' => $success,
+    'message' => $message,
     'debug' => [
         'updated' => $updatedCount,
         'errors' => $errorCount

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Mar 12, 2026 at 06:41 AM
+-- Generation Time: Mar 15, 2026 at 05:07 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -100,7 +100,46 @@ INSERT INTO `admin_audit_trail` (`audit_id`, `user_id`, `action_type`, `entity_t
 (32, 19, 'ENLISTMENT_APPROVED', 'students', '10', 'Approved enlistment for student #10', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":6,\"email\":\"clarito.nickcharles@gmail.com\",\"first_name\":\"Charlie Nathaniel\",\"last_name\":\"Viador\"}}', '::1', '2026-03-12 05:28:24'),
 (33, 19, 'APPLICATION_REJECTED', 'student_applications', '7', 'Rejected and removed application #7', '{\"status\":\"Rejected\",\"remarks\":\"sdfsffsdjoj\",\"student_name\":\"John Clarito\"}', '::1', '2026-03-12 05:36:49'),
 (34, 19, 'STUDENT_PROMOTED', 'students', '10', 'Approved teacher recommendation and promoted student #10 to Grade 12', '{\"teacher_recommended_status\":\"Promote to Grade 12\",\"school_year_from\":\"2025-2026\",\"school_year_to\":\"2026-2027\",\"approved_by\":19}', '::1', '2026-03-12 05:39:52'),
-(35, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '19', 'Approved teacher student-progress recommendation #19', '{\"decision\":\"Approved\",\"remark\":\"go\",\"action_result\":\"Promoted to Grade 12.\"}', '::1', '2026-03-12 05:39:52');
+(35, 19, 'TEACHER_PROGRESS_APPROVED', 'student_promotion_status', '19', 'Approved teacher student-progress recommendation #19', '{\"decision\":\"Approved\",\"remark\":\"go\",\"action_result\":\"Promoted to Grade 12.\"}', '::1', '2026-03-12 05:39:52'),
+(36, 19, 'APPLICATION_REJECTED', 'student_applications', '8', 'Rejected and removed application #8', '{\"status\":\"Rejected\",\"remarks\":\"good bye\",\"student_name\":\"John Clarito\"}', '::1', '2026-03-12 06:02:05'),
+(37, 19, 'STUDENT_DATA_PURGED', 'students', NULL, 'Super Admin purged all student-related records.', '{\"deleted_counts\":{\"teacher_student_notes\":1,\"student_promotion_status\":13,\"archived_student_strand\":0,\"student_strand\":4,\"students\":4,\"student_applications\":4,\"student_users\":5},\"before_counts\":{\"student_users\":5,\"student_applications\":4,\"students\":4,\"student_strand\":4,\"archived_student_strand\":0,\"student_promotion_status\":13,\"teacher_student_notes\":1}}', '::1', '2026-03-12 12:43:37'),
+(38, 19, 'STUDENT_DATA_PURGED', 'students', NULL, 'Super Admin purged all student-related records.', '{\"deleted_counts\":{\"teacher_student_notes\":0,\"student_promotion_status\":0,\"archived_student_strand\":0,\"student_strand\":0,\"students\":0,\"student_applications\":0,\"student_users\":0},\"before_counts\":{\"student_users\":0,\"student_applications\":0,\"students\":0,\"student_strand\":0,\"archived_student_strand\":0,\"student_promotion_status\":0,\"teacher_student_notes\":0}}', '::1', '2026-03-12 12:43:45'),
+(39, 106, 'APPLICATION_REJECTED', 'student_applications', '12', 'Rejected and removed application #12', '{\"status\":\"Rejected\",\"remarks\":\"\",\"student_name\":\"TestTc28First TestTc28Last\"}', '::1', '2026-03-13 05:00:16'),
+(40, 106, 'APPLICATION_APPROVED', 'student_applications', '13', 'Approved application #13', '{\"status\":\"Approved\",\"remarks\":\"Approved in automated test\",\"student_name\":\"TestTc29First TestTc29Last\",\"created_user_id\":110}', '::1', '2026-03-13 05:00:17'),
+(41, 106, 'APPLICATION_REJECTED', 'student_applications', '14', 'Rejected and removed application #14', '{\"status\":\"Rejected\",\"remarks\":\"Incomplete requirements\",\"student_name\":\"TestTc30First TestTc30Last\"}', '::1', '2026-03-13 05:00:17'),
+(42, 106, 'ENLISTMENT_APPROVED', 'students', '11', 'Approved enlistment for student #11', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":9,\"email\":\"tc26_20260313125957_doc_allowed@example.com\",\"first_name\":\"TestBaseFirst\",\"last_name\":\"TestBaseLast\"}}', '::1', '2026-03-13 05:00:22'),
+(43, 106, 'DOCUMENT_DELETED', 'student_documents', '11', 'Deleted Form 138 for application #11', '{\"document_field\":\"form_138\",\"document_label\":\"Form 138\",\"deleted_filename\":\"tc35_20260313125957.pdf\",\"student_name\":\"OnlineSuccessFirst OnlineSuccessLast\"}', '::1', '2026-03-13 05:00:23'),
+(44, 116, 'APPLICATION_REJECTED', 'student_applications', '18', 'Rejected and removed application #18', '{\"status\":\"Rejected\",\"remarks\":\"\",\"student_name\":\"TestTc28First TestTc28Last\"}', '::1', '2026-03-13 05:01:09'),
+(45, 116, 'APPLICATION_APPROVED', 'student_applications', '19', 'Approved application #19', '{\"status\":\"Approved\",\"remarks\":\"Approved in automated test\",\"student_name\":\"TestTc29First TestTc29Last\",\"created_user_id\":120}', '::1', '2026-03-13 05:01:10'),
+(46, 116, 'APPLICATION_REJECTED', 'student_applications', '20', 'Rejected and removed application #20', '{\"status\":\"Rejected\",\"remarks\":\"Incomplete requirements\",\"student_name\":\"TestTc30First TestTc30Last\"}', '::1', '2026-03-13 05:01:10'),
+(47, 116, 'ENLISTMENT_APPROVED', 'students', '14', 'Approved enlistment for student #14', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":16,\"email\":\"tc26_20260313130056_doc_allowed@example.com\",\"first_name\":\"TestBaseFirst\",\"last_name\":\"TestBaseLast\"}}', '::1', '2026-03-13 05:01:15'),
+(48, 126, 'APPLICATION_REJECTED', 'student_applications', '24', 'Rejected and removed application #24', '{\"status\":\"Rejected\",\"remarks\":\"\",\"student_name\":\"TestTc28First TestTc28Last\"}', '::1', '2026-03-13 05:02:17'),
+(49, 126, 'APPLICATION_APPROVED', 'student_applications', '25', 'Approved application #25', '{\"status\":\"Approved\",\"remarks\":\"Approved in automated test\",\"student_name\":\"TestTc29First TestTc29Last\",\"created_user_id\":130}', '::1', '2026-03-13 05:02:18'),
+(50, 126, 'APPLICATION_REJECTED', 'student_applications', '26', 'Rejected and removed application #26', '{\"status\":\"Rejected\",\"remarks\":\"Incomplete requirements\",\"student_name\":\"TestTc30First TestTc30Last\"}', '::1', '2026-03-13 05:02:18'),
+(51, 126, 'ENLISTMENT_APPROVED', 'students', '17', 'Approved enlistment for student #17', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":22,\"email\":\"tc26_20260313130203_doc_allowed@example.com\",\"first_name\":\"TestBaseFirst\",\"last_name\":\"TestBaseLast\"}}', '::1', '2026-03-13 05:02:23'),
+(52, 136, 'APPLICATION_REJECTED', 'student_applications', '31', 'Rejected and removed application #31', '{\"status\":\"Rejected\",\"remarks\":\"\",\"student_name\":\"TestTc28First TestTc28Last\"}', '::1', '2026-03-13 05:03:46'),
+(53, 136, 'APPLICATION_APPROVED', 'student_applications', '32', 'Approved application #32', '{\"status\":\"Approved\",\"remarks\":\"Approved in automated test\",\"student_name\":\"TestTc29First TestTc29Last\",\"created_user_id\":140}', '::1', '2026-03-13 05:03:47'),
+(54, 136, 'APPLICATION_REJECTED', 'student_applications', '33', 'Rejected and removed application #33', '{\"status\":\"Rejected\",\"remarks\":\"Incomplete requirements\",\"student_name\":\"TestTc30First TestTc30Last\"}', '::1', '2026-03-13 05:03:47'),
+(55, 136, 'ENLISTMENT_APPROVED', 'students', '20', 'Approved enlistment for student #20', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":28,\"email\":\"tc26_20260313130328_doc_allowed@example.com\",\"first_name\":\"TestBaseFirst\",\"last_name\":\"TestBaseLast\"}}', '::1', '2026-03-13 05:03:52'),
+(56, 136, 'DOCUMENT_DELETED', 'student_documents', '30', 'Deleted Form 138 for application #30', '{\"document_field\":\"form_138\",\"document_label\":\"Form 138\",\"deleted_filename\":\"tc35_20260313130328.pdf\",\"student_name\":\"OnlineISRB SuccessNJPF\"}', '::1', '2026-03-13 05:03:52'),
+(57, 146, 'APPLICATION_REJECTED', 'student_applications', '38', 'Rejected and removed application #38', '{\"status\":\"Rejected\",\"remarks\":\"\",\"student_name\":\"TestTc28First TestTc28Last\"}', '::1', '2026-03-13 05:08:37'),
+(58, 146, 'APPLICATION_APPROVED', 'student_applications', '39', 'Approved application #39', '{\"status\":\"Approved\",\"remarks\":\"Approved in automated test\",\"student_name\":\"TestTc29First TestTc29Last\",\"created_user_id\":150}', '::1', '2026-03-13 05:08:37'),
+(59, 146, 'APPLICATION_REJECTED', 'student_applications', '40', 'Rejected and removed application #40', '{\"status\":\"Rejected\",\"remarks\":\"Incomplete requirements\",\"student_name\":\"TestTc30First TestTc30Last\"}', '::1', '2026-03-13 05:08:38'),
+(60, 146, 'ENLISTMENT_APPROVED', 'students', '23', 'Approved enlistment for student #23', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":35,\"email\":\"tc26_20260313130819_doc_allowed@example.com\",\"first_name\":\"TestBaseFirst\",\"last_name\":\"TestBaseLast\"}}', '::1', '2026-03-13 05:08:42'),
+(61, 146, 'DOCUMENT_DELETED', 'student_documents', '37', 'Deleted Form 138 for application #37', '{\"document_field\":\"form_138\",\"document_label\":\"Form 138\",\"deleted_filename\":\"tc35_20260313130819.pdf\",\"student_name\":\"OnlineTUYP SuccessHOKI\"}', '::1', '2026-03-13 05:08:43'),
+(62, 156, 'APPLICATION_APPROVED', 'student_applications', '46', 'Approved application #46', '{\"status\":\"Approved\",\"remarks\":\"Approved in automated test\",\"student_name\":\"TestTc29First TestTc29Last\",\"created_user_id\":160}', '::1', '2026-03-13 05:23:47'),
+(63, 156, 'APPLICATION_REJECTED', 'student_applications', '47', 'Rejected and removed application #47', '{\"status\":\"Rejected\",\"remarks\":\"Incomplete requirements\",\"student_name\":\"TestTc30First TestTc30Last\"}', '::1', '2026-03-13 05:23:47'),
+(64, 156, 'ENLISTMENT_APPROVED', 'students', '26', 'Approved enlistment for student #26', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":42,\"email\":\"tc26_20260313132331_doc_allowed@example.com\",\"first_name\":\"TestBaseFirst\",\"last_name\":\"TestBaseLast\"}}', '::1', '2026-03-13 05:23:52'),
+(65, 156, 'DOCUMENT_DELETED', 'student_documents', '44', 'Deleted Form 138 for application #44', '{\"document_field\":\"form_138\",\"document_label\":\"Form 138\",\"deleted_filename\":\"tc35_20260313132331.pdf\",\"student_name\":\"OnlineSTIR SuccessIKVN\"}', '::1', '2026-03-13 05:23:52'),
+(66, 19, 'APPLICATION_STATUS_UPDATED', 'student_applications', '49', 'Updated application #49 to Pending', '{\"status\":\"Pending\",\"remarks\":\"goods\",\"student_name\":\"Andry Clarito\"}', '::1', '2026-03-14 02:26:34'),
+(67, 19, 'APPLICATION_APPROVED', 'student_applications', '49', 'Approved application #49', '{\"status\":\"Approved\",\"remarks\":\"goods\",\"student_name\":\"Andry Clarito\",\"created_user_id\":163}', '::1', '2026-03-14 02:26:55'),
+(68, 102, 'APPLICATION_STATUS_UPDATED', 'student_applications', '48', 'Updated application #48 to Pending', '{\"status\":\"Pending\",\"remarks\":\"\",\"student_name\":\"TestTc31First TestTc31Last\"}', '::1', '2026-03-14 13:22:38'),
+(69, 102, 'ENLISTMENT_STATUS_UPDATED', 'students', '29', 'Updated enlistment status for student #29 to Pending', '{\"new_status\":\"Pending\"}', '::1', '2026-03-14 13:24:03'),
+(70, 102, 'APPLICATION_APPROVED', 'student_applications', '50', 'Approved application #50', '{\"status\":\"Approved\",\"remarks\":\"\",\"student_name\":\"Gerd Clarito\",\"created_user_id\":164}', '::1', '2026-03-14 13:54:36'),
+(71, 19, 'STUDENT_DATA_PURGED', 'students', NULL, 'Super Admin purged all student-related records.', '{\"deleted_counts\":{\"teacher_student_notes\":0,\"student_promotion_status\":0,\"archived_student_strand\":0,\"student_strand\":8,\"students\":20,\"student_applications\":32,\"student_users\":20},\"before_counts\":{\"student_users\":20,\"student_applications\":32,\"students\":20,\"student_strand\":8,\"archived_student_strand\":0,\"student_promotion_status\":0,\"teacher_student_notes\":0}}', '::1', '2026-03-14 14:00:45'),
+(72, 19, 'STUDENT_DATA_PURGED', 'students', NULL, 'Super Admin purged all student-related records.', '{\"deleted_counts\":{\"teacher_student_notes\":0,\"student_promotion_status\":0,\"archived_student_strand\":0,\"student_strand\":0,\"students\":0,\"student_applications\":0,\"student_users\":0},\"before_counts\":{\"student_users\":0,\"student_applications\":0,\"students\":0,\"student_strand\":0,\"archived_student_strand\":0,\"student_promotion_status\":0,\"teacher_student_notes\":0}}', '::1', '2026-03-14 14:00:55'),
+(73, 19, 'APPLICATION_APPROVED', 'student_applications', '52', 'Approved application #52', '{\"status\":\"Approved\",\"remarks\":\"\",\"student_name\":\"Harvey Clarito\",\"created_user_id\":165}', '::1', '2026-03-14 14:06:37'),
+(74, 19, 'ENLISTMENT_APPROVED', 'students', '31', 'Approved enlistment for student #31', '{\"new_status\":\"Enlisted\",\"student\":{\"application_id\":52,\"email\":\"claritohabe@gmail.com\",\"first_name\":\"Harvey\",\"last_name\":\"Clarito\"}}', '::1', '2026-03-15 02:00:16');
 
 -- --------------------------------------------------------
 
@@ -278,10 +317,7 @@ CREATE TABLE `students` (
 --
 
 INSERT INTO `students` (`student_id`, `user_id`, `application_id`, `enrollment_status`, `date_enrolled`, `enlistment_status`, `school_year`) VALUES
-(6, 97, 2, 'Graduated', '2026-03-05', 'Finished', '2026-2027'),
-(8, 99, 3, 'Graduated', '2026-03-06', 'Finished', '2026-2027'),
-(9, 100, 5, 'Graduated', '2026-03-06', 'Finished', '2026-2027'),
-(10, 101, 6, 'Active', '2026-03-08', 'Promoted', '2026-2027');
+(31, 165, 52, 'Active', '2026-03-14', 'Pending', '2025-2026');
 
 -- --------------------------------------------------------
 
@@ -314,10 +350,7 @@ CREATE TABLE `student_addresses` (
 --
 
 INSERT INTO `student_addresses` (`address_id`, `application_id`, `house_number`, `street`, `barangay`, `city_municipality`, `province`, `country`, `zip_code`, `same_as_current`, `permanent_house_number`, `permanent_street`, `permanent_barangay`, `permanent_city`, `permanent_province`, `permanent_country`, `permanent_zip_code`) VALUES
-(2, 2, 'Blk 4 Lot 3', 'Buena Oro', 'Barangay 15', 'Cagayan de Oro City', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Barangay 15', 'Cagayan de Oro City', 'Misamis Oriental', 'Philippines', '9000'),
-(3, 3, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', '104305000', '104300000', 'Philippines', '9000'),
-(5, 5, 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Blk 4 Lot 3', 'Buena Oro', 'Macasandig', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000'),
-(6, 6, 'Lot 5', 'Jkodgs', 'Malasay', 'Katipunan', 'Zamboanga Del Norte', 'Philippines', '4000', 'Yes', 'Lot 5', 'Jkodgs', 'Malasay', 'Katipunan', 'Zamboanga Del Norte', 'Philippines', '4000');
+(52, 52, 'Street', 'Don Marcelino Street', 'Agusan', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000', 'Yes', 'Street', 'Don Marcelino Street', 'Agusan', 'City of Cagayan De Oro', 'Misamis Oriental', 'Philippines', '9000');
 
 -- --------------------------------------------------------
 
@@ -352,10 +385,7 @@ CREATE TABLE `student_applications` (
 --
 
 INSERT INTO `student_applications` (`application_id`, `lrn`, `last_name`, `first_name`, `middle_name`, `extension_name`, `date_of_birth`, `sex`, `place_of_birth`, `religion`, `mother_tongue`, `enrollment_type`, `application_status`, `email`, `contact_number`, `remarks`, `date_submitted`, `facebook_profile`, `profile_image`) VALUES
-(2, '405220150089', 'Clarito', 'Nick Charles', 'Durangparang', '', '2005-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'Balik-Aral', 'Approved', 'nickcharlesclarito@gmail.com', '09944718764', 'dasgasga', '2026-03-05 20:59:38', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', '1773287601_PROFILE_2.jpg'),
-(3, '123892477492', 'Clarito', 'Andry', 'Durangparang', '', '2010-08-20', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nidu.clarito.coc@phinmaed.com', '09315510501', 'kdaslgajpgas', '2026-03-06 05:01:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
-(5, '182785932075', 'Japlag', 'Jason Jay', 'Dumang', '', '2006-10-17', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'nickhoyo2005@gmail.com', '09782357252', 'dasfvxdshsherrg', '2026-03-06 19:04:49', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL),
-(6, '197529532252', 'Viador', 'Charlie Nathaniel', 'Barero', '', '2003-11-12', 'Male', 'Cagayan De Oro', 'Catholic', 'Bisaya', 'New', 'Approved', 'clarito.nickcharles@gmail.com', '09637258522', 'Badgao ka???', '2026-03-08 06:40:42', 'https://www.hostitsmart.com/manage/knowledgebase/388/How-to-Change-Table-Name-in-phpMyAdmin.html', NULL);
+(52, '098765432112', 'Clarito', 'Harvey', 'Durangparang', '', '2005-01-01', 'Male', 'Cagayan De Oro City', 'Catholic', 'Filipino', 'New', 'Pending', 'claritohabe@gmail.com', '09947892199', '', '2026-03-14 14:05:29', '', NULL);
 
 -- --------------------------------------------------------
 
@@ -377,10 +407,7 @@ CREATE TABLE `student_documents` (
 --
 
 INSERT INTO `student_documents` (`document_id`, `application_id`, `psa_birth_certificate`, `psa_birth_certificate_no`, `form_138`, `student_id_copy`) VALUES
-(2, 2, '1772948258_PSA_BIRTH_CERTIFICATE_2.pdf', NULL, '1772948258_FORM_138_2.pdf', '1772948258_STUDENT_ID_COPY_2.pdf'),
-(3, 3, NULL, NULL, NULL, NULL),
-(5, 5, NULL, NULL, NULL, NULL),
-(6, 6, NULL, NULL, NULL, NULL);
+(52, 52, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -410,10 +437,7 @@ CREATE TABLE `student_family` (
 --
 
 INSERT INTO `student_family` (`family_id`, `application_id`, `father_last_name`, `father_first_name`, `father_middle_name`, `father_contact`, `mother_last_name`, `mother_first_name`, `mother_middle_name`, `mother_contact`, `guardian_last_name`, `guardian_first_name`, `guardian_middle_name`, `guardian_contact`) VALUES
-(2, 2, 'Clarito', 'Randy', 'Durangparang', '09944719534', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
-(3, 3, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
-(5, 5, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', ''),
-(6, 6, 'Clarito', 'Randy', 'Durangparang', '09826473264', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', '');
+(52, 52, 'Clarito', 'Randy', 'Abecia', '09262360968', 'Clarito', 'Maria Cristina', 'Durangparang', '09262360968', '', '', '', '');
 
 -- --------------------------------------------------------
 
@@ -438,10 +462,7 @@ CREATE TABLE `student_learning_modality` (
 --
 
 INSERT INTO `student_learning_modality` (`modality_id`, `application_id`, `blended`, `modular_print`, `modular_digital`, `online`, `homeschooling`, `educational_tv`, `radio_based_tv`) VALUES
-(2, 2, 0, 0, 0, 0, 0, 0, 0),
-(3, 3, 0, 0, 0, 0, 0, 0, 0),
-(5, 5, 0, 0, 0, 0, 0, 0, 0),
-(6, 6, 0, 0, 0, 0, 0, 0, 0);
+(52, 52, 0, 0, 0, 0, 0, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -461,10 +482,7 @@ CREATE TABLE `student_learning_program` (
 --
 
 INSERT INTO `student_learning_program` (`program_id`, `application_id`, `attended_learning_program`, `learning_program_specify`) VALUES
-(2, 2, 'No', ''),
-(3, 3, 'No', ''),
-(5, 5, 'Yes', 'Home Schooling'),
-(6, 6, 'Yes', 'Home Schooling');
+(52, 52, 'No', '');
 
 -- --------------------------------------------------------
 
@@ -486,10 +504,7 @@ CREATE TABLE `student_previous_school` (
 --
 
 INSERT INTO `student_previous_school` (`prev_school_id`, `application_id`, `last_grade_completed`, `last_school_year_completed`, `last_school_attended`, `school_id`) VALUES
-(2, 2, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', ''),
-(3, 3, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111'),
-(5, 5, 'Grade 10', '2024-2025', 'Cagayan De Oro National High School', '304111'),
-(6, 6, 'Grade 10', '2025-2026', 'Cagayan De Oro National High School', '304111');
+(52, 52, 'Grade 10', '2019-2020', 'Lourdes College IBED', '');
 
 -- --------------------------------------------------------
 
@@ -515,25 +530,6 @@ CREATE TABLE `student_promotion_status` (
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `student_promotion_status`
---
-
-INSERT INTO `student_promotion_status` (`promotion_status_id`, `student_id`, `teacher_id`, `school_year`, `semester`, `computed_status`, `recommended_status`, `teacher_remarks`, `approval_status`, `is_approved`, `admin_user_id`, `admin_remarks`, `approved_at`, `created_at`, `updated_at`) VALUES
-(1, 8, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-12 05:27:33'),
-(2, 6, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:06', '2026-03-08 09:19:27', '2026-03-08 09:24:06'),
-(3, 9, 27, '2025-2026', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:24:07', '2026-03-08 09:19:27', '2026-03-08 09:24:07'),
-(10, 8, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
-(11, 6, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
-(12, 9, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'datu puti', 'Approved', 1, 19, '', '2026-03-08 10:26:30', '2026-03-08 09:25:58', '2026-03-08 09:26:30'),
-(13, 8, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:12', '2026-03-08 09:29:37', '2026-03-08 09:30:12'),
-(14, 6, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:12', '2026-03-08 09:29:37', '2026-03-08 09:30:12'),
-(15, 9, 11, '2026-2027', '1st Semester', 'Complete', 'Promote to 2nd Semester', '', 'Approved', 1, 19, '', '2026-03-08 10:30:13', '2026-03-08 09:29:37', '2026-03-08 09:30:13'),
-(16, 8, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:45', '2026-03-08 09:31:03', '2026-03-08 09:31:45'),
-(17, 6, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:45', '2026-03-08 09:31:03', '2026-03-08 09:31:45'),
-(18, 9, 11, '2026-2027', '2nd Semester', 'Complete', 'Graduate', '', 'Approved', 1, 19, '', '2026-03-08 10:31:46', '2026-03-08 09:31:03', '2026-03-08 09:31:46'),
-(19, 10, 27, '2025-2026', '2nd Semester', 'Complete', 'Promote to Grade 12', 'hjkhsfhsd', 'Approved', 1, 19, 'go', '2026-03-12 06:39:52', '2026-03-12 05:39:05', '2026-03-12 05:39:52');
-
 -- --------------------------------------------------------
 
 --
@@ -554,10 +550,7 @@ CREATE TABLE `student_social_info` (
 --
 
 INSERT INTO `student_social_info` (`social_id`, `application_id`, `indigenous_community`, `ip_specify`, `four_ps_beneficiary`, `four_ps_household_id`) VALUES
-(2, 2, 'No', '', 'No', ''),
-(3, 3, 'No', '', 'No', ''),
-(5, 5, 'No', '', 'No', ''),
-(6, 6, 'Yes', 'Badgao', 'Yes', '98638212');
+(52, 52, 'No', '', 'No', '');
 
 -- --------------------------------------------------------
 
@@ -586,10 +579,7 @@ CREATE TABLE `student_special_needs` (
 --
 
 INSERT INTO `student_special_needs` (`sne_id`, `application_id`, `with_disability`, `has_pwd_id`, `pwd_id_number`, `special_education_needed`, `non_graded_sne`, `disability_category`, `disability_description`, `sped_services_needed`, `medical_diagnosis`, `assessment_date`, `assessed_by`) VALUES
-(2, 2, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
-(3, 3, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
-(5, 5, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL),
-(6, 6, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL);
+(52, 52, 'No', 'No', '', 'No', 'No', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -612,10 +602,7 @@ CREATE TABLE `student_strand` (
 --
 
 INSERT INTO `student_strand` (`student_strand_id`, `student_id`, `strand_id`, `grade_level`, `semester`, `school_year`, `section_id`) VALUES
-(1, 6, 5, 12, '2nd Semester', '2026-2027', 37),
-(2, 8, 5, 12, '2nd Semester', '2026-2027', 37),
-(3, 9, 5, 12, '2nd Semester', '2026-2027', 37),
-(4, 10, 5, 12, '1st Semester', '2026-2027', 37);
+(25, 31, 3, 11, '2nd Semester', '2025-2026', 17);
 
 -- --------------------------------------------------------
 
@@ -686,7 +673,19 @@ INSERT INTO `teachers` (`teacher_id`, `user_id`, `first_name`, `last_name`, `mid
 (47, 87, 'Alexis', 'Nebula', 'Comet', NULL),
 (48, 88, 'Nathan', 'Comet', 'Asteroid', NULL),
 (49, 89, 'Madison', 'Asteroid', 'Meteor', NULL),
-(50, 90, 'Jordan', 'Meteor', 'Cosmos', NULL);
+(50, 90, 'Jordan', 'Meteor', 'Cosmos', NULL),
+(51, 105, 'TestTeacher', 'Runner', NULL, NULL),
+(52, 112, 'New', 'Teacher', NULL, NULL),
+(53, 115, 'TestTeacher', 'Runner', NULL, NULL),
+(54, 122, 'New', 'Teacher', NULL, NULL),
+(55, 125, 'TestTeacher', 'Runner', NULL, NULL),
+(56, 132, 'New', 'Teacher', NULL, NULL),
+(57, 135, 'TestTeacher', 'Runner', NULL, NULL),
+(58, 142, 'New', 'Teacher', NULL, NULL),
+(59, 145, 'TestTeacher', 'Runner', NULL, NULL),
+(60, 152, 'New', 'Teacher', NULL, NULL),
+(61, 155, 'TestTeacher', 'Runner', NULL, NULL),
+(62, 162, 'New', 'Teacher', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -710,7 +709,13 @@ CREATE TABLE `teacher_advisory` (
 
 INSERT INTO `teacher_advisory` (`advisory_id`, `teacher_id`, `section_id`, `grade_level`, `strand_id`, `school_year`, `assigned_date`) VALUES
 (1, 27, 33, 11, 5, '2025-2026', '2026-03-08 07:17:01'),
-(2, 11, 37, 12, 5, '2025-2026', '2026-03-08 09:27:31');
+(2, 11, 37, 12, 5, '2025-2026', '2026-03-08 09:27:31'),
+(3, 51, 33, 11, 5, '2025-2026', '2026-03-13 04:59:59'),
+(5, 53, 33, 11, 5, '2025-2026', '2026-03-13 05:00:57'),
+(7, 55, 33, 11, 5, '2025-2026', '2026-03-13 05:02:04'),
+(9, 57, 33, 11, 5, '2025-2026', '2026-03-13 05:03:29'),
+(11, 59, 33, 11, 5, '2025-2026', '2026-03-13 05:08:20'),
+(13, 61, 33, 11, 5, '2025-2026', '2026-03-13 05:23:33');
 
 -- --------------------------------------------------------
 
@@ -728,13 +733,6 @@ CREATE TABLE `teacher_student_notes` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `teacher_student_notes`
---
-
-INSERT INTO `teacher_student_notes` (`note_id`, `teacher_id`, `student_id`, `behavior_note`, `follow_up_note`, `intervention_note`, `created_at`, `updated_at`) VALUES
-(1, 27, 8, 'jdksajlfasfas', 'fsafaf', 'fasfaf', '2026-03-08 07:19:38', '2026-03-08 07:19:38');
 
 -- --------------------------------------------------------
 
@@ -807,11 +805,72 @@ INSERT INTO `users` (`user_id`, `username`, `password`, `role_id`, `status`, `fi
 (88, 'teacher048', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (89, 'teacher049', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
 (90, 'teacher050', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'Active', 1),
-(91, '146273816439', '$2y$10$JfdtFxxr8ov1gFjTpKWUWOYpIiTCo2KIC8qTrobIbYEPxrL1t6nCG', 1, 'Active', 0),
-(97, '405220150089', '$2y$10$k/VQwXg7RWJVmCl48AzxTuityJNyxLNYXkuRevdPeklf6V.JmX/Fe', 1, 'Active', 0),
-(99, '123892477492', '$2y$10$omOeBaVL1PKGuycXxrmZwugqpb6L1ePvCjHEuRR4hCFkzk7W/U11q', 1, 'Active', 0),
-(100, '182785932075', '$2y$10$a1tlQWF.EXwNDnAWkigLteT9cRsmGhwsK59G033xnbOiWvZioLTBm', 1, 'Active', 0),
-(101, '197529532252', '$2y$10$UW9kLJuEhmkae6ffekgx5.fOnx.XB6vWfDvHKnJLBB60mfT6VVFi2', 1, 'Active', 0);
+(102, 'registrar', '$2y$10$eRuPGBKHXhkVctNOvLu8c.UFByrTJKUK1zqcxDY/A.s5eB7eWZROO', 4, 'Active', 0),
+(105, 'tc26_20260313125957_teacher', '$2y$10$knFGM7PvWgXeZxP0f7bWFu1RzvrO.HDgl/rVdifdkthGH3kCG4JW.', 3, 'Active', 0),
+(106, 'tc26_20260313125957_super', '$2y$10$HL5Y6HpBWax4IftgO5McSOtpz.ZOaWJZGoSgWq410UljUZ55CKCLe', 2, 'Active', 0),
+(107, 'tc26_20260313125957_registrar', '$2y$10$KJbb/ql6VXekqhVdzWaumuZZubRllC77nM0y9Ft7bqWfYsYjK72by', 4, 'Active', 0),
+(108, 'tc26_20260313125957_firstlogin', '$2y$10$qeGl.9FtJFQ.gxn2BDGUPeGLbCShcHpZd/cNmUSUVsVJr2kJDvqf6', 4, 'Active', 1),
+(109, 'tc26_20260313125957_changepw', '$2y$10$8l0lE7nmhffdL2UTL07wm.3t3xhGvkSFv7STvOgnP7hd8CTsNHl9.', 4, 'Active', 1),
+(111, 'tc26_20260313125957_acct_registrar', '$2y$10$SwdSQx7e6z2J28b8080uLedOxlchaUAEC9Oxy6LcHtNfh/NRB63AG', 4, 'Active', 1),
+(112, 'tc26_20260313125957_acct_teacher', '$2y$10$qNyzom7xU6TUs5JTMKbpjuvLmhGDX/i3CbCEQSQLXAJLRwtaInGda', 3, 'Active', 1),
+(115, 'tc26_20260313130056_teacher', '$2y$10$07z4VLqlhC6CSFf4iueAj.WMU2bDLDb6XNh0c1fM8/M8dJC118tSu', 3, 'Active', 0),
+(116, 'tc26_20260313130056_super', '$2y$10$G7jeCpWrlo0OSFZeKmOy.OmQWjkTC8alynNhjvWnexNPVUvG9C1hy', 2, 'Active', 0),
+(117, 'tc26_20260313130056_registrar', '$2y$10$cDrocItz9EEihaIEFVYPxu.I3bMqJr/KP41QiBy3R8n22.Xx.NWWi', 4, 'Active', 0),
+(118, 'tc26_20260313130056_firstlogin', '$2y$10$25khisL8wpF9KzEcIzileu8rRxgwY9.b206k3R1jhIdPVTYDwpy1W', 4, 'Active', 1),
+(119, 'tc26_20260313130056_changepw', '$2y$10$NtqqjH7RREHmQybEko3pI.dX85DI5uvKiwJvSU1TOCsYbfPljBV/a', 4, 'Active', 1),
+(121, 'tc26_20260313130056_acct_registrar', '$2y$10$HlugD09E21Wd66YefUL4BuoHAHNOY6dk3cVJAnFHoVAzdHKYrSOiO', 4, 'Active', 1),
+(122, 'tc26_20260313130056_acct_teacher', '$2y$10$YlB8sWiW4sXdFPDIcjBUK.NfEIjHdq4WWxyMKybUiveEOVR0zpWq6', 3, 'Active', 1),
+(125, 'tc26_20260313130203_teacher', '$2y$10$hO9tOgdPX4EVWk1VFrz7T.BEhC0PGJDX9qVmFgDuZYzB62aCpRx1G', 3, 'Active', 0),
+(126, 'tc26_20260313130203_super', '$2y$10$aYLIzDWVYHybsQYHofpd1OrJt8WE5GoiUlXfF/67Js13KGsQ1M85C', 2, 'Active', 0),
+(127, 'tc26_20260313130203_registrar', '$2y$10$ZYV6yoKu.z8Ki7TBzJw5auqqOGEnymjFgq4RxoOoMCqfptnSl25CO', 4, 'Active', 0),
+(128, 'tc26_20260313130203_firstlogin', '$2y$10$jidgrMg3XgZv2k.nTl.YleWEIuLR7y142NnmYlcbDgzHsu//wJH0m', 4, 'Active', 1),
+(129, 'tc26_20260313130203_changepw', '$2y$10$EqjBK2vRxh0gsXPIvIi2zuhKiI/W7dNPN9NJa9S/nMw/B3yGqwNVe', 4, 'Active', 1),
+(131, 'tc26_20260313130203_acct_registrar', '$2y$10$NEU7Cz6p6uf.CTRis9akSeNrmRsW1ucO6wThfoTWFD6Tn72dAa4vi', 4, 'Active', 1),
+(132, 'tc26_20260313130203_acct_teacher', '$2y$10$LAILqcVh9v/H/Dxvhyi97edpYTg01tCYN8frbQHcPD2DGkRhoeuzm', 3, 'Active', 1),
+(135, 'tc26_20260313130328_teacher', '$2y$10$IUtWSgl/9q5xRkkROWp5Mu/p7EHx0kEswvDuf9nPwE96Ii3VlbzX2', 3, 'Active', 0),
+(136, 'tc26_20260313130328_super', '$2y$10$cxDgUzOBzPt5l1ccKMXgse5V6FRTr5AbfUQk9xHMX6y8Qpr8Xa/Ma', 2, 'Active', 0),
+(137, 'tc26_20260313130328_registrar', '$2y$10$Xut4i0Pkw2UZ8gRqi42SXOUfNHkZwVefBd10PZJmZusQBakxUYLw6', 4, 'Active', 0),
+(138, 'tc26_20260313130328_firstlogin', '$2y$10$9NA0Sd3YOykIIehcD7ng5eOEk4X43LieWIWSD6.Acx06.28wtYi4W', 4, 'Active', 1),
+(139, 'tc26_20260313130328_changepw', '$2y$10$Y7P2jwUc.8agnZDCutQd2uZEu5RvC43qtJ1HyhEGNIEj3hvbCMCXm', 4, 'Active', 1),
+(141, 'tc26_20260313130328_acct_registrar', '$2y$10$hY0neUboQWf3YgGaKVX/ue5UszZogYawR2uokAfokIL9P2hj7hIB2', 4, 'Active', 1),
+(142, 'tc26_20260313130328_acct_teacher', '$2y$10$lSoUvA2r1uGsZ0g5ysa67OYNZbQKlKwTla7fqjzGK8gIRhMIyqt56', 3, 'Active', 1),
+(145, 'tc26_20260313130819_teacher', '$2y$10$SzSUQxIw8B5151UGkNKJV.mDcqzhNFWqlB2Wf4HWQX4XugVdLzs9C', 3, 'Active', 0),
+(146, 'tc26_20260313130819_super', '$2y$10$WBlL1/Py22zMt0brAhYVz.jV3IW.P88Nhd8k57PpK7gKt0PFiPYf6', 2, 'Active', 0),
+(147, 'tc26_20260313130819_registrar', '$2y$10$m7W5mLjAimbgtkvchqnN9estlrxHmdRIpzmNRh6fA7W5bknOCMrgu', 4, 'Active', 0),
+(148, 'tc26_20260313130819_firstlogin', '$2y$10$o56cJ.vpFCgNknTRMtNiKu4.N5Sru1v.zOx0tGytHmT7gHpbCIE4u', 4, 'Active', 1),
+(149, 'tc26_20260313130819_changepw', '$2y$10$nmS6QpSWz3AaGAS7Xxmvt.izarIXZlQrvJuD354aJSuk074J.mbOm', 4, 'Active', 1),
+(151, 'tc26_20260313130819_acct_registrar', '$2y$10$NKWw5.O8/kJow1AC0gi1AOFPab8hHb7xgwPurEQhVd///XzVbMH4C', 4, 'Active', 1),
+(152, 'tc26_20260313130819_acct_teacher', '$2y$10$vWMSPHD48/XW2sGosY3xMeBCpGZCqpIAeLXmMbJqz2M35EqEk6zpy', 3, 'Active', 1),
+(155, 'tc26_20260313132331_teacher', '$2y$10$1Rj3VNYnk0yO.xV4M1VZ6OdRn3wJu3F/HalLb9dcdeEi1JHrlAOhC', 3, 'Active', 0),
+(156, 'tc26_20260313132331_super', '$2y$10$BhGcXfYCQv90WFyWnJIE7ubQT7/eyZE0pLXig.3XF4OeIzp5Kbb.S', 2, 'Active', 0),
+(157, 'tc26_20260313132331_registrar', '$2y$10$W.UCy4vSULdLDc1BP48KvOl4CwnZhIZP9z2TXipcHqG1QIOWB1DVO', 4, 'Active', 0),
+(158, 'tc26_20260313132331_firstlogin', '$2y$10$rr1VY12K0Fx9GjP4t/FyzeO5BqgR/vBPWoPUNhXYMVW03JrijuQia', 4, 'Active', 1),
+(159, 'tc26_20260313132331_changepw', '$2y$10$xtJN3kEFIqsxOi9OMBECGe.0d3BWZqsso6ruxrgQfId.V.V2GzQp6', 4, 'Active', 1),
+(161, 'tc26_20260313132331_acct_registrar', '$2y$10$RKmhtH5mrGOTf0ox3BT5YuSSPz8zRIdr6bZX0Ih07pD/nBgpMvqfe', 4, 'Active', 1),
+(162, 'tc26_20260313132331_acct_teacher', '$2y$10$d.pyk.MSY3VMvLcac0/2COUpdxEpZ6WRdByPKZYRSrlz2ynxxwui.', 3, 'Active', 1),
+(165, '098765432112', '$2y$10$lX5lrXvkHw0JuvpTMxXKUupyumDSFr4Esb4rnGi6OWoOCtGx/RuJ.', 1, 'Active', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_theme_preferences`
+--
+
+CREATE TABLE `user_theme_preferences` (
+  `user_id` int(11) NOT NULL,
+  `theme_preference` varchar(10) NOT NULL DEFAULT 'light',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `user_theme_preferences`
+--
+
+INSERT INTO `user_theme_preferences` (`user_id`, `theme_preference`, `created_at`, `updated_at`) VALUES
+(19, 'dark', '2026-03-15 03:13:12', '2026-03-15 03:54:37'),
+(51, 'dark', '2026-03-15 03:21:32', '2026-03-15 03:21:32'),
+(165, 'light', '2026-03-15 03:11:44', '2026-03-15 04:03:58');
 
 --
 -- Indexes for dumped tables
@@ -992,6 +1051,12 @@ ALTER TABLE `users`
   ADD KEY `role_id` (`role_id`);
 
 --
+-- Indexes for table `user_theme_preferences`
+--
+ALTER TABLE `user_theme_preferences`
+  ADD PRIMARY KEY (`user_id`);
+
+--
 -- AUTO_INCREMENT for dumped tables
 --
 
@@ -1005,7 +1070,7 @@ ALTER TABLE `activation_settings`
 -- AUTO_INCREMENT for table `admin_audit_trail`
 --
 ALTER TABLE `admin_audit_trail`
-  MODIFY `audit_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
+  MODIFY `audit_id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
 
 --
 -- AUTO_INCREMENT for table `archived_student_strand`
@@ -1017,7 +1082,7 @@ ALTER TABLE `archived_student_strand`
 -- AUTO_INCREMENT for table `password_resets`
 --
 ALTER TABLE `password_resets`
-  MODIFY `reset_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `reset_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT for table `roles`
@@ -1041,49 +1106,49 @@ ALTER TABLE `strands`
 -- AUTO_INCREMENT for table `students`
 --
 ALTER TABLE `students`
-  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `student_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT for table `student_addresses`
 --
 ALTER TABLE `student_addresses`
-  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `address_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_applications`
 --
 ALTER TABLE `student_applications`
-  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `application_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_documents`
 --
 ALTER TABLE `student_documents`
-  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `document_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_family`
 --
 ALTER TABLE `student_family`
-  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `family_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_learning_modality`
 --
 ALTER TABLE `student_learning_modality`
-  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `modality_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_learning_program`
 --
 ALTER TABLE `student_learning_program`
-  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `program_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_previous_school`
 --
 ALTER TABLE `student_previous_school`
-  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `prev_school_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_promotion_status`
@@ -1095,43 +1160,43 @@ ALTER TABLE `student_promotion_status`
 -- AUTO_INCREMENT for table `student_social_info`
 --
 ALTER TABLE `student_social_info`
-  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `social_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_special_needs`
 --
 ALTER TABLE `student_special_needs`
-  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `sne_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT for table `student_strand`
 --
 ALTER TABLE `student_strand`
-  MODIFY `student_strand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `student_strand_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT for table `teachers`
 --
 ALTER TABLE `teachers`
-  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `teacher_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT for table `teacher_advisory`
 --
 ALTER TABLE `teacher_advisory`
-  MODIFY `advisory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `advisory_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `teacher_student_notes`
 --
 ALTER TABLE `teacher_student_notes`
-  MODIFY `note_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `note_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=102;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=166;
 
 --
 -- Constraints for dumped tables

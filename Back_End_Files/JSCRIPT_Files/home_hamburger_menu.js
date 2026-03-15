@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
             { key: "profile", icon: "../../Assets/profile_button.png" },
             { key: "student_enlistment", icon: "../../Assets/enlistment_button.png" },
             { key: "class_list", icon: "../../Assets/class_list_button.png" },
-            { key: "student_progress", icon: "../../Assets/progress_button.png" },
             { key: "enrollment_summary", icon: "../../Assets/teacher_enrollment_image.png" },
             { key: "teacher_advisory_notes", icon: "../../Assets/grades_button.png" },
             { key: "admin_student_application_list", icon: "../../Assets/application_button.jpg" },
@@ -37,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
             { key: "reports_dashboard", icon: "../../Assets/validation_button.png" },
             { key: "document_correction", icon: "../../Assets/application_button.jpg" },
             { key: "audit_trail", icon: "../../Assets/NotVisible.png" },
-            { key: "student_progress_validation", icon: "../../Assets/progress_button.png" },
+            { key: "settings", icon: "../../Assets/profile_button.png" },
             { key: "home.php", icon: "../../Assets/LOGO.png" },
             { key: "dashboard", icon: "../../Assets/LOGO.png" }
         ];

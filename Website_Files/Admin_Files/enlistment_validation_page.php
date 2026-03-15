@@ -42,7 +42,7 @@ if ($showSuccessModal) {
     <link rel="stylesheet" href="../../Design/admin/application_list_design.css">
     <link rel="stylesheet" href="../../Design/admin/enlistment_validation.css">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
@@ -138,8 +138,8 @@ if ($showSuccessModal) {
                         <th>Grade Level</th>
                         <th>Strand</th>
                         <th>Section</th>
+                        <th>Semester</th>
                         <th>Enlistment Status</th>
-                        <th>View</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -167,27 +167,20 @@ if ($showSuccessModal) {
                             <td><?= $row['grade_level'] ?? '' ?></td>
                             <td><?= $row['strand_name'] ?? '' ?></td>
                             <td><?= $row['section_name'] ?? '' ?></td>
+                            <td><?= htmlspecialchars((string) ($row['semester'] ?? '')) ?: 'N/A' ?></td>
                             <td>
-                                <input type="hidden"
-                                       name="status[<?= $row['student_id'] ?>]"
-                                       class="status-dropdown status-hidden-input"
-                                       value="<?= htmlspecialchars((string) $row['enlistment_status'], ENT_QUOTES) ?>">
-                                <button type="button"
-                                        class="status-cycle-btn enlistment-status-toggle"
-                                        data-status-values="Pending|Enlisted|Rejected">
-                                    <?= htmlspecialchars((string) $row['enlistment_status']) ?>
-                                </button>
-                            </td>
-                            <td>
-                                <a href="sensitive_information.php?search_name=<?= urlencode($student_name); ?>"
-                                   class="btn-view-sensitive"
-                                   title="View Sensitive Information"
-                                   target="_blank">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </a>
+                                <div class="validation-status-cell">
+                                    <input type="hidden"
+                                           name="status[<?= $row['student_id'] ?>]"
+                                           class="status-dropdown status-hidden-input"
+                                           value="<?= htmlspecialchars((string) $row['enlistment_status'], ENT_QUOTES) ?>">
+                                    <button type="button"
+                                            class="status-cycle-btn enlistment-status-toggle"
+                                            data-status-values="Pending|Enlisted|Rejected">
+                                        <?= htmlspecialchars((string) $row['enlistment_status']) ?>
+                                    </button>
+                                    <span class="validation-status-helper">Click the status button to change the enlistment status.</span>
+                                </div>
                             </td>
                         </tr>
                         <?php endwhile; ?>

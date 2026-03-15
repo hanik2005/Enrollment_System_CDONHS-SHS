@@ -26,7 +26,7 @@ $errorCode = trim((string) ($_GET['error'] ?? ''));
     <link rel="stylesheet" href="../../Design/admin/admin_account_management.css">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">

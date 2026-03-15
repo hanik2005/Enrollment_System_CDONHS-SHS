@@ -16,7 +16,7 @@ include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/teacher/teacher_enrollment_summary_design.css">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
@@ -31,6 +31,7 @@ include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
                 <a href="home.php">Home</a>
                 <a href="class_list.php">Class List</a>
                 <a href="teacher_advisory_notes_page.php">Advisory Notes</a>
+                <a href="settings.php">Settings</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
         </div>

@@ -44,6 +44,7 @@ SELECT s.student_id,
        sa.last_name,
        sa.enrollment_type,
        ss.grade_level,
+       ss.semester,
        st.strand_name,
        sec.section_name,
        s.enlistment_status

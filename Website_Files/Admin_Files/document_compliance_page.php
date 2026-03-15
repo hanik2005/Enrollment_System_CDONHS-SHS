@@ -16,7 +16,7 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
     <link rel="stylesheet" href="../../Design/admin/document_compliance_design.css">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
@@ -81,7 +81,7 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
                 <?php echo $summary['has_form_137_column'] ? (int) $summary['missing_form_137'] : 0; ?>
             </div>
         </div>
-        <div class="summary-card">
+        <div class="summary-card summary-card-centered">
             <div class="summary-label">Missing Student ID Copy</div>
             <div class="summary-value"><?php echo (int) $summary['missing_student_id_copy']; ?></div>
         </div>
@@ -150,11 +150,9 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
                 <tr>
                     <th>No</th>
                     <th>Student</th>
-                    <th>Enrollment Type</th>
                     <th>Grade</th>
                     <th>Strand</th>
                     <th>Section</th>
-                    <th>Application Status</th>
                     <th>Birth Certificate</th>
                     <th>Form 138</th>
                     <th>Form 137</th>
@@ -180,14 +178,11 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
                         <tr>
                             <td><?php echo $rowNo++; ?></td>
                             <td>
-                                <strong><?php echo htmlspecialchars($fullName); ?></strong><br>
-                                <span class="info-muted"><?php echo htmlspecialchars($row['email'] ?? 'No email'); ?></span>
+                                <strong><?php echo htmlspecialchars($fullName); ?></strong>
                             </td>
-                            <td><?php echo htmlspecialchars($row['enrollment_type'] ?? 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($row['grade_level'] ? 'Grade ' . $row['grade_level'] : 'N/A'); ?></td>
                             <td><?php echo htmlspecialchars($row['strand_name'] ?? 'Unassigned'); ?></td>
                             <td><?php echo htmlspecialchars($row['section_name'] ?? 'Unassigned'); ?></td>
-                            <td><?php echo htmlspecialchars($row['application_status']); ?></td>
                             <td>
                                 <span class="status-pill <?php echo $row['psa_birth_certificate_status'] === 'Submitted' ? 'status-submitted' : 'status-missing'; ?>">
                                     <?php echo htmlspecialchars($row['psa_birth_certificate_status']); ?>
@@ -235,7 +230,7 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="14" style="text-align: center; padding: 20px;">
+                        <td colspan="12" style="text-align: center; padding: 20px;">
                             No records found for the selected filters.
                         </td>
                     </tr>

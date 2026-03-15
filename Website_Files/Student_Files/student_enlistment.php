@@ -30,6 +30,8 @@ if (!$user) {
     exit;
 }
 
+syncSessionThemePreference($connection, (int) $_SESSION['user_id']);
+
 $stmtEnrollment = $connection->prepare("
     SELECT enrollment_status
     FROM students
@@ -61,6 +63,7 @@ $displayName = formatPortalPersonName(
 
 $studentMenuLinks = '<a href="home.php">Home</a>';
 $studentMenuLinks .= '<a href="profile_page.php">My Profile</a>';
+$studentMenuLinks .= '<a href="settings.php">Settings</a>';
 $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>';
 
 $now = new DateTime('now', new DateTimeZone('Asia/Manila'));
@@ -89,7 +92,7 @@ if ($currentMonth >= 8) {
     <title>Student Enlistment</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
 
 <div class="header">
     <div class="left">

@@ -61,8 +61,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function toggleRowBatchFields(row, isChecked) {
         const batchFields = row?.querySelector(".batch-update-fields");
+        const statusDisplay = row?.querySelector(".application-status-display");
+
         if (batchFields) {
-            batchFields.style.display = isChecked ? "block" : "none";
+            batchFields.style.display = isChecked ? "flex" : "none";
+        }
+
+        if (statusDisplay) {
+            statusDisplay.classList.toggle("is-hidden", isChecked);
         }
     }
 
@@ -78,6 +84,27 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
         button.classList.add("status-pending");
+    }
+
+    function updateStatusDisplay(row) {
+        if (!row) return;
+
+        const hiddenInput = row.querySelector(".batch-status");
+        if (!hiddenInput) return;
+
+        const value = hiddenInput.value || "Pending";
+        const badge = row.querySelector(".application-status-display");
+        const button = row.querySelector(".batch-status-toggle");
+
+        if (badge) {
+            badge.textContent = value;
+            applyStatusButtonClass(badge, value);
+        }
+
+        if (button) {
+            button.textContent = value;
+            applyStatusButtonClass(button, value);
+        }
     }
 
     function initializeBatchStatusToggle(button) {
@@ -96,16 +123,14 @@ document.addEventListener("DOMContentLoaded", function () {
             hiddenInput.value = statuses[0];
         }
 
-        button.textContent = hiddenInput.value;
-        applyStatusButtonClass(button, hiddenInput.value);
+        updateStatusDisplay(row);
 
         button.addEventListener("click", function () {
             const currentIndex = statuses.indexOf(hiddenInput.value);
             const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % statuses.length : 0;
             const nextValue = statuses[nextIndex];
             hiddenInput.value = nextValue;
-            button.textContent = nextValue;
-            applyStatusButtonClass(button, nextValue);
+            updateStatusDisplay(row);
         });
     }
 

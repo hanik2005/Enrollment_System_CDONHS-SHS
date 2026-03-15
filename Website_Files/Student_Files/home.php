@@ -30,6 +30,8 @@ if (!$user) {
     exit;
 }
 
+syncSessionThemePreference($connection, (int) $_SESSION['user_id']);
+
 $profileImagePath = !empty($user['profile_image'])
     ? "../../uploads/Profile/student/" . htmlspecialchars($user['profile_image'])
     : "../../Assets/profile_button.png";
@@ -70,6 +72,7 @@ if (!$isEnlisted && !$isPending && !$Promoted && !$isGraduated) {
 } else {
     $studentMenuLinks .= '<span class="menu-link-disabled">Already Enlisted</span>';
 }
+$studentMenuLinks .= '<a href="settings.php">Settings</a>';
 $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>';
 ?>
 
@@ -86,7 +89,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
     <title>Student Home</title>
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes('student-home-page'); ?>>
 <a class="skip-link" href="#main-content">Skip to main content</a>
 
 <div class="header">
@@ -123,48 +126,91 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
 <main id="main-content">
 
     <section class="home-section hero-section">
-
         <section class="home-hero">
-        <div>
-        <span class="home-hero-tag">Official School Updates</span>
+            <div class="home-hero-content">
+                <span class="home-hero-tag">Official School Updates</span>
+                <h2>Cagayan de Oro National High School - Senior High School</h2>
+                <p>
+                    Welcome to the CDONHS-SHS student dashboard. Check official announcements,
+                    monitor your current school standing, and keep up with important enrollment
+                    reminders from one place.
+                </p>
 
-        <h2>Cagayan de Oro National High School - Senior High School</h2>
+                <div class="home-hero-status-row">
+                    <div class="home-status-chip">
+                        <span>Current Standing</span>
+                        <strong><?php echo htmlspecialchars($programText); ?></strong>
+                    </div>
+                    <div class="home-status-chip">
+                        <span>Student LRN</span>
+                        <strong><?php echo htmlspecialchars($user['lrn'] ?? 'Not available'); ?></strong>
+                    </div>
+                </div>
 
-        <p>
-        Welcome to the CDONHS-SHS dashboard. Get official announcements,
-        enrollment updates, and important school reminders in one place.
-        </p>
+                <div class="home-hero-actions">
+                    <a class="home-facebook-link"
+                       href="<?php echo $facebookPageUrl; ?>"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        View Official Facebook Announcements
+                    </a>
 
-        <div class="home-hero-actions">
-        <a class="home-facebook-link"
-        href="<?php echo $facebookPageUrl; ?>"
-        target="_blank"
-        rel="noopener noreferrer">
-        View Official Facebook Announcements
-        </a>
+                    <?php if (!$isEnlisted && !$isPending && !$Promoted && !$isGraduated): ?>
+                        <a class="home-enlistment-link" href="student_enlistment.php">
+                            Open Enlistment and complete your strand and section request
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
 
-        <?php if (!$isEnlisted && !$isPending && !$Promoted && !$isGraduated): ?>
-         <a class="home-enlistment-link" 
-         href="student_enlistment.php">Click Enlistment to have Strand and Section
-        </a>
-        <?php endif; ?>
+            <div class="home-hero-visual">
+                <img class="home-hero-image"
+                     src="../../Assets/dashboard_samples/school_campus_aerial_web.png"
+                     alt="CDONHS-SHS campus">
 
-        </div>
-        </div>
+                <div class="home-hero-panel">
+                    <span class="home-hero-panel-tag">Student Snapshot</span>
+                    <strong><?php echo htmlspecialchars($displayName); ?></strong>
+                    <p>Keep your profile complete, watch your enlistment status, and stay connected to verified school updates.</p>
 
-        <img class="home-hero-image"
-        src="../../Assets/dashboard_samples/school_campus_aerial_web.png"
-        alt="CDONHS-SHS campus">
+                    <div class="home-hero-panel-grid">
+                        <div class="home-hero-panel-item">
+                            <span>Portal Access</span>
+                            <strong>Active</strong>
+                        </div>
+                        <div class="home-hero-panel-item">
+                            <span>Grade Level</span>
+                            <strong><?php echo $gradeLevel !== null ? 'Grade ' . htmlspecialchars((string) $gradeLevel) : 'Pending'; ?></strong>
+                        </div>
+                        <div class="home-hero-panel-item">
+                            <span>Strand</span>
+                            <strong><?php echo htmlspecialchars($strandName ?: 'Not assigned'); ?></strong>
+                        </div>
+                        <div class="home-hero-panel-item">
+                            <span>Section</span>
+                            <strong><?php echo htmlspecialchars($sectionName ?: 'Not assigned'); ?></strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
-
     </section>
 
 
     <section class="home-section info-section" id="student-school-info">
+        <div class="home-section-heading">
+            <span class="home-section-kicker">School Essentials</span>
+            <h3 class="home-section-title">Everything you need in one student dashboard</h3>
+            <p class="home-section-copy">
+                Follow official notices, review the school mission and vision, and keep an eye on your current
+                academic standing without leaving the portal.
+            </p>
+        </div>
 
         <div class="home-info-grid">
 
-        <section class="home-info-card">
+        <section class="home-info-card home-info-card-announcements">
+            <span class="home-card-tag">Updates</span>
             <h3>Announcements</h3>
             <p>
             Latest advisories, enrollment notices, and school events are
@@ -179,7 +225,8 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
             </a>
         </section>
 
-        <section class="home-info-card">
+        <section class="home-info-card home-info-card-mission">
+            <span class="home-card-tag">Mission</span>
             <h3>Mission</h3>
             <p>
             To protect and promote the right of every Filipino to quality,
@@ -188,18 +235,34 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
             </p>
         </section>
 
-        <section class="home-info-card">
+        <section class="home-info-card home-info-card-vision">
+            <span class="home-card-tag">Vision</span>
             <h3>Vision</h3>
             <p>
             We dream of Filipinos who passionately love their country and
             whose values and competencies enable them to realize their full
             potential and contribute to nation-building.
             </p>
-            </section>
+        </section>
 
-            <section class="home-info-card">
+            <section class="home-info-card home-info-card-status">
+            <span class="home-card-tag">My Status</span>
             <h3>Current Program Status</h3>
             <p><?php echo $programText; ?></p>
+            <div class="home-status-list">
+                <div class="home-status-list-item">
+                    <span>Grade</span>
+                    <strong><?php echo $gradeLevel !== null ? 'Grade ' . htmlspecialchars((string) $gradeLevel) : 'Pending'; ?></strong>
+                </div>
+                <div class="home-status-list-item">
+                    <span>Strand</span>
+                    <strong><?php echo htmlspecialchars($strandName ?: 'Not assigned'); ?></strong>
+                </div>
+                <div class="home-status-list-item">
+                    <span>Section</span>
+                    <strong><?php echo htmlspecialchars($sectionName ?: 'Not assigned'); ?></strong>
+                </div>
+            </div>
             </section>
 
             </div>
@@ -208,37 +271,51 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
 
 
         <section class="home-section gallery-section">
+            <div class="home-section-heading home-section-heading-center">
+                <span class="home-section-kicker">Campus Life</span>
+                <h3 class="home-section-title">A quick look at the school environment</h3>
+                <p class="home-section-copy">
+                    Explore featured moments from the campus community and stay mindful of the reminders that keep
+                    your enrollment progress on track.
+                </p>
+            </div>
 
             <section class="home-gallery">
-
-                <h3>Featured School Photos</h3>
-
                 <div class="home-gallery-grid">
+                    <figure class="home-gallery-item">
+                        <img src="../../Assets/dashboard_samples/classroom_students_1_web.jpg"
+                             alt="Students in classroom activity">
+                        <figcaption>Collaborative classroom activities that support active learning.</figcaption>
+                    </figure>
 
-                <img src="../../Assets/dashboard_samples/classroom_students_1_web.jpg"
-                alt="Students in classroom activity">
+                    <figure class="home-gallery-item">
+                        <img src="../../Assets/dashboard_samples/classroom_students_2_web.jpg"
+                             alt="Students learning with classmates">
+                        <figcaption>Daily study spaces where students learn and work together.</figcaption>
+                    </figure>
 
-                <img src="../../Assets/dashboard_samples/classroom_students_2_web.jpg"
-                alt="Students learning with classmates">
-
-                <img src="../../Assets/dashboard_samples/students_group_1_web.jpg"
-                alt="Group of students smiling">
-
+                    <figure class="home-gallery-item">
+                        <img src="../../Assets/dashboard_samples/students_group_1_web.jpg"
+                             alt="Group of students smiling">
+                        <figcaption>A student community built on support, growth, and school pride.</figcaption>
+                    </figure>
                 </div>
-
             </section>
 
             <section class="home-info-card reminder-card">
-
-            <h3>Quick Reminder</h3>
-
-            <p>
-            Always check your enlistment status and school announcements
-            before important enrollment dates.
-            </p>
-
-        </section>
-
+                <span class="home-card-tag">Quick Reminder</span>
+                <h3>Stay ready for important enrollment dates</h3>
+                <p>
+                    Always check your enlistment status and official school announcements before deadlines,
+                    schedule changes, and major enrollment milestones.
+                </p>
+                <a class="home-facebook-link"
+                   href="<?php echo $facebookPageUrl; ?>"
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    Review official updates
+                </a>
+            </section>
     </section>
 
 </main>

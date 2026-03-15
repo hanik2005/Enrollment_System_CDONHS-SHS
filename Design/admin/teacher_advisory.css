@@ -220,8 +220,21 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    .advisory-container {
+        padding: 14px;
+    }
+
+    .advisory-box {
+        padding: 16px;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
+    }
+
+    .form-buttons,
+    .assign-btn {
+        width: 100%;
     }
     
     .advisory-table {

@@ -3,6 +3,7 @@ const logoutTimeLimit = 60 * 1000; // 1 minute countdown before logout
 const storageKey = "portal_timer_logout_state_v1";
 const actionKey = "portal_timer_logout_action_v1";
 const channelName = "portal_timer_logout_channel_v1";
+const actionPropagationWindowMs = 10 * 1000; // keep cross-tab actions fresh only for a short window
 
 let modal = null;
 let countdown = null;
@@ -13,6 +14,14 @@ let bc = null;
 
 function nowMs() {
     return Date.now();
+}
+
+function createFreshState() {
+    return {
+        idleDeadline: nowMs() + idleTimeLimit,
+        logoutDeadline: 0,
+        forceLogoutAt: 0
+    };
 }
 
 function readState() {
@@ -75,14 +84,26 @@ function handleRemoteAction(action) {
 
 function initializeState() {
     const state = readState();
-    if (state && state.idleDeadline > 0) {
+    if (state) {
+        const now = nowMs();
+        const isRecentForcedLogout =
+            state.forceLogoutAt > 0 && now - state.forceLogoutAt <= actionPropagationWindowMs;
+        const isRecentLogoutDeadline =
+            state.logoutDeadline > 0 && now - state.logoutDeadline <= actionPropagationWindowMs;
+
+        if (isRecentForcedLogout || isRecentLogoutDeadline) {
+            return state;
+        }
+
+        if (state.forceLogoutAt > 0 || state.logoutDeadline > 0 || state.idleDeadline <= 0) {
+            const refreshed = createFreshState();
+            writeState(refreshed);
+            return refreshed;
+        }
+
         return state;
     }
-    const initial = {
-        idleDeadline: nowMs() + idleTimeLimit,
-        logoutDeadline: 0,
-        forceLogoutAt: 0
-    };
+    const initial = createFreshState();
     writeState(initial);
     return initial;
 }
@@ -111,11 +132,7 @@ function publishActivity(force = false) {
     }
     lastActivityPublish = now;
     closeModal();
-    writeState({
-        idleDeadline: now + idleTimeLimit,
-        logoutDeadline: 0,
-        forceLogoutAt: 0
-    });
+    writeState(createFreshState());
 }
 
 function publishWarningIfNeeded(state) {
@@ -259,6 +276,12 @@ function syncFromState() {
     const now = nowMs();
 
     if (state.forceLogoutAt > 0) {
+        if (now - state.forceLogoutAt > actionPropagationWindowMs) {
+            const refreshed = createFreshState();
+            writeState(refreshed);
+            closeModal();
+            return;
+        }
         autoLogout();
         return;
     }

@@ -39,7 +39,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['activation_id'])) {
 /* ========================= */
 /* FETCH ACTIVATION SETTINGS */
 /* ========================= */
-$activation_query = "SELECT * FROM activation_settings ORDER BY id ASC";
+$activation_query = "SELECT * FROM activation_settings WHERE activation_name <> 'Student Progress Page' ORDER BY id ASC";
 $activation_result = mysqli_query($connection, $activation_query);
 
 $activation_settings = [];
@@ -61,7 +61,7 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/admin/activation_design.css">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <!-- Header -->
     <div class="header">
         <div class="left">
@@ -117,9 +117,6 @@ while ($row = mysqli_fetch_assoc($activation_result)) {
                                             break;
                                         case 'Form 137 and 138 Page':
                                             echo 'Allows students to view their Form 137 and 138 records';
-                                            break;
-                                        case 'Student Progress Page':
-                                            echo 'Enables teachers to view and track student progress';
                                             break;
                                         case 'Teacher Registration':
                                             echo 'Allows new teachers to register and apply';

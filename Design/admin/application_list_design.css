@@ -116,6 +116,7 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 760px;
     background: white;
     border-radius: 10px;
     overflow: hidden;
@@ -148,47 +149,124 @@ tr:hover {
 
 /* Status Badges */
 .status-badge {
-    display: inline-block;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
+    border: 2px solid transparent;
+    line-height: 1.2;
+}
+
+.status-cell,
+.remarks-cell,
+.view-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-cell {
+    min-width: 180px;
+    justify-content: center;
+}
+
+.remarks-cell {
+    min-width: 240px;
+    justify-content: center;
+}
+
+.batch-update-fields {
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.application-status-display.is-hidden {
+    display: none;
+}
+
+.status-edit-panel {
+    width: 100%;
+    margin: 6px 0;
+}
+
+.cell-helper-text {
+    display: block;
+    color: #6b7280;
+    font-size: 0.76em;
+    line-height: 1.35;
+    text-align: center;
+    max-width: 190px;
 }
 
 .status-pending {
     background-color: #fef3c7;
-    color: #92400e;
-    border: 1px solid #fcd34d;
+    color: #78350f;
+    border-color: #f59e0b;
 }
 
 .status-approved {
-    background-color: #d1fae5;
-    color: #065f46;
-    border: 1px solid #6ee7b7;
+    background-color: #dcfce7;
+    color: #14532d;
+    border-color: #16a34a;
 }
 
 .status-rejected {
     background-color: #fee2e2;
-    color: #991b1b;
-    border: 1px solid #fca5a5;
+    color: #7f1d1d;
+    border-color: #dc2626;
 }
 
 .status-cycle-btn {
-    min-width: 120px;
-    padding: 8px 14px;
-    border-radius: 8px;
-    border: 1px solid #d1d5db;
-    font-size: 0.85rem;
-    font-weight: 700;
+    min-width: 140px;
+    min-height: 42px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 2px solid #1e3a8a;
+    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 100%);
+    color: #ffffff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
     cursor: pointer;
     text-transform: uppercase;
     transition: transform 0.2s ease, box-shadow 0.2s ease, filter 0.2s ease;
+    margin: 0 auto;
+}
+
+.status-cycle-btn.status-pending {
+    background: linear-gradient(135deg, #fde68a 0%, #f59e0b 100%);
+    border-color: #d97706;
+    color: #422006;
+}
+
+.status-cycle-btn.status-approved {
+    background: linear-gradient(135deg, #86efac 0%, #16a34a 100%);
+    border-color: #15803d;
+    color: #052e16;
+}
+
+.status-cycle-btn.status-rejected {
+    background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+    border-color: #dc2626;
+    color: #450a0a;
 }
 
 .status-cycle-btn:hover:not(:disabled) {
     transform: translateY(-1px);
     box-shadow: 0 6px 14px rgba(15, 23, 42, 0.12);
+}
+
+.status-cycle-btn:focus-visible {
+    outline: 3px solid rgba(59, 130, 246, 0.55);
+    outline-offset: 2px;
 }
 
 .status-cycle-btn:disabled {
@@ -367,6 +445,14 @@ option:disabled {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .page-title h1 {
+        font-size: 1.5em;
+    }
+
+    .table-container {
+        padding: 12px;
+    }
+
     .header {
         flex-direction: column;
         gap: 15px;
@@ -540,6 +626,11 @@ option:disabled {
     .filter-buttons {
         width: 100%;
         justify-content: center;
+    }
+
+    .status-cycle-btn {
+        width: 100%;
+        min-width: 0;
     }
 }
 
@@ -741,6 +832,8 @@ option:disabled {
     flex-direction: column;
     gap: 4px;
     margin-bottom: 6px;
+    align-items: center;
+    width: 100%;
 }
 
 .remarks-indicator {
@@ -758,6 +851,13 @@ option:disabled {
     font-size: 0.74em;
     color: #374151;
     line-height: 1.3;
+    max-width: 240px;
+    text-align: center;
+}
+
+.remarks-cell .cell-helper-text {
+    max-width: 240px;
+    margin: 2px auto 0;
 }
 
 /* ==============================

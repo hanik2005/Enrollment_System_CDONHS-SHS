@@ -1,387 +1,570 @@
-/* =================================================
-   HERO SECTION (FULL WIDTH)
-================================================= */
-
-.hero-section{
-  background: linear-gradient(135deg,#eff6ff 0%,#ffffff 60%,#f8fbff 100%);
+.student-home-page {
+    --student-navy: #132b73;
+    --student-blue: #2563eb;
+    --student-sky: #60a5fa;
+    --student-gold: #f59e0b;
+    --student-gold-soft: #fef3c7;
+    --student-cream: #fffaf0;
+    --student-surface: rgba(255, 255, 255, 0.94);
+    --student-border: rgba(191, 219, 254, 0.8);
+    --student-text: #0f172a;
+    --student-muted: #475569;
+    background:
+        radial-gradient(circle at 12% 10%, rgba(37, 99, 235, 0.12), transparent 30%),
+        radial-gradient(circle at 88% 10%, rgba(245, 158, 11, 0.18), transparent 34%),
+        linear-gradient(180deg, #eef4ff 0%, #fff9ef 100%);
+    color: var(--student-text);
 }
 
-.home-hero{
-  width:100%;
-  min-height:calc(100vh - 120px);
-
-  display:grid;
-  grid-template-columns:1.2fr 1fr;
-  gap:70px;
-
-  align-items:center;
-  padding:60px 8%;
-
-  border:none;
-  border-radius:0;
-  box-shadow:none;
-  background:transparent;
+.student-home-page .home-section {
+    padding-left: clamp(14px, 3vw, 30px);
+    padding-right: clamp(14px, 3vw, 30px);
 }
 
-
-/* HERO TEXT AREA */
-
-.home-hero div{
-  max-width:650px;
+.student-home-page .hero-section {
+    padding-top: 24px;
+    padding-bottom: 18px;
+    background: transparent;
 }
 
-.home-hero-tag{
-  display:inline-block;
-  margin-bottom:10px;
-  padding:6px 12px;
-
-  border-radius:999px;
-
-  font-size:0.9rem;
-  font-weight:700;
-
-  color:#1e3a8a;
-
-  background:#dbeafe;
-  border:1px solid #93c5fd;
+.student-home-page .home-hero {
+    position: relative;
+    overflow: hidden;
+    max-width: 1240px;
+    min-height: 0;
+    margin: 0 auto;
+    padding: clamp(22px, 4vw, 38px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.92fr);
+    gap: clamp(20px, 3vw, 34px);
+    align-items: center;
+    border-radius: 30px;
+    background:
+        radial-gradient(circle at top right, rgba(251, 191, 36, 0.22), transparent 28%),
+        linear-gradient(135deg, #10285f 0%, #1d4ed8 50%, #163a8a 100%);
+    box-shadow: 0 28px 50px rgba(15, 23, 42, 0.18);
 }
 
-/* HERO TITLE */
-
-.home-hero h2{
-  margin:0 0 12px;
-
-  color:#172554;
-
-  font-size:clamp(1.8rem,3vw,2.4rem);
-  line-height:1.2;
+.student-home-page .home-hero::before {
+    content: "";
+    position: absolute;
+    inset: auto -46px -72px auto;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    pointer-events: none;
 }
 
-/* HERO PARAGRAPH */
-
-.home-hero p{
-  margin:0;
-
-  color:#1e293b;
-
-  font-size:1.05rem;
-  line-height:1.6;
+.student-home-page .home-hero-content {
+    position: relative;
+    z-index: 1;
 }
 
-/* HERO BUTTONS */
-
-.home-hero-actions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:12px;
-
-  margin-top:18px;
+.student-home-page .home-hero-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 0 14px;
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #fde68a;
+    font-size: 0.8rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
 }
 
-/* HERO IMAGE */
-
-.home-hero-image{
-  width:100%;
-  max-width:560px;
-
-  border-radius:18px;
-
-  object-fit:cover;
-
-  justify-self:end;
-  border:none;
+.student-home-page .home-hero h2 {
+    margin: 0 0 14px;
+    color: #ffffff;
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.1;
+    max-width: 12ch;
 }
 
-/* HERO MOBILE */
-
-@media (max-width:768px){
-
-  .home-hero{
-    grid-template-columns:1fr;
-    text-align:center;
-    gap:30px;
-  }
-
-  .home-hero-image{
-    justify-self:center;
-    max-width:380px;
-  }
-
+.student-home-page .home-hero p {
+    margin: 0;
+    max-width: 62ch;
+    color: #dbeafe;
+    font-size: 1rem;
+    line-height: 1.75;
 }
 
-/* ===============================
-   FEATURED SCHOOL PHOTOS SECTION
-   FIXED ALIGNMENT
-================================ */
-
-.gallery-section{
-  width:100%;
-  padding:70px 8%;
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-
-  background:#ffffff;
+.student-home-page .home-hero-status-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 22px;
 }
 
-/* TITLE */
-
-.home-gallery h3{
-  font-size:1.9rem;
-  font-weight:700;
-  color:#1e3a8a;
-
-  margin-bottom:40px;
-  text-align:center;
+.student-home-page .home-status-chip {
+    padding: 15px 16px;
+    border-radius: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 }
 
-/* IMAGE GRID */
-
-.home-gallery-grid{
-  width:100%;
-  max-width:1100px;
-
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-
-  gap:30px;
-  margin-bottom:35px;
+.student-home-page .home-status-chip span {
+    display: block;
+    margin-bottom: 7px;
+    color: #bfdbfe;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-/* IMAGES */
-
-.home-gallery-grid img{
-  width:100%;
-  height:260px;
-
-  object-fit:cover;
-
-  border-radius:18px;
-
-  box-shadow:0 10px 25px rgba(0,0,0,0.08);
-
-  transition:transform .25s ease;
+.student-home-page .home-status-chip strong {
+    display: block;
+    color: #ffffff;
+    font-size: 0.98rem;
+    line-height: 1.45;
 }
 
-.home-gallery-grid img:hover{
-  transform:translateY(-5px);
+.student-home-page .home-hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
 }
 
-/* QUICK REMINDER CARD */
-
-.reminder-card{
-  width:100%;
-  max-width:1100px;
-
-  padding:28px;
-
-  border-radius:16px;
-
-  background:#ffffff;
-
-  border:1px solid #e5e7eb;
-
-  box-shadow:0 10px 25px rgba(0,0,0,0.06);
-
-  text-align:center;
+.student-home-page .home-facebook-link,
+.student-home-page .home-enlistment-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 12px 18px;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 800;
+    line-height: 1.35;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, background 0.22s ease, color 0.22s ease;
 }
 
-.reminder-card h3{
-  color:#1e3a8a;
-  margin-bottom:10px;
+.student-home-page .home-facebook-link {
+    background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+    color: var(--student-navy);
+    border: 1px solid rgba(191, 219, 254, 0.58);
+    box-shadow: 0 14px 24px rgba(15, 23, 42, 0.12);
 }
 
-.reminder-card p{
-  color:#475569;
-  font-size:0.95rem;
+.student-home-page .home-facebook-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 30px rgba(15, 23, 42, 0.18);
+    color: var(--student-navy);
 }
 
-/* RESPONSIVE */
-
-@media(max-width:900px){
-
-.home-gallery-grid{
-grid-template-columns:1fr 1fr;
+.student-home-page .home-enlistment-link {
+    background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%);
+    color: #172554;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    box-shadow: 0 16px 26px rgba(245, 158, 11, 0.26);
 }
 
+.student-home-page .home-enlistment-link:hover {
+    transform: translateY(-2px);
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #172554;
 }
 
-@media(max-width:600px){
-
-.home-gallery-grid{
-grid-template-columns:1fr;
+.student-home-page .home-hero-visual {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    min-height: 100%;
 }
 
-}
-/* ======================================
-   SCHOOL INFO SECTION (ANNOUNCEMENTS ETC)
-   ENHANCED MODERN CARD DESIGN
-====================================== */
-
-.info-section{
-  width:100%;
-  min-height:70vh;
-
-  padding:80px 8%;
-
-  background:linear-gradient(
-    180deg,
-    #ffffff 0%,
-    #f8fbff 100%
-  );
-
-  display:flex;
-  justify-content:center;
-  align-items:center;
+.student-home-page .home-hero-image {
+    width: 100%;
+    min-height: 420px;
+    max-width: none;
+    border-radius: 24px;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.18);
+    box-shadow: 0 22px 34px rgba(15, 23, 42, 0.24);
 }
 
-/* GRID LAYOUT */
-
-.home-info-grid{
-
-  width:100%;
-  max-width:1200px;
-
-  display:grid;
-
-  grid-template-columns:repeat(4,1fr);
-
-  gap:30px;
+.student-home-page .home-hero-panel {
+    position: absolute;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(15, 23, 42, 0.68);
+    box-shadow: 0 18px 28px rgba(2, 6, 23, 0.26);
+    backdrop-filter: blur(10px);
 }
 
-/* CARD STYLE */
-
-.home-info-card{
-
-  padding:25px;
-
-  border-radius:16px;
-
-  background:#ffffff;
-
-  border:1px solid #e5e7eb;
-
-  box-shadow:0 8px 25px rgba(0,0,0,0.06);
-
-  transition:transform .25s ease,
-             box-shadow .25s ease;
-
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+.student-home-page .home-hero-panel-tag {
+    display: inline-flex;
+    margin-bottom: 10px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: rgba(251, 191, 36, 0.18);
+    color: #fde68a;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-/* HOVER EFFECT */
-
-.home-info-card:hover{
-
-  transform:translateY(-6px);
-
-  box-shadow:0 16px 35px rgba(0,0,0,0.12);
+.student-home-page .home-hero-panel > strong {
+    display: block;
+    margin-bottom: 8px;
+    color: #ffffff;
+    font-size: 1.18rem;
+    line-height: 1.25;
 }
 
-/* TITLE */
-
-.home-info-card h3{
-
-  font-size:1.2rem;
-
-  font-weight:700;
-
-  color:#1e3a8a;
-
-  margin-bottom:6px;
+.student-home-page .home-hero-panel > p {
+    margin: 0 0 14px;
+    color: #cbd5e1;
+    font-size: 0.92rem;
+    line-height: 1.6;
 }
 
-/* TEXT */
-
-.home-info-card p{
-
-  font-size:0.95rem;
-
-  line-height:1.6;
-
-  color:#374151;
+.student-home-page .home-hero-panel-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
 }
 
-/* FACEBOOK BUTTON */
-
-.home-facebook-link{
-
-  margin-top:12px;
-
-  display:inline-block;
-
-  padding:8px 14px;
-
-  border-radius:8px;
-
-  background:#eff6ff;
-
-  border:1px solid #93c5fd;
-
-  color:#1e3a8a;
-
-  font-weight:600;
-
-  text-decoration:none;
-
-  transition:background .2s ease;
+.student-home-page .home-hero-panel-item {
+    padding: 12px 13px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.home-enlistment-link{
-
-  margin-top:12px;
-
-  display:inline-block;
-
-  padding:8px 14px;
-
-  border-radius:8px;
-
-  background:#d44f4f;
-
-  border:1px solid #ec2828;
-
-  color:#ffffff;
-
-  font-weight:600;
-
-  text-decoration:none;
-
-  transition:background .2s ease;
-}
-.home-enlistment-link:hover{
-    color: black;
-    background:#dbeafe;
+.student-home-page .home-hero-panel-item span {
+    display: block;
+    margin-bottom: 6px;
+    color: #bfdbfe;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
-
-.home-facebook-link:hover{
-  background:#dbeafe;
+.student-home-page .home-hero-panel-item strong {
+    display: block;
+    color: #ffffff;
+    font-size: 0.92rem;
+    line-height: 1.4;
 }
 
-/* TABLET */
-
-@media(max-width:1000px){
-
-.home-info-grid{
-grid-template-columns:1fr 1fr;
+.student-home-page .info-section,
+.student-home-page .gallery-section {
+    background: transparent;
+    padding-top: 26px;
+    padding-bottom: 28px;
 }
 
+.student-home-page .home-section-heading {
+    max-width: 1200px;
+    margin: 0 auto 18px;
 }
 
-/* MOBILE */
-
-@media(max-width:600px){
-
-.home-info-grid{
-grid-template-columns:1fr;
+.student-home-page .home-section-heading-center {
+    text-align: center;
 }
 
-.info-section{
-padding:60px 6%;
+.student-home-page .home-section-kicker {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #dbeafe;
+    color: var(--student-navy);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
 }
 
+.student-home-page .home-section-title {
+    margin: 0 0 10px;
+    color: #172554;
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    line-height: 1.2;
+}
+
+.student-home-page .home-section-copy {
+    margin: 0;
+    max-width: 66ch;
+    color: var(--student-muted);
+    line-height: 1.7;
+}
+
+.student-home-page .home-section-heading-center .home-section-copy {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.student-home-page .home-info-grid {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.student-home-page .home-info-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 240px;
+    padding: 22px;
+    border-radius: 22px;
+    background:
+        radial-gradient(circle at top right, rgba(255, 255, 255, 0.9), transparent 36%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 251, 255, 0.98));
+    border: 1px solid rgba(219, 234, 254, 0.94);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+}
+
+.student-home-page .home-info-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 6px;
+    background: linear-gradient(90deg, #1d4ed8 0%, #f59e0b 100%);
+}
+
+.student-home-page .home-info-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 24px 36px rgba(15, 23, 42, 0.12);
+}
+
+.student-home-page .home-card-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: var(--student-navy);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.student-home-page .home-info-card h3 {
+    margin: 0;
+    color: #172554;
+    font-size: 1.15rem;
+    line-height: 1.3;
+}
+
+.student-home-page .home-info-card p {
+    margin: 0;
+    color: #334155;
+    font-size: 0.95rem;
+    line-height: 1.7;
+}
+
+.student-home-page .home-info-card-announcements {
+    background:
+        radial-gradient(circle at top right, rgba(59, 130, 246, 0.16), transparent 36%),
+        linear-gradient(180deg, #ffffff 0%, #f4f8ff 100%);
+}
+
+.student-home-page .home-info-card-mission {
+    background:
+        radial-gradient(circle at top right, rgba(245, 158, 11, 0.16), transparent 36%),
+        linear-gradient(180deg, #ffffff 0%, #fff9ef 100%);
+}
+
+.student-home-page .home-info-card-vision {
+    background:
+        radial-gradient(circle at top right, rgba(16, 185, 129, 0.14), transparent 36%),
+        linear-gradient(180deg, #ffffff 0%, #f3fbf7 100%);
+}
+
+.student-home-page .home-info-card-status {
+    background:
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 36%),
+        linear-gradient(180deg, #ffffff 0%, #f6f4ff 100%);
+}
+
+.student-home-page .home-status-list {
+    margin-top: auto;
+    display: grid;
+    gap: 10px;
+}
+
+.student-home-page .home-status-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 12px;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(148, 163, 184, 0.16);
+}
+
+.student-home-page .home-status-list-item span {
+    color: #475569;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.student-home-page .home-status-list-item strong {
+    color: #172554;
+    font-size: 0.88rem;
+    text-align: right;
+}
+
+.student-home-page .home-gallery {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.student-home-page .home-gallery-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    margin-bottom: 22px;
+}
+
+.student-home-page .home-gallery-item {
+    margin: 0;
+    overflow: hidden;
+    border-radius: 22px;
+    border: 1px solid rgba(219, 234, 254, 0.96);
+    background: var(--student-surface);
+    box-shadow: 0 16px 28px rgba(15, 23, 42, 0.08);
+}
+
+.student-home-page .home-gallery-item img {
+    width: 100%;
+    height: 250px;
+    display: block;
+    object-fit: cover;
+    transition: transform 0.22s ease;
+}
+
+.student-home-page .home-gallery-item:hover img {
+    transform: scale(1.03);
+}
+
+.student-home-page .home-gallery-item figcaption {
+    padding: 14px 16px 16px;
+    color: #475569;
+    font-size: 0.92rem;
+    line-height: 1.6;
+}
+
+.student-home-page .reminder-card {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 0;
+    align-items: flex-start;
+    background:
+        radial-gradient(circle at top right, rgba(251, 191, 36, 0.18), transparent 36%),
+        linear-gradient(180deg, #ffffff 0%, #fff8ec 100%);
+}
+
+.student-home-page .reminder-card::before {
+    background: linear-gradient(90deg, #f59e0b 0%, #f97316 100%);
+}
+
+.student-home-page .reminder-card .home-facebook-link {
+    margin-top: 4px;
+}
+
+@media (max-width: 1100px) {
+    .student-home-page .home-hero {
+        grid-template-columns: 1fr;
+    }
+
+    .student-home-page .home-hero-image {
+        min-height: 340px;
+    }
+
+    .student-home-page .home-info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .student-home-page .home-hero {
+        border-radius: 24px;
+        padding: 20px;
+    }
+
+    .student-home-page .home-hero h2 {
+        max-width: none;
+        font-size: clamp(1.8rem, 8vw, 2.4rem);
+    }
+
+    .student-home-page .home-hero-status-row,
+    .student-home-page .home-hero-panel-grid,
+    .student-home-page .home-info-grid,
+    .student-home-page .home-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .student-home-page .home-hero-panel {
+        position: static;
+        margin-top: 16px;
+    }
+
+    .student-home-page .home-hero-image {
+        min-height: 280px;
+    }
+}
+
+@media (max-width: 560px) {
+    .student-home-page .home-section {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .student-home-page .hero-section {
+        padding-top: 16px;
+    }
+
+    .student-home-page .home-hero-actions,
+    .student-home-page .home-facebook-link,
+    .student-home-page .home-enlistment-link {
+        width: 100%;
+    }
+
+    .student-home-page .home-facebook-link,
+    .student-home-page .home-enlistment-link {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .student-home-page .home-info-card,
+    .student-home-page .reminder-card {
+        min-height: 0;
+    }
+
+    .student-home-page .home-gallery-item img {
+        height: 220px;
+    }
 }

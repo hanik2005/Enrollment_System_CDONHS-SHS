@@ -246,4 +246,18 @@
     .notes-title-card h1 {
         font-size: 20px;
     }
+
+    .notes-toolbar input {
+        max-width: none;
+    }
+
+    .open-note-modal,
+    .btn-cancel,
+    .btn-save {
+        width: 100%;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
 }

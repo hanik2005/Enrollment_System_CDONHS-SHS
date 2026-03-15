@@ -1,3 +1,5 @@
+@import url("portal_theme.css");
+
 :root {
   --color-bg: #edf2f8;
   --color-surface: #ffffff;
@@ -357,6 +359,83 @@ th {
 
   .nav-links a {
     width: 100%;
+  }
+}
+
+/* Shared responsive helpers for dashboard pages */
+@media (max-width: 900px) {
+  .dashboard,
+  .summary-page,
+  .notes-page,
+  .main-container,
+  .advisory-container,
+  .enlistment-container,
+  .sensitive-info-container,
+  .content-area {
+    padding-left: 14px !important;
+    padding-right: 14px !important;
+  }
+
+  .dashboard-box,
+  .summary-title-card,
+  .notes-title-card,
+  .detail-card,
+  .table-container,
+  .summary-table-wrap,
+  .notes-table-wrap {
+    border-radius: 12px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-container table,
+  .summary-table,
+  .notes-table,
+  .validation-table,
+  .class-table,
+  .advisory-table {
+    min-width: 680px;
+  }
+
+  .filter-row,
+  .filter-buttons,
+  .summary-tools,
+  .validation-buttons,
+  .form-buttons,
+  .remarks-modal-actions,
+  .modal-actions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filter-buttons > *,
+  .summary-tools > *,
+  .validation-buttons > *,
+  .form-buttons > *,
+  .remarks-modal-actions > *,
+  .modal-actions > * {
+    flex: 1 1 180px;
+  }
+}
+
+@media (max-width: 560px) {
+  .page-title h1,
+  .summary-title-card h1,
+  .notes-title-card h1 {
+    font-size: 1.28rem !important;
+  }
+
+  .btn,
+  .confirm-btn,
+  .status-cycle-btn,
+  .toggle-btn {
+    width: 100%;
+    min-height: 44px;
   }
 }
 

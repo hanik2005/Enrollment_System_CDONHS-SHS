@@ -44,21 +44,26 @@
         
         .status-badge {
             display: inline-block;
-            padding: 5px 12px;
-            border-radius: 15px;
+            padding: 6px 14px;
+            border-radius: 999px;
             font-size: 12px;
-            font-weight: bold;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            border: 2px solid transparent;
+            text-transform: uppercase;
             margin-left: 10px;
         }
         
         .status-enabled {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #dcfce7;
+            color: #14532d;
+            border-color: #16a34a;
         }
         
         .status-disabled {
-            background-color: #f8d7da;
-            color: #721c24;
+            background-color: #fee2e2;
+            color: #7f1d1d;
+            border-color: #dc2626;
         }
         
         .toggle-form {
@@ -67,30 +72,34 @@
         }
         
         .toggle-btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 5px;
+            min-height: 42px;
+            padding: 9px 18px;
+            border: 2px solid transparent;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 800;
+            letter-spacing: 0.02em;
             transition: all 0.3s;
         }
         
         .toggle-btn.enable {
-            background-color: #28a745;
-            color: white;
+            background: linear-gradient(135deg, #86efac 0%, #16a34a 100%);
+            color: #052e16;
+            border-color: #15803d;
         }
         
         .toggle-btn.enable:hover {
-            background-color: #218838;
+            background: linear-gradient(135deg, #bbf7d0 0%, #22c55e 100%);
         }
         
         .toggle-btn.disable {
-            background-color: #dc3545;
-            color: white;
+            background: linear-gradient(135deg, #fca5a5 0%, #ef4444 100%);
+            color: #450a0a;
+            border-color: #dc2626;
         }
         
         .toggle-btn.disable:hover {
-            background-color: #c82333;
+            background: linear-gradient(135deg, #fecaca 0%, #f87171 100%);
         }
         
         .back-btn {
@@ -124,4 +133,26 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 14px;
+            }
+
+            .activation-card {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .toggle-form,
+            .toggle-btn {
+                width: 100%;
+            }
+
+            .status-badge {
+                margin-left: 0;
+                margin-top: 8px;
+            }
         }

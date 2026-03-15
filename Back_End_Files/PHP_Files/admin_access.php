@@ -3,6 +3,8 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+require_once __DIR__ . '/theme_preferences.php';
+
 const ROLE_STUDENT = 1;
 const ROLE_SUPER_ADMIN = 2;
 const ROLE_TEACHER = 3;
@@ -44,6 +46,21 @@ function getDashboardPathForRole(int $roleId): string
     }
 }
 
+function getSettingsPathForRole(int $roleId): string
+{
+    switch ($roleId) {
+        case ROLE_STUDENT:
+            return '/Enrollment_System_CDONHS-SHS/Website_Files/Student_Files/settings.php';
+        case ROLE_SUPER_ADMIN:
+        case ROLE_REGISTRAR:
+            return '/Enrollment_System_CDONHS-SHS/Website_Files/Admin_Files/settings.php';
+        case ROLE_TEACHER:
+            return '/Enrollment_System_CDONHS-SHS/Website_Files/Teacher_Files/settings.php';
+        default:
+            return '/Enrollment_System_CDONHS-SHS/Website_Files/login.php';
+    }
+}
+
 function canManageTeacherAdvisory(int $roleId): bool
 {
     return $roleId === ROLE_SUPER_ADMIN;
@@ -66,7 +83,6 @@ function getAdminNavigationLinks(int $roleId): array
         ['href' => 'reports_dashboard_page.php', 'label' => 'Reports Dashboard'],
         ['href' => 'document_correction_page.php', 'label' => 'Document Correction'],
         ['href' => 'audit_trail_page.php', 'label' => 'Audit Trail'],
-        ['href' => 'student_progress_validation_page.php', 'label' => 'Student Progress Validation'],
     ];
 
     if (canManageTeacherAdvisory($roleId)) {
@@ -79,6 +95,8 @@ function getAdminNavigationLinks(int $roleId): array
     if (canCreateRegistrarAccounts($roleId)) {
         $links[] = ['href' => 'admin_creation.php', 'label' => 'Account Management'];
     }
+
+    $links[] = ['href' => 'settings.php', 'label' => 'Settings'];
 
     $links[] = [
         'href' => '../../Back_End_Files/PHP_Files/logout.php',
@@ -169,6 +187,7 @@ function requirePortalAccess(mysqli $connection, array $allowedRoleIds, string $
 
     $_SESSION['role_id'] = (int) $user['role_id'];
     $_SESSION['role_name'] = $user['role_name'] ?: getRoleLabel((int) $user['role_id']);
+    syncSessionThemePreference($connection, (int) $user['user_id']);
 
     return $user;
 }

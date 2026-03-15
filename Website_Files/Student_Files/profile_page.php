@@ -1,190 +1,4 @@
-<?php
-session_start();
-
-if (!isset($_SESSION['user_id'])) {
-    header("Location: ../login.php");
-    exit;
-}
-
-include "../../DB_Connection/Connection.php";
-include "../../Back_End_Files/PHP_Files/portal_ui_helper.php";
-
-// Verify student session and get profile data
-// Now joining multiple tables for normalized database structure
-$stmt = $connection->prepare("
-    SELECT s.student_id, s.enrollment_status, s.date_enrolled, s.enlistment_status,
-           sa.first_name, sa.last_name, sa.middle_name, sa.extension_name,
-           sa.lrn, sa.date_of_birth, sa.sex, sa.place_of_birth, sa.religion, sa.mother_tongue,
-           sa.email, sa.contact_number, sa.facebook_profile, sa.enrollment_type,
-           sa.profile_image,
-           u.username, u.status,
-           -- Address from student_addresses
-           addr.house_number, addr.street, addr.barangay, addr.city_municipality, addr.province, addr.country, addr.zip_code,
-           addr.permanent_house_number, addr.permanent_street, addr.permanent_barangay, 
-           addr.permanent_city, addr.permanent_province, addr.permanent_country, addr.permanent_zip_code,
-           -- Family from student_family
-           fam.father_last_name, fam.father_first_name, fam.father_middle_name, fam.father_contact,
-           fam.mother_last_name, fam.mother_first_name, fam.mother_middle_name, fam.mother_contact,
-           fam.guardian_last_name, fam.guardian_first_name, fam.guardian_middle_name, fam.guardian_contact,
-           -- Social info from student_social_info
-           soc.indigenous_community, soc.ip_specify, soc.four_ps_beneficiary, soc.four_ps_household_id,
-           -- Documents from student_documents
-           doc.psa_birth_certificate, doc.form_138, doc.student_id_copy,
-           -- Previous school from student_previous_school
-           prev.last_school_attended, prev.last_grade_completed, prev.last_school_year_completed,
-           -- Special needs from student_special_needs
-           sne.with_disability, sne.has_pwd_id, sne.pwd_id_number
-    FROM students s
-    INNER JOIN users u ON s.user_id = u.user_id
-    INNER JOIN student_applications sa ON s.application_id = sa.application_id
-    LEFT JOIN student_addresses addr ON sa.application_id = addr.application_id
-    LEFT JOIN student_family fam ON sa.application_id = fam.application_id
-    LEFT JOIN student_social_info soc ON sa.application_id = soc.application_id
-    LEFT JOIN student_documents doc ON sa.application_id = doc.application_id
-    LEFT JOIN student_previous_school prev ON sa.application_id = prev.application_id
-    LEFT JOIN student_special_needs sne ON sa.application_id = sne.application_id
-    WHERE s.user_id = ?
-");
-
-$stmt->bind_param("i", $_SESSION['user_id']);
-$stmt->execute();
-$result = $stmt->get_result();
-$profile = $result->fetch_assoc();
-
-if (!$profile) {
-    session_destroy();
-    header("Location: ../login.php");
-    exit;
-}
-
-// Get strand and section info
-$strandInfo = null;
-$stmt = $connection->prepare("
-    SELECT st.strand_name, sec.section_name, ss.grade_level
-    FROM student_strand ss
-    INNER JOIN strands st ON ss.strand_id = st.strand_id
-    INNER JOIN section sec ON ss.section_id = sec.section_id
-    WHERE ss.student_id = ?
-    ORDER BY ss.grade_level DESC
-    LIMIT 1
-");
-$stmt->bind_param("i", $profile['student_id']);
-$stmt->execute();
-$strandResult = $stmt->get_result();
-if ($strandResult->num_rows > 0) {
-    $strandInfo = $strandResult->fetch_assoc();
-}
-
-// Get adviser info for the student
-$adviserInfo = null;
-$adviserStmt = $connection->prepare("
-    SELECT 
-        t.first_name as adviser_first_name, 
-        t.last_name as adviser_last_name,
-        t.middle_name as adviser_middle_name,
-        t.extension_name as adviser_extension
-    FROM student_strand ss
-    INNER JOIN section sec ON ss.section_id = sec.section_id
-    LEFT JOIN teacher_advisory ta ON sec.section_id = ta.section_id
-    LEFT JOIN teachers t ON ta.teacher_id = t.teacher_id
-    WHERE ss.student_id = ?
-");
-$adviserStmt->bind_param("i", $profile['student_id']);
-$adviserStmt->execute();
-$adviserResult = $adviserStmt->get_result();
-if ($adviserResult->num_rows > 0) {
-    $adviserInfo = $adviserResult->fetch_assoc();
-}
-
-$adviserName = "No adviser assigned yet";
-if ($adviserInfo && !empty($adviserInfo['adviser_first_name'])) {
-    $adviserName = $adviserInfo['adviser_first_name'];
-    if (!empty($adviserInfo['adviser_middle_name'])) {
-        $adviserName .= ' ' . substr($adviserInfo['adviser_middle_name'], 0, 1) . '.';
-    }
-    $adviserName .= ' ' . $adviserInfo['adviser_last_name'];
-    if (!empty($adviserInfo['adviser_extension'])) {
-        $adviserName .= ' ' . $adviserInfo['adviser_extension'];
-    }
-}
-
-// Handle success/error messages
-$message = "";
-$messageType = "";
-if (isset($_GET['success'])) {
-    $messageType = "success";
-    $message = "Profile updated successfully!";
-}
-if (isset($_GET['error'])) {
-    $messageType = "error";
-    switch ($_GET['error']) {
-        case 'update_failed':
-            $message = "Failed to update profile. Please try again.";
-            break;
-        case 'invalid_input':
-            $message = "Invalid input detected.";
-            break;
-        case 'image_upload_failed':
-            $message = "Profile image upload failed. Please try again with a smaller image file.";
-            break;
-        case 'image_invalid_type':
-            $message = "Profile image must be JPG, JPEG, PNG, or GIF.";
-            break;
-        case 'unauthorized':
-            $message = "You are not allowed to update this profile.";
-            break;
-        default:
-            $message = "An error occurred.";
-    }
-}
-
-$fullName = formatPortalPersonName(
-    $profile['first_name'] ?? null,
-    $profile['middle_name'] ?? null,
-    $profile['last_name'] ?? null,
-    $profile['extension_name'] ?? null,
-    $profile['username'] ?? 'Student User'
-);
-
-// Format address
-$address = ($profile['house_number'] ?? '') . " " . ($profile['street'] ?? '') . ", " . ($profile['barangay'] ?? '') . ", " . 
-           ($profile['city_municipality'] ?? '') . ", " . ($profile['province'] ?? '');
-
-// Set profile image path for header
-$profileImagePath = !empty($profile['profile_image']) 
-    ? "../../uploads/Profile/student/" . htmlspecialchars($profile['profile_image']) 
-    : "../../Assets/profile_button.png";
-
-include "../../Back_End_Files/PHP_Files/get_student_program.php";
-
-$studentProgramDetail = 'Current Class: ';
-if (($profile['enrollment_status'] ?? '') === 'Graduated') {
-    $studentProgramDetail = 'Status: Already graduated and cannot be enlisted again';
-}elseif ($isPending) {
-     $studentProgramDetail  = "Pending Enlistment";
-} elseif ($isRejected) {
-    $studentProgramDetail = "Rejected Enlistment"; 
-} elseif ($strandInfo) {
-    $studentProgramDetail .= 'Grade ' . $strandInfo['grade_level'] . ' - ' . $strandInfo['strand_name'] . ' - ' . $strandInfo['section_name'];
-} else {
-    $studentProgramDetail .= 'Not assigned yet';
-}
-
-$studentMenuLinks = '<a href="home.php">Home</a>';
-if (($profile['enrollment_status'] ?? '') !== 'Graduated'
-    && ($profile['enlistment_status'] ?? '') !== 'Enlisted'
-    && ($profile['enlistment_status'] ?? '') !== 'Pending'
-    && ($profile['enlistment_status'] ?? '') !== 'Promoted') {
-    $studentMenuLinks .= '<a href="student_enlistment.php">Enlistment</a>';
-} elseif (($profile['enlistment_status'] ?? '') === 'Pending') {
-    $studentMenuLinks .= '<span class="menu-link-disabled">Pending Enlistment</span>';
-} elseif (($profile['enrollment_status'] ?? '') === 'Graduated') {
-    $studentMenuLinks .= '<span class="menu-link-disabled">Already Graduated</span>';
-} else {
-    $studentMenuLinks .= '<span class="menu-link-disabled">Already Enlisted</span>';
-}
-$studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>';
-?>
+<?php require_once __DIR__ . '/../../Back_End_Files/PHP_Files/student_profile_page_data.php'; ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -198,7 +12,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
     <link rel="icon" href="../../Assets/LOGO.png" type="image/jpg">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
 </head>
-<body class="student-profile-page">
+<body <?php echo renderThemeBodyAttributes('student-profile-page'); ?>>
 
 <!-- Header -->
 <div class="header">
@@ -221,11 +35,11 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
 
 <?php echo renderStudentMenuOverlay(
     'student-profile-menu',
-    $profileImagePath,
+    $profileHeaderImagePath,
     $fullName,
     (string) ($profile['lrn'] ?? ''),
     isset($strandInfo['grade_level']) ? (string) $strandInfo['grade_level'] : null,
-    $strandInfo['strand_name'] ?? null,
+    $strandInfo['strand_abbreviation'] ?? null,
     $strandInfo['section_name'] ?? null,
     $studentMenuLinks
 ); ?>
@@ -243,48 +57,58 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
           <!-- Profile Form -->
         <form action="../../Back_End_Files/PHP_Files/student_profile_backend.php" method="POST" id="profileForm" enctype="multipart/form-data">
             <input type="hidden" name="student_id" value="<?php echo $profile['student_id']; ?>">
-            
-            <!-- Profile Header -->
-            <div class="profile-header">
-                <div class="profile-image-container">
-                    <?php 
-                    $profileImagePath = !empty($profile['profile_image']) 
-                        ? "../../uploads/Profile/student/" . htmlspecialchars($profile['profile_image']) 
-                        : "../../Assets/default.png"; 
-                    ?>
-                    <img src="<?php echo $profileImagePath; ?>" alt="Profile Image" class="profile-image" id="profileImagePreview">
-                    <label for="profile_image" class="profile-image-upload" title="Click to change profile image">
-                        <span aria-hidden="true">+</span>
-                    </label>
-                    <input type="file" id="profile_image" name="profile_image" accept="image/*" class="profile-image-input" onchange="previewImage(this)">
+
+            <div class="profile-page-bar">
+                <div class="profile-page-heading">
+                    <span class="profile-page-kicker">Student Workspace</span>
+                    <h1>My Profile</h1>
+                    <p>Review your student record, update editable information, and keep your school documents complete.</p>
                 </div>
-                <div class="profile-header-info">
-                    <h2><?php echo htmlspecialchars($fullName); ?></h2>
-                    <p>Student record and profile photo</p>
+                <div class="profile-buttons profile-buttons-top">
+                    <button type="button" class="btn btn-edit" id="editBtn" onclick="toggleEdit()">Edit Profile</button>
+                    <button type="submit" class="btn btn-save" id="saveBtn" style="display: none;">Save Changes</button>
+                    <button type="button" class="btn btn-cancel" id="cancelBtn" style="display: none;" onclick="cancelEdit()">Cancel</button>
+                    <a href="home.php" class="btn btn-secondary">Back to Home</a>
                 </div>
             </div>
 
-        <div class="student-profile-hero">
-            <div class="student-profile-hero-copy">
-                <span class="student-profile-hero-tag">Student Profile Center</span>
-                <h1>Profile Overview</h1>
-                <p>Keep your contact details, family records, and uploaded documents updated so your school information stays complete and accurate.</p>
-            </div>
-            <div class="student-profile-hero-meta">
-                <div class="student-profile-hero-card">
-                    <span>Status</span>
-                    <strong><?php echo htmlspecialchars($profile['enrollment_status']); ?></strong>
+            <div class="profile-summary-card">
+                <div class="profile-summary-main">
+                    <div class="profile-image-container">
+                        <img src="<?php echo $profileFormImagePath; ?>" alt="Profile Image" class="profile-image" id="profileImagePreview">
+                        <label for="profile_image" class="profile-image-upload" title="Click to change profile image">
+                            <span aria-hidden="true">+</span>
+                        </label>
+                        <input type="file" id="profile_image" name="profile_image" accept="image/*" class="profile-image-input" onchange="previewImage(this)">
+                    </div>
+                    <div class="profile-summary-copy">
+                        <span class="profile-summary-tag">Student Overview</span>
+                        <h2><?php echo htmlspecialchars($fullName); ?></h2>
+                        <p>Student record and profile photo</p>
+                        <div class="profile-header-chips">
+                            <span class="profile-header-chip">Username: <?php echo htmlspecialchars($profile['username'] ?? 'Student'); ?></span>
+                            <span class="profile-header-chip">Enlistment: <?php echo htmlspecialchars($profile['enlistment_status'] ?? 'Not set'); ?></span>
+                            <span class="profile-header-chip">Enrolled: <?php echo !empty($profile['date_enrolled']) ? htmlspecialchars(date('F j, Y', strtotime($profile['date_enrolled']))) : 'Not recorded'; ?></span>
+                        </div>
+                    </div>
                 </div>
-                <div class="student-profile-hero-card">
-                    <span>LRN</span>
-                    <strong><?php echo htmlspecialchars($profile['lrn'] ?? 'Not available'); ?></strong>
+                <div class="profile-summary-stats">
+                    <div class="profile-summary-stat">
+                        <span>Status</span>
+                        <strong><?php echo htmlspecialchars($profile['enrollment_status']); ?></strong>
+                    </div>
+                    <div class="profile-summary-stat">
+                        <span>LRN</span>
+                        <strong><?php echo htmlspecialchars($profile['lrn'] ?? 'Not available'); ?></strong>
+                    </div>
+                    <div class="profile-summary-stat profile-summary-stat-wide">
+                        <span>Current Class</span>
+                        <strong><?php echo htmlspecialchars($studentProgramDetail); ?></strong>
+                    </div>
                 </div>
             </div>
-        </div>
 
-      
-
-            <div class="academic-focus-card">
+            <div class="academic-focus-card profile-assignment-card">
                 <div class="academic-focus-header">
                     Current Class Assignment
                 </div>
@@ -311,7 +135,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
             <div class="profile-content view-mode" id="profileContent">
                 
                 <!-- Personal Information -->
-                <div class="profile-section">
+                <div class="profile-section profile-section-personal">
                     <h3>Personal Information</h3>
                     
                     <div class="profile-field">
@@ -371,7 +195,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
                 </div>
 
                 <!-- Contact Information -->
-                <div class="profile-section">
+                <div class="profile-section profile-section-contact full-width">
                     <h3>Contact Information</h3>
                     
                     <div class="profile-field">
@@ -391,7 +215,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
                 </div>
 
                 <!-- Address -->
-                <div class="profile-section full-width">
+                <div class="profile-section profile-section-address full-width">
                     <h3>Address Information</h3>
                     <div class="address-grid">
                         <div class="profile-field">
@@ -427,7 +251,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
                 </div>
 
                 <!-- Academic Information (Read-only) -->
-                <div class="profile-section">
+                <div class="profile-section profile-section-academic full-width">
                     <h3>Academic Information</h3>
                     
                     <div class="profile-field">
@@ -448,7 +272,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
                 </div>
 
                 <!-- Guardian Information -->
-                <div class="profile-section">
+                <div class="profile-section profile-section-guardian full-width">
                     <h3>Guardian Information</h3>
                     
                     <div class="profile-field">
@@ -489,7 +313,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
                 </div>
 
                 <!-- Documents -->
-                <div class="profile-section full-width">
+                <div class="profile-section profile-section-documents full-width">
                     <h3>Uploaded Documents</h3>
                     <p class="section-description">
                         Upload your documents if not yet submitted. Click on a document to view/download.
@@ -552,13 +376,7 @@ $studentMenuLinks .= '<a class="menu-link-danger" href="../../Back_End_Files/PHP
 
             </div>
 
-            <!-- Buttons -->
-            <div class="profile-buttons">
-                <button type="button" class="btn btn-edit" id="editBtn" onclick="toggleEdit()">Edit Profile</button>
-                <button type="submit" class="btn btn-save" id="saveBtn" style="display: none;">Save Changes</button>
-                <button type="button" class="btn btn-cancel" id="cancelBtn" style="display: none;" onclick="cancelEdit()">Cancel</button>
-                <a href="home.php" class="btn btn-secondary">Back to Home</a>
-            </div>
+            <p class="profile-action-note">Use Edit Profile to unlock editable fields and upload missing documents before saving your changes.</p>
         </form>
 
     </div>

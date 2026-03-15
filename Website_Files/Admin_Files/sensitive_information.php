@@ -17,7 +17,7 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
     <link rel="stylesheet" href="../../Design/admin/sensitive_information_design.css">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
 
     <!-- Header -->
     <div class="header">

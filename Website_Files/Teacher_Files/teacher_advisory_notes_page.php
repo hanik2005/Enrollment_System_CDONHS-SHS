@@ -22,7 +22,7 @@ function escapeNoteDataAttr(string $value): string
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/teacher/teacher_advisory_notes_design.css">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
@@ -35,7 +35,9 @@ function escapeNoteDataAttr(string $value): string
             </button>
             <div class="legacy-nav-links">
                 <a href="home.php">Home</a>
+                <a href="class_list.php">Class List</a>
                 <a href="enrollment_summary_page.php">Enrollment Summary</a>
+                <a href="settings.php">Settings</a>
                 <a href="../../Back_End_Files/PHP_Files/logout.php">Logout</a>
             </div>
         </div>

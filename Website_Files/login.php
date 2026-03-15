@@ -14,6 +14,14 @@ include '../Back_End_Files/PHP_Files/login_backend.php';
     
 </head>
 <body>
+    <script>
+        try {
+            localStorage.removeItem("portal_timer_logout_state_v1");
+            localStorage.removeItem("portal_timer_logout_action_v1");
+        } catch (_) {
+            // Ignore storage unavailability.
+        }
+    </script>
     <div class="login-wrapper">
         <div class="left-panel">
             <img src="../Assets/LOGO.png" alt="School Logo" class="logo">

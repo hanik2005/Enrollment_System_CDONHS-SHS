@@ -16,7 +16,7 @@ $navLinks = getAdminNavigationLinks((int) $admin['role_id']);
     <link rel="stylesheet" href="../../Design/dashboard_design.css">
     <link rel="stylesheet" href="../../Design/admin/teacher_advisory.css">
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <!-- header -->
     <div class="header">
         <div class="left">

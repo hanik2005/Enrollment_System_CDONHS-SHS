@@ -34,6 +34,7 @@
 .class-table {
     width: 100%;
     border-collapse: collapse;
+    min-width: 760px;
     font-size: 15px;
 }
 
@@ -95,12 +96,25 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+    .main-container {
+        padding: 14px;
+    }
+
+    .table-container {
+        padding: 12px;
+        overflow-x: auto;
+    }
+
     .class-table {
         font-size: 13px;
     }
 
     .page-title h1 {
         font-size: 20px;
+    }
+
+    .print-btn {
+        width: 100%;
     }
 }
 

@@ -38,6 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['role_id'] = $user['role_id'];
             $_SESSION['status'] = $user['status'];
             $_SESSION['first_login'] = $user['first_login'];
+            syncSessionThemePreference($connection, (int) $user['user_id']);
 
             if ($user['first_login'] == 1) {
                 header("Location: /Enrollment_System_CDONHS-SHS/Website_Files/change_password.php");

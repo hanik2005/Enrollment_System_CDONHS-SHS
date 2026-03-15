@@ -23,7 +23,7 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
     <link rel="stylesheet" href="../../Design/admin/application_list_design.css">
     <script src="../../Back_End_Files/JSCRIPT_Files/timer-logout.js"></script>
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="header">
         <div class="left">
             <img src="../../Assets/LOGO.png" alt="CDONSHS Logo">
@@ -82,11 +82,6 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                     <th><input type="checkbox" id="selectAllCheckbox"></th>
                     <th>#</th>
                     <th>Full Name</th>
-                    <th>LRN</th>
-                    <th>Email</th>
-                    <th>PSA Birth Cert</th>
-                    <th>Form 138</th>
-                    <th>Student ID</th>
                     <th>Status</th>
                     <th>Remarks</th>
                     <th>View</th>
@@ -99,6 +94,10 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                         <?php
                         $hasLrn = !empty(trim((string) ($row['lrn'] ?? '')));
                         $studentFullName = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+                        $currentStatus = trim((string) ($row['application_status'] ?? 'Pending'));
+                        if ($currentStatus === '') {
+                            $currentStatus = 'Pending';
+                        }
                         $existingRemarks = trim((string) ($row['remarks'] ?? ''));
                         $remarksPreview = $existingRemarks;
                         if (strlen($remarksPreview) > 60) {
@@ -111,72 +110,40 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                             </td>
                             <td><?= $count++; ?></td>
                             <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></td>
-                            <td>
-                                <?php if ($hasLrn): ?>
-                                    <?= htmlspecialchars($row['lrn']); ?>
-                                <?php else: ?>
-                                    <div class="lrn-missing-container">
-                                        <span class="doc-missing">Missing LRN</span>
-                                        <span class="lrn-admin-note">Admin must edit the LRN in Sensitive Information.</span>
-                                    </div>
-                                <?php endif; ?>
-                            </td>
-                            <td><?= htmlspecialchars($row['email']); ?></td>
-
-                            <td>
-                                <?php if (!empty($row['psa_birth_certificate'])): ?>
-                                    <a href="../../uploads/Documents/student/<?= htmlspecialchars($row['psa_birth_certificate']); ?>"
-                                       target="_blank" class="doc-submitted">&#10003; View</a>
-                                <?php else: ?>
-                                    <span class="doc-missing">&#10007; Missing</span>
-                                <?php endif; ?>
-                            </td>
-
-                            <td>
-                                <?php if (!empty($row['form_138'])): ?>
-                                    <a href="../../uploads/Documents/student/<?= htmlspecialchars($row['form_138']); ?>"
-                                       target="_blank" class="doc-submitted">&#10003; View</a>
-                                <?php else: ?>
-                                    <span class="doc-missing">&#10007; Missing</span>
-                                <?php endif; ?>
-                            </td>
-
-                            <td>
-                                <?php if (!empty($row['student_id_copy'])): ?>
-                                    <a href="../../uploads/Documents/student/<?= htmlspecialchars($row['student_id_copy']); ?>"
-                                       target="_blank" class="doc-submitted">&#10003; View</a>
-                                <?php else: ?>
-                                    <span class="doc-missing">&#10007; Missing</span>
-                                <?php endif; ?>
-                            </td>
 
                             <td>
                                 <?php
                                 $statusClass = 'status-pending';
-                                if ($row['application_status'] === 'Approved') {
+                                if ($currentStatus === 'Approved') {
                                     $statusClass = 'status-approved';
                                 }
-                                if ($row['application_status'] === 'Rejected') {
+                                if ($currentStatus === 'Rejected') {
                                     $statusClass = 'status-rejected';
                                 }
                                 ?>
-                                <span class="status-badge <?= $statusClass; ?>">
-                                    <?= htmlspecialchars($row['application_status']); ?>
-                                </span>
+                                <div class="status-cell">
+                                    <span class="status-badge application-status-display <?= $statusClass; ?>">
+                                        <?= htmlspecialchars($currentStatus); ?>
+                                    </span>
+                                    <div class="batch-update-fields status-edit-panel" style="display: none;">
+                                        <input type="hidden" name="application_status" class="batch-status" value="<?= htmlspecialchars($currentStatus, ENT_QUOTES); ?>">
+                                        <button type="button"
+                                                class="status-cycle-btn batch-status-toggle"
+                                                data-status-values="Pending|Approved|Rejected"
+                                                aria-label="Edit application status for <?= htmlspecialchars($studentFullName); ?>">
+                                            <?= htmlspecialchars($currentStatus); ?>
+                                        </button>
+                                    </div>
+                                    <span class="cell-helper-text">Tick the checkbox first before editing the status.</span>
+                                    <?php if (!$hasLrn): ?>
+                                        <span class="lrn-admin-note-block">Cannot confirm while LRN is missing.</span>
+                                    <?php endif; ?>
+                                </div>
                             </td>
 
                             <td>
-                                <div class="batch-update-fields" style="display: none;">
-                                    <input type="hidden" class="application-id" value="<?= $row['application_id']; ?>">
+                                <div class="remarks-cell original-form-fields">
                                     <input type="hidden" name="remarks" class="batch-remarks" value="<?= htmlspecialchars($existingRemarks, ENT_QUOTES); ?>">
-                                    <input type="hidden" name="application_status" class="batch-status" value="<?= htmlspecialchars((string) $row['application_status'], ENT_QUOTES); ?>">
-                                    <button type="button"
-                                            class="status-cycle-btn batch-status-toggle"
-                                            data-status-values="Pending|Approved|Rejected">
-                                        <?= htmlspecialchars((string) $row['application_status']); ?>
-                                    </button>
-                                </div>
-                                <div class="original-form-fields">
                                     <button type="button" class="btn btn-remarks-edit">Add/Edit Remarks</button>
                                     <div class="remarks-state">
                                         <span class="remarks-indicator <?= $existingRemarks !== '' ? 'remarks-has-value' : ''; ?>">
@@ -186,29 +153,29 @@ include "../../Back_End_Files/PHP_Files/joining_application_validation.php";
                                             <?= $existingRemarks !== '' ? htmlspecialchars($remarksPreview) : 'Click Add/Edit Remarks to input and save.'; ?>
                                         </span>
                                     </div>
-                                    <span style="color: #666; font-size: 0.85em;">Use checkbox + Confirm Selected to apply saved remarks/status</span>
-                                    <?php if (!$hasLrn): ?>
-                                        <span class="lrn-admin-note-block">Cannot confirm while LRN is missing.</span>
-                                    <?php endif; ?>
+                                    <span class="cell-helper-text">Saved remarks are applied after you select the row and click Confirm Selected.</span>
                                 </div>
                             </td>
 
                             <td>
-                                <a href="sensitive_information.php?search_name=<?= urlencode($row['first_name'] . ' ' . $row['last_name']); ?>"
-                                   class="btn-view-sensitive"
-                                   title="View Sensitive Information"
-                                   target="_blank">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                        <circle cx="12" cy="12" r="3"></circle>
-                                    </svg>
-                                </a>
+                                <div class="view-cell">
+                                    <a href="sensitive_information.php?search_name=<?= urlencode($row['first_name'] . ' ' . $row['last_name']); ?>"
+                                       class="btn-view-sensitive"
+                                       title="View Sensitive Information"
+                                       target="_blank">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                    </a>
+                                    <span class="cell-helper-text">Open Sensitive Information to review the full record, LRN, email, and submitted documents.</span>
+                                </div>
                             </td>
                         </tr>
                     <?php endwhile; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="11" style="text-align: center; padding: 30px;">
+                        <td colspan="6" style="text-align: center; padding: 30px;">
                             No student applications found.
                         </td>
                     </tr>

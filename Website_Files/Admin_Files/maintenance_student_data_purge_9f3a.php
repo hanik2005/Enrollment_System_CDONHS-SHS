@@ -184,7 +184,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     </style>
 </head>
-<body>
+<body <?php echo renderThemeBodyAttributes(); ?>>
     <div class="purge-container">
         <h1>Student Data Purge (Super Admin)</h1>
         <p>Logged in as: <strong><?php echo htmlspecialchars($adminRoleLabel); ?></strong></p>

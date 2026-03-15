@@ -4,13 +4,15 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
     color: #333;
 }
 
 .login-wrapper {
     display: flex;
-    height: 100vh;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .left-panel {
@@ -289,12 +291,40 @@ a:hover {
     .login-wrapper {
         flex-direction: column;
     }
-    .left-panel, .right-panel {
+
+    .left-panel,
+    .right-panel {
         flex: none;
-        height: 50vh;
+        min-height: auto;
+        height: auto;
+        padding: 24px 16px;
     }
 
     .auth-challenge {
         gap: 8px;
+    }
+
+    .left-panel .logo {
+        width: 140px;
+        height: 140px;
+    }
+
+    .login-form {
+        padding: 22px 16px;
+    }
+}
+
+@media (max-width: 560px) {
+    .left-panel h1 {
+        font-size: 1.45rem;
+    }
+
+    .auth-challenge {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-operator,
+    .auth-refresh {
+        justify-self: center;
     }
 }

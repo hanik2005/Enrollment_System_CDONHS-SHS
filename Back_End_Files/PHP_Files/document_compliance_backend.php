@@ -54,17 +54,10 @@ $form137Select = $hasForm137Column
 $sql = "
     SELECT
         sa.application_id,
-        sa.lrn,
         sa.first_name,
         sa.last_name,
         sa.middle_name,
         sa.extension_name,
-        sa.email,
-        sa.enrollment_type,
-        sa.application_status,
-        s.student_id,
-        s.enrollment_status,
-        s.enlistment_status,
         ss.grade_level,
         st.strand_name,
         sec.section_name,
